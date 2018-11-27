@@ -21,6 +21,11 @@ publishing {
     publications {
         shadow(MavenPublication) { publication ->
             project.shadow.component(publication)
+
+            // For release only
+            if (!project.version.contains('-')) {
+                artifact testJar
+            }
         }
     }
     repositories {
@@ -43,5 +48,20 @@ sonarqube {
         property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec"
         property "sonar.dependencyCheck.reportPath", "${project.buildDir}/reports/dependency-check-report.xml"
         property 'sonar.dependencyCheck.htmlReportPath', "${project.buildDir}/reports/dependency-check-report.html"
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://nexus.intra.monext.fr:10130/nexus/content/groups/public"
+            credentials {
+                username mavenUser
+                password mavenPassword
+            }
+        }
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
     }
 }

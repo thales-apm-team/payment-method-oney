@@ -1,3 +1,4 @@
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -22,5 +23,14 @@ sonarqube {
 
         property 'sonar.organization', 'thales-services-monext'
         property 'sonar.host.url', 'https://sonarcloud.io'
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
     }
 }
