@@ -50,4 +50,9 @@ public class OneyConstants {
     public static final String MERCHANT_GUID_DESCRIPTION = "merchant.guid.description";
     public static final String MERCHANT_GUID_MESSAGE_ERROR = "merchant.guid.error.message";
 
+    public static final String PAYMENT_REQUEST_URL = "staging/payments/v1/purchase/facilypay_url";
+    public static final String CONFIRM_REQUEST_URL = "";
+    public static final String CANCEL_REQUEST_URL = "";
+    public static final String STATUS_REQUEST_URL = "";
+
 }

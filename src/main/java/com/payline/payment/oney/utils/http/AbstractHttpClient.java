@@ -12,16 +12,14 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
 
@@ -33,6 +31,7 @@ public abstract class AbstractHttpClient {
 
     private CloseableHttpClient client;
     private static final Logger LOGGER = LogManager.getLogger(AbstractHttpClient.class);
+
 
 
     /**
@@ -67,12 +66,11 @@ public abstract class AbstractHttpClient {
      * @param host        URL host
      * @param path        URL path
      * @param body        Request body
-     * @param credential  The authentication credential
      * @return The response returned from the HTTP call
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    protected StringResponse doPost(String scheme, String host, String path, HttpEntity body, String credential) throws IOException, URISyntaxException {
+    protected StringResponse doPost(String scheme, String host, String path,Header[] headers, HttpEntity body) throws IOException, URISyntaxException {
 
         final URI uri = new URIBuilder()
                 .setScheme(scheme)
@@ -80,7 +78,6 @@ public abstract class AbstractHttpClient {
                 .setPath(path)
                 .build();
 
-        Header[] headers = createHeaders(credential,COUNTRY_CODE_VALUE);
 
         final HttpPost httpPostRequest = new HttpPost(uri);
         httpPostRequest.setHeaders(headers);
@@ -127,13 +124,12 @@ public abstract class AbstractHttpClient {
      * @param scheme      URL scheme
      * @param host        URL host
      * @param path        URL path
-     * @param credential  The authentication credential
      * @return The response returned from the HTTP call
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
 
-        protected StringResponse doGet(String scheme, String host, String path, String credential) throws IOException, URISyntaxException {
+        protected StringResponse doGet(String scheme, String host, String path, Header[] headers) throws IOException, URISyntaxException {
 
             final URI uri = new URIBuilder()
                     .setScheme(scheme)
@@ -141,11 +137,8 @@ public abstract class AbstractHttpClient {
                     .setPath(path)
                     .build();
 
-            Header[] headers = createHeaders(credential,COUNTRY_CODE_VALUE);
-
             final HttpGet httpGetRequest = new HttpGet(uri);
             httpGetRequest.setHeaders(headers);
-
             final long start = System.currentTimeMillis();
             int count = 0;
             StringResponse strResponse = null;
@@ -183,20 +176,5 @@ public abstract class AbstractHttpClient {
 
         }
 
-    /**
-     * Create header for POST/GET methdod
-     * @param authentication authentication credential
-     * @param countryCode country code of the merchant
-     * @return
-     */
-        private Header[] createHeaders(String authentication,String countryCode) {
-            Header[] headers = new Header[4];
-            headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
-            headers[1] = new BasicHeader(AUTHORIZATION, authentication );
-            headers[2] = new BasicHeader(COUNTRY_CODE_KEY, countryCode);
-            headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
-
-            return headers;
-        }
 
 }
