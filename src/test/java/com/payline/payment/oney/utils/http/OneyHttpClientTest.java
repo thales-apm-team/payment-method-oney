@@ -1,6 +1,8 @@
 package com.payline.payment.oney.utils.http;
 
+import org.apache.http.Header;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -45,4 +47,18 @@ public class OneyHttpClientTest {
         Assert.assertEquals(400, response.getCode());
 
     }
+    @Test
+    public void buildGetOrderPath(){
+
+        this.client = OneyHttpClient.getInstance();
+        Map<String, String> param = new HashMap<>();
+        param.put("psp_guid", "val1");
+        param.put("merchant_guid", "val2");
+        param.put("reference", "val3");
+
+        String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3" ;
+        String path = client.buildGetOrderPath("somePath/",param);
+        Assert.assertEquals(pathAttempted,path);
+    }
+
 }
