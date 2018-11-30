@@ -55,6 +55,9 @@ public class OneyConstants {
     public static final String CANCEL_REQUEST_URL = "";
     public static final String STATUS_REQUEST_URL = "";
 
+    //0 immediate, 1 deferred, 2 check card
+    public static final int PAYMENT_TYPE = 0;
+
 
 
 }

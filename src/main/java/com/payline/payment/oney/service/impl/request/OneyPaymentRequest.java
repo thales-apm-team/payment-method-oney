@@ -1,6 +1,10 @@
 package com.payline.payment.oney.service.impl.request;
 
+import com.payline.payment.oney.InvalidRequestException;
 import com.payline.payment.oney.bean.common.*;
+import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
+import com.payline.payment.oney.bean.common.payment.NavigationData;
+import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public class OneyPaymentRequest extends OneyRequest {
@@ -71,7 +75,7 @@ public class OneyPaymentRequest extends OneyRequest {
         return pspContext;
     }
 
-    private OneyPaymentRequest(OneyPaymentRequest.OneyPaymentRequestBuilder builder) {
+    private OneyPaymentRequest(Builder builder) {
         this.merchantGuid = builder.merchantGuid;
         this.pspGuid = builder.pspGuid;
         this.languageCode = builder.languageCode;
@@ -90,7 +94,7 @@ public class OneyPaymentRequest extends OneyRequest {
 
 
     //Builder
-    public static final class OneyPaymentRequestBuilder {
+    public static final class Builder {
 
         private String merchantGuid;
         private String pspGuid;
@@ -107,86 +111,86 @@ public class OneyPaymentRequest extends OneyRequest {
         private String merchantContext;
         private String pspContext;
 
-        private OneyPaymentRequestBuilder() {
+        private Builder() {
         }
 
 
-        public static OneyPaymentRequest.OneyPaymentRequestBuilder aOneyPaymentRequest() {
-            return new OneyPaymentRequest.OneyPaymentRequestBuilder();
+        public static Builder aOneyPaymentRequest() {
+            return new Builder();
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withMerchantGuid(String merchantGuid) {
+        public Builder withMerchantGuid(String merchantGuid) {
             this.merchantGuid = merchantGuid;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withPspGuid(String pspGuid) {
+        public Builder withPspGuid(String pspGuid) {
             this.pspGuid = pspGuid;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withLanguageCode(String languageCode) {
+        public Builder withLanguageCode(String languageCode) {
             this.languageCode = languageCode;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withSkinId(int skinId) {
+        public Builder withSkinId(int skinId) {
             this.skinId = skinId;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withOrigin(String origin) {
+        public Builder withOrigin(String origin) {
             this.origin = origin;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withMerchantLanguageCode(String merchantLanguageCode) {
+        public Builder withMerchantLanguageCode(String merchantLanguageCode) {
             this.merchantLanguageCode = merchantLanguageCode;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withMerchantRequestId(String merchantRequestId) {
+        public Builder withMerchantRequestId(String merchantRequestId) {
             this.merchantRequestId = merchantRequestId;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withPurchase(Purchase purchase) {
+        public Builder withPurchase(Purchase purchase) {
             this.purchase = purchase;
             return this;
         }
 
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withCustomer(Customer customer) {
+        public Builder withCustomer(Customer customer) {
             this.customer = customer;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withPaymentdata(PaymentData paymentData) {
+        public Builder withPaymentdata(PaymentData paymentData) {
             this.paymentData = paymentData;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withLoyaltyInformation(LoyaltyInformation loyaltyInformation) {
+        public Builder withLoyaltyInformation(LoyaltyInformation loyaltyInformation) {
             this.loyaltyInformation = loyaltyInformation;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withNavigation(NavigationData navigationData) {
+        public Builder withNavigation(NavigationData navigationData) {
             this.navigationData = navigationData;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withmMrchantContext(String merchantContext) {
+        public Builder withmMrchantContext(String merchantContext) {
             this.merchantContext = merchantContext;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder withPspContext(String pspContext) {
+        public Builder withPspContext(String pspContext) {
             this.pspContext = pspContext;
             return this;
         }
 
-        public OneyPaymentRequest.OneyPaymentRequestBuilder verifyIntegrity() {
+        public Builder verifyIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
             }
@@ -210,6 +214,25 @@ public class OneyPaymentRequest extends OneyRequest {
             return new OneyPaymentRequest(this.verifyIntegrity());
         }
 
+        public Builder fromPaylineRequest(PaymentRequest paylineRequest) throws InvalidRequestException {
+
+            return OneyPaymentRequest.Builder.aOneyPaymentRequest()
+                    .withLanguageCode("")
+                    .withPspGuid("")
+                    .withMerchantGuid("")
+                    .withNavigation(NavigationData.Builder
+                            .aNavigationDataBuilder()
+                            .fromEnvironment(paylineRequest.getEnvironment())
+                            .build())
+                    .withPaymentdata(PaymentData.Builder
+                            .aPaymentData()
+                            .fromAmount(paylineRequest.getAmount())
+                            .build())
+                    .withPurchase(null)
+                    .withCustomer(null)
+                    ;
+
+        }
 
 
     }

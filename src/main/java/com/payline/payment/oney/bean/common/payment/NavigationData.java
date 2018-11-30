@@ -1,15 +1,19 @@
-package com.payline.payment.oney.bean.common;
+package com.payline.payment.oney.bean.common.payment;
 
+import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.InvalidRequestException;
 import com.payline.pmapi.bean.payment.Environment;
 
 public class NavigationData {
 
-
+    @SerializedName("server_response_url")
     private String notificationUrl;
+    @SerializedName("success_url")
     private String successUrl;
+    @SerializedName("fail_url")
     private String failUrl;
     //alternative return url
+    @SerializedName("alternative_return_url")
     private String pendingUrl;
 
     //Getter
@@ -29,7 +33,7 @@ public class NavigationData {
         return pendingUrl;
     }
 
-    public NavigationData(NavigationData.Builder builder) {
+    private NavigationData(NavigationData.Builder builder) {
         this.notificationUrl = builder.notificationUrl;
         this.successUrl = builder.successUrl;
         this.failUrl = builder.failUrl;
@@ -81,7 +85,7 @@ public class NavigationData {
                     .withFailUrl(environment.getRedirectionCancelURL());
         }
 
-        public NavigationData.Builder verifyIntegrity() {
+        private NavigationData.Builder verifyIntegrity() {
             if (this.successUrl == null) {
                 throw new IllegalStateException("NavigationData must have a successUrl when built");
             }
