@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl.request;
 
+import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,12 +10,13 @@ import java.util.Base64;
 public abstract class OneyRequest {
     //Construit une requête Oney
 
-    protected static final Logger logger = LogManager.getLogger(OneyRequest.class);
-
+    private static final Logger logger = LogManager.getLogger(OneyRequest.class);
+    @SerializedName("merchant_guid")
     protected String  merchantGuid;
+    @SerializedName("psp_guid")
     protected String  pspGuid;
+    @SerializedName("encrypted_message")
     protected String  encryptedMessage;
-    protected String  decryptedMessage;
 
 
     public String getMerchantGuid() {

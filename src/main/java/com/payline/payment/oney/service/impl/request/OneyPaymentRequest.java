@@ -1,29 +1,41 @@
 package com.payline.payment.oney.service.impl.request;
 
+import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.InvalidRequestException;
 import com.payline.payment.oney.bean.common.*;
 import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
 import com.payline.payment.oney.bean.common.payment.NavigationData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OneyPaymentRequest extends OneyRequest {
 
     //todo definir les objets qui composent une requete de payment
     //v1 pour le moment
+    private static final Logger logger = LogManager.getLogger(OneyPaymentRequest.class);
 
-
+    @SerializedName("language_code")
     private String languageCode;
+    @SerializedName("skin_id")
     private int skinId; //(enum must be smarter (1 a 5)
     private String origin; //(WEB default value)
+    @SerializedName("merchant_language_code")
     private String merchantLanguageCode; //(ISO 639-1)
+    @SerializedName("merchant_request_id")
     private String merchantRequestId;
     private Purchase purchase;
     private Customer customer;
+    @SerializedName("payment")
     private PaymentData paymentData;
+    @SerializedName("loyalty_information")
     private LoyaltyInformation loyaltyInformation;
+    @SerializedName("navigation")
     private NavigationData navigationData;
+    @SerializedName("merchant_context")
     private String merchantContext;
+    @SerializedName("psp_context")
     private String pspContext;
 
 
@@ -180,7 +192,7 @@ public class OneyPaymentRequest extends OneyRequest {
             return this;
         }
 
-        public Builder withmMrchantContext(String merchantContext) {
+        public Builder withMerchantContext(String merchantContext) {
             this.merchantContext = merchantContext;
             return this;
         }

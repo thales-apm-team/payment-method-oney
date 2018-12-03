@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.common.Amount;
 
-import java.util.List;
 
 public class PaymentData extends OneyBean {
 
@@ -14,8 +13,8 @@ public class PaymentData extends OneyBean {
     private String currency; //a convertir ISO 4217
     @SerializedName("payment_type")
     private Integer paymentType; // enum de 0 à 2 ?
-    @SerializedName("business_transaction_list")
-    private List<BusinessTransactionData> businessTransactionList;
+    @SerializedName("business_transaction")
+    private BusinessTransactionData businessTransaction;
 
 
     public Float getAmount() {
@@ -30,8 +29,8 @@ public class PaymentData extends OneyBean {
         return paymentType;
     }
 
-    public List<BusinessTransactionData> getBusinessTransactionList() {
-        return businessTransactionList;
+    public BusinessTransactionData getBusinessTransaction() {
+        return businessTransaction;
     }
 
     private PaymentData() {
@@ -41,14 +40,14 @@ public class PaymentData extends OneyBean {
         this.amount = builder.amount;
         this.currency = builder.currency;
         this.paymentType = builder.paymentType;
-        this.businessTransactionList = builder.businessTransactionList;
+        this.businessTransaction = builder.businessTransaction;
     }
 
     public static class Builder {
         private Float amount;
         private String currency;
         private Integer paymentType;
-        private List<BusinessTransactionData> businessTransactionList;
+        private BusinessTransactionData businessTransaction;
 
         public static PaymentData.Builder aPaymentData() {
             return new PaymentData.Builder();
@@ -69,8 +68,8 @@ public class PaymentData extends OneyBean {
             return this;
         }
 
-        public PaymentData.Builder withBusinessTransactionList(List<BusinessTransactionData> businessTransactionList) {
-            this.businessTransactionList = businessTransactionList;
+        public PaymentData.Builder withBusinessTransactionList(BusinessTransactionData businessTransaction) {
+            this.businessTransaction = businessTransaction;
             return this;
         }
 
@@ -81,7 +80,12 @@ public class PaymentData extends OneyBean {
             }
             if (this.currency == null) {
                 throw new IllegalStateException("PaymentData must have a currency when built");
-            } else {
+            }
+
+            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != 2) ){
+                throw new IllegalStateException("PaymentData must have a businessTransaction when built");
+
+            }else {
                 return this;
             }
         }
@@ -92,10 +96,10 @@ public class PaymentData extends OneyBean {
 
         public PaymentData.Builder fromAmount(Amount amount) {
 //todo mapper businessTransactionData et payment type (une constante ??)
-            List<BusinessTransactionData> businessTransactionList = null;
             return PaymentData.Builder.aPaymentData()
                     .withAmount(amount.getAmountInSmallestUnit().floatValue())
                     .withCurrency(amount.getCurrency().getCurrencyCode())
+                    .withPaymentType(2)
                     //     .withBusinessTransactionList(businessTransactionList)
 //                    .withPaymentType(PAYMENT_TYPE)
                     ;
