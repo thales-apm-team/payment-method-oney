@@ -1,11 +1,12 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.Customer;
-import com.payline.payment.oney.bean.common.CustomerIdentity;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static com.payline.payment.oney.utils.BeanUtils.createDefaultCustomerIdentity;
 
 public class CustomerTest {
 
@@ -16,7 +17,7 @@ public class CustomerTest {
     @Test
     public void customerOK(){
         customer = Customer.Builder.aCustomBuilder()
-        .withCustomerIdentity(new CustomerIdentity())
+        .withCustomerIdentity(createDefaultCustomerIdentity())
         .withLanguageCode("FR")
         .withCustumerExternalCode("code")
         .withTrustFlag(1)
@@ -27,7 +28,7 @@ public class CustomerTest {
     @Test
     public void withoutCustomerIdentity(){
         expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Customer must have a customerIdentity when built");
+        expectedEx.expectMessage("Customer must have a identity when built");
 
         customer = Customer.Builder.aCustomBuilder()
                 .withLanguageCode("FR")
@@ -42,7 +43,7 @@ public class CustomerTest {
         expectedEx.expectMessage("Customer must have a languageCode when built");
 
         customer = Customer.Builder.aCustomBuilder()
-                .withCustomerIdentity(new CustomerIdentity())
+                .withCustomerIdentity(createDefaultCustomerIdentity())
                 .withCustumerExternalCode("code")
                 .withTrustFlag(1)
                 .build();
@@ -54,7 +55,7 @@ public class CustomerTest {
         expectedEx.expectMessage("Customer must have a customerExternalCode when built");
 
         customer = Customer.Builder.aCustomBuilder()
-                .withCustomerIdentity(new CustomerIdentity())
+                .withCustomerIdentity(createDefaultCustomerIdentity())
                 .withLanguageCode("FR")
                 .withTrustFlag(1)
                 .build();
@@ -64,7 +65,7 @@ public class CustomerTest {
     @Test
     public void testToString(){
         customer = Customer.Builder.aCustomBuilder()
-                .withCustomerIdentity(new CustomerIdentity())
+                .withCustomerIdentity(createDefaultCustomerIdentity())
                 .withLanguageCode("FR")
                 .withCustumerExternalCode("code")
                 .withTrustFlag(1)

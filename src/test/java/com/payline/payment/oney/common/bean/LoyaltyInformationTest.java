@@ -1,6 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
+import com.sun.media.sound.InvalidFormatException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

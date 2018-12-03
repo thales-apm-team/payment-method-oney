@@ -11,7 +11,7 @@ import org.junit.rules.ExpectedException;
 import java.math.BigInteger;
 import java.util.Currency;
 
-import static com.payline.payment.oney.utils.http.BeanUtils.createDefaultBusinessTransactionData;
+import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
 
 public class PaymentDataTest {
 
