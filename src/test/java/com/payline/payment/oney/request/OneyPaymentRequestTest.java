@@ -2,7 +2,7 @@ package com.payline.payment.oney.request;
 
 import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class OneyPaymentRequestTest {
 

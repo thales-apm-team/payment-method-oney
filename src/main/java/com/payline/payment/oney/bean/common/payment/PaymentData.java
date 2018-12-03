@@ -12,7 +12,7 @@ public class PaymentData extends OneyBean {
     @SerializedName("currency_code")
     private String currency; //a convertir ISO 4217
     @SerializedName("payment_type")
-    private Integer paymentType; // enum de 0 à 2 ?
+    private PaymentType paymentType; // enum de 0 à 2 ?
     @SerializedName("business_transaction")
     private BusinessTransactionData businessTransaction;
 
@@ -25,7 +25,7 @@ public class PaymentData extends OneyBean {
         return currency;
     }
 
-    public Integer getPaymentType() {
+    public PaymentType getPaymentType() {
         return paymentType;
     }
 
@@ -46,7 +46,7 @@ public class PaymentData extends OneyBean {
     public static class Builder {
         private Float amount;
         private String currency;
-        private Integer paymentType;
+        private PaymentType paymentType;
         private BusinessTransactionData businessTransaction;
 
         public static PaymentData.Builder aPaymentData() {
@@ -63,7 +63,7 @@ public class PaymentData extends OneyBean {
             return this;
         }
 
-        public PaymentData.Builder withPaymentType(int paymentType) {
+        public PaymentData.Builder withPaymentType(PaymentType paymentType) {
             this.paymentType = paymentType;
             return this;
         }
@@ -82,7 +82,7 @@ public class PaymentData extends OneyBean {
                 throw new IllegalStateException("PaymentData must have a currency when built");
             }
 
-            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != 2) ){
+            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != PaymentType.CHECK_CARD) ){
                 throw new IllegalStateException("PaymentData must have a businessTransaction when built");
 
             }else {
@@ -99,7 +99,7 @@ public class PaymentData extends OneyBean {
             return PaymentData.Builder.aPaymentData()
                     .withAmount(amount.getAmountInSmallestUnit().floatValue())
                     .withCurrency(amount.getCurrency().getCurrencyCode())
-                    .withPaymentType(2)
+                    .withPaymentType(PaymentType.CHECK_CARD)
                     //     .withBusinessTransactionList(businessTransactionList)
 //                    .withPaymentType(PAYMENT_TYPE)
                     ;

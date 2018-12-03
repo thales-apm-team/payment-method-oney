@@ -3,7 +3,8 @@ package com.payline.payment.oney.utils;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class OneyCryptoTest {
@@ -56,10 +57,8 @@ public class OneyCryptoTest {
 
     @Test
     public void encryptWrongKey(){
-//Todo correct this test handle exception attempted
-       Assert.fail();
         expectedEx.expect(RuntimeException.class);
-        expectedEx.expectMessage("Unable to encrypt this message: [{}]");
+        expectedEx.expectMessage("Unable to encrypt this message");
         crypto = new OneyCrypto("maCle");
 
         String message = "mon message a chiffrer";

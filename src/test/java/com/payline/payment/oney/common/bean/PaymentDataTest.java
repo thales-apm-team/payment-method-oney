@@ -1,6 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.payment.PaymentData;
+import com.payline.payment.oney.bean.common.payment.PaymentType;
 import com.payline.pmapi.bean.common.Amount;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -76,7 +77,7 @@ public class PaymentDataTest {
     public void paymentDataOKWithoutBusinessTransactionData() {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
-                .withPaymentType(2)
+                .withPaymentType(PaymentType.CHECK_CARD)
                 .withCurrency("EUR")
                 .build();
         Assert.assertNotNull(paymentdata);
@@ -87,7 +88,7 @@ public class PaymentDataTest {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withCurrency("EUR")
-                .withPaymentType(1)
+                .withPaymentType(PaymentType.DEFERRED)
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 
