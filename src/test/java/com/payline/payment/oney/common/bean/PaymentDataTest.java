@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Currency;
 
 public class PaymentDataTest {
@@ -62,11 +63,15 @@ public class PaymentDataTest {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withCurrency("EUR")
+                .withPaymentType(1)
+                .withBusinessTransactionList(new ArrayList<>())
                 .build();
 
         System.out.println(paymentdata);
         Assert.assertTrue(paymentdata.toString().contains("payment_amount"));
         Assert.assertTrue(paymentdata.toString().contains("currency_code"));
+        Assert.assertTrue(paymentdata.toString().contains("payment_type"));
+        Assert.assertTrue(paymentdata.toString().contains("business_transaction_list"));
 
 
     }

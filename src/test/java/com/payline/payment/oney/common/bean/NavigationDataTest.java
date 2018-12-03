@@ -68,7 +68,6 @@ public class NavigationDataTest {
                 .fromEnvironment(environment)
                 .build();
 
-        System.out.println(navigationData);
         Assert.assertTrue(navigationData.toString().contains("success_url"));
         Assert.assertTrue(navigationData.toString().contains("fail_url"));
         Assert.assertTrue(navigationData.toString().contains("server_response_url"));

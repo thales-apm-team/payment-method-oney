@@ -59,7 +59,6 @@ public class LoyaltyInformationTest {
                 .withExpirationDate("2018-04-24")
                 .withValue("25")
                 .build();
-        System.out.println(loyaltyInformation);
         Assert.assertTrue(loyaltyInformation.toString().contains("loyalty_id"));
         Assert.assertTrue(loyaltyInformation.toString().contains("loyalty_faq_url"));
         Assert.assertTrue(loyaltyInformation.toString().contains("expiration_date"));
