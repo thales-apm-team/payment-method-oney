@@ -2,7 +2,7 @@ package com.payline.payment.oney.bean.common;
 
 import com.google.gson.Gson;
 
-public class OneyBean {
+public abstract class OneyBean {
 
     @Override
     public String toString() {

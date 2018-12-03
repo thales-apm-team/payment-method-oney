@@ -1,7 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.InvalidRequestException;
-import com.payline.payment.oney.bean.common.NavigationData;
+import com.payline.payment.oney.bean.common.payment.NavigationData;
 import com.payline.pmapi.bean.payment.Environment;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -58,5 +58,21 @@ public class NavigationDataTest {
         Assert.assertEquals("successOrPending", navigationData.getPendingUrl());
         Assert.assertEquals("successOrPending", navigationData.getSuccessUrl());
         Assert.assertEquals("fail", navigationData.getFailUrl());
+    }
+
+
+    @Test
+    public void toStringTest() throws InvalidRequestException {
+        Environment environment = new Environment("notif", "successOrPending", "fail", true);
+        navigationData = NavigationData.Builder.aNavigationDataBuilder()
+                .fromEnvironment(environment)
+                .build();
+
+        System.out.println(navigationData);
+        Assert.assertTrue(navigationData.toString().contains("success_url"));
+        Assert.assertTrue(navigationData.toString().contains("fail_url"));
+        Assert.assertTrue(navigationData.toString().contains("server_response_url"));
+        Assert.assertTrue(navigationData.toString().contains("alternative_return_url"));
+
     }
 }

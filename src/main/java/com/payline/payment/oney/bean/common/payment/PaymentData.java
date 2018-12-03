@@ -1,14 +1,12 @@
 package com.payline.payment.oney.bean.common.payment;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.common.Amount;
-import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import java.util.List;
 
-import static com.payline.payment.oney.utils.OneyConstants.PAYMENT_TYPE;
-
-public class PaymentData {
+public class PaymentData extends OneyBean {
 
     @SerializedName("payment_amount")
     private Float amount;

@@ -57,4 +57,18 @@ public class PaymentDataTest {
 
     }
 
+    @Test
+    public void toStringTest(){
+        paymentdata = PaymentData.Builder.aPaymentData()
+                .withAmount(100)
+                .withCurrency("EUR")
+                .build();
+
+        System.out.println(paymentdata);
+        Assert.assertTrue(paymentdata.toString().contains("payment_amount"));
+        Assert.assertTrue(paymentdata.toString().contains("currency_code"));
+
+
+    }
+
 }
