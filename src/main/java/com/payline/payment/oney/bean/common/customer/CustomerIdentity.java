@@ -1,11 +1,11 @@
-package com.payline.payment.oney.bean.common;
+package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class CustomerIdentity extends OneyBean {
 

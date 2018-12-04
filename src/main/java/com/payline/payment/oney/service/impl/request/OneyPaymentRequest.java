@@ -2,10 +2,11 @@ package com.payline.payment.oney.service.impl.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.InvalidRequestException;
-import com.payline.payment.oney.bean.common.*;
-import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
-import com.payline.payment.oney.bean.common.payment.NavigationData;
+import com.payline.payment.oney.bean.common.customer.Customer;
+import com.payline.payment.oney.bean.common.LoyaltyInformation;
+import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
+import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -202,7 +203,7 @@ public class OneyPaymentRequest extends OneyRequest {
             return this;
         }
 
-        public Builder verifyIntegrity() {
+        private Builder verifyIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
             }
@@ -226,7 +227,7 @@ public class OneyPaymentRequest extends OneyRequest {
             return new OneyPaymentRequest(this.verifyIntegrity());
         }
 
-        public Builder fromPaylineRequest(PaymentRequest paylineRequest) throws InvalidRequestException {
+        public Builder fromPaylineRequest(PaymentRequest paymentRequest) throws InvalidRequestException {
 
             return OneyPaymentRequest.Builder.aOneyPaymentRequest()
                     .withLanguageCode("")
@@ -234,14 +235,17 @@ public class OneyPaymentRequest extends OneyRequest {
                     .withMerchantGuid("")
                     .withNavigation(NavigationData.Builder
                             .aNavigationDataBuilder()
-                            .fromEnvironment(paylineRequest.getEnvironment())
+                            .fromEnvironment(paymentRequest.getEnvironment())
                             .build())
                     .withPaymentdata(PaymentData.Builder
                             .aPaymentData()
-                            .fromAmount(paylineRequest.getAmount())
+                            .fromAmount(paymentRequest.getAmount())
+                            .build())
+                    .withCustomer(Customer.Builder.aCustomBuilder()
+                            .fromPaylineRequest(paymentRequest)
                             .build())
                     .withPurchase(null)
-                    .withCustomer(null)
+
                     ;
 
         }

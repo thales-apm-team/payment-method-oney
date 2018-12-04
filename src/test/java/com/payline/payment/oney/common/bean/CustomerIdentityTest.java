@@ -1,9 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
-import com.payline.payment.oney.bean.common.CustomerIdentity;
-import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
+import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.pmapi.bean.common.Buyer;
-import com.sun.media.sound.InvalidFormatException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -132,7 +130,6 @@ public class CustomerIdentityTest {
                 .withCompanyName("DKA")
                 .build();
 
-        System.out.println(customerIdentity);
         Assert.assertTrue(customerIdentity.toString().contains("individual_taxpayer_code"));
         Assert.assertTrue(customerIdentity.toString().contains("person_type"));
         Assert.assertTrue(customerIdentity.toString().contains("honorific_code"));

@@ -205,6 +205,7 @@ public class TestUtils {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "+33606060606");
         phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+33707070707");
+        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+33708070708");
 
         return phoneNumbers;
     }
@@ -325,21 +326,5 @@ public class TestUtils {
 
                 .build();
     }
-
-    /**
-     * Defini le numero de téléphone utilisé pour l'envoi d'OTP
-     *
-     * @return
-     */
-    public static String setupNumber() {
-
-        Scanner keyboardUser = new Scanner(System.in);
-        System.out.println("Enter your  phone number : ");
-        String phoneNumber = keyboardUser.nextLine();
-        keyboardUser.reset();
-        PHONE_NUMBER_TEST = phoneNumber;
-        return phoneNumber;
-    }
-
 
 }

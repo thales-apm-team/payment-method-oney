@@ -92,7 +92,6 @@ public class PaymentDataTest {
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 
-        System.out.println(paymentdata);
         Assert.assertTrue(paymentdata.toString().contains("payment_amount"));
         Assert.assertTrue(paymentdata.toString().contains("currency_code"));
         Assert.assertTrue(paymentdata.toString().contains("payment_type"));

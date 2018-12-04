@@ -1,7 +1,6 @@
-package com.payline.payment.oney.bean.common.payment;
+package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.bean.common.OneyBean;
 
 public class LoyaltyInformation extends OneyBean {
 

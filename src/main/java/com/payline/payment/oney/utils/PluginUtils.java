@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static com.payline.pmapi.bean.common.Buyer.Civility.*;
 
@@ -77,7 +78,8 @@ public class PluginUtils {
         }
         return null;
     }
-
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     /**
      * Global validation method.
      * for childObjects, syntax is childObject.fieldName

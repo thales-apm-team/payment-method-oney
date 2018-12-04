@@ -1,8 +1,7 @@
-package com.payline.payment.oney.bean.common.payment;
+package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.InvalidRequestException;
-import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.payment.Environment;
 
 public class NavigationData extends OneyBean {
