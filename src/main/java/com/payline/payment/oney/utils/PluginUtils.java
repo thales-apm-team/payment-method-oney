@@ -5,12 +5,15 @@ import com.payline.payment.oney.InvalidRequestException;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
 import com.payline.pmapi.bean.Request;
+import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.payline.pmapi.bean.common.Buyer.Civility.*;
 
 public class PluginUtils {
 
@@ -47,6 +50,32 @@ public class PluginUtils {
 
     public static ConfigEnvironment getEnvironnement(ContractParametersCheckRequest contractParametersCheckRequest) {
         return contractParametersCheckRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
+    }
+
+
+    //Mapping methods betwen  Payline and Oney
+    public static Integer getPersonType(Buyer.LegalStatus legalStatus) {
+        switch (legalStatus) {
+            case UNKNOWN:
+                return 0;
+            case COMPANY:
+                return 1;
+            case PERSON:
+                return 2;
+        }
+        return null;
+    }
+
+    public static Integer getHonorificCode(Buyer.Civility civility) {
+        switch (civility) {
+            case UNKNOWN:
+                return 0;
+            case MR:
+                return 1;
+            case MRS:
+                return 2;
+        }
+        return null;
     }
 
     /**

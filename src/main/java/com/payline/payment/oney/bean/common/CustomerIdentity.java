@@ -1,6 +1,11 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.pmapi.bean.common.Buyer;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class CustomerIdentity extends OneyBean {
 
@@ -178,13 +183,40 @@ public class CustomerIdentity extends OneyBean {
             this.cityzenshipCountryCode = code;
             return this;
         }
-        public CustomerIdentity.Builder withBirthArrondissementCode (Integer code) {
+
+        public CustomerIdentity.Builder withBirthArrondissementCode(Integer code) {
             this.birthArrondissementCode = code;
             return this;
         }
 
         public CustomerIdentity.Builder withCompanyName(String name) {
             this.companyName = name;
+            return this;
+        }
+
+        public CustomerIdentity.Builder fromPayline(Buyer buyer) {
+            //todo
+            this.taxpayerCode = null;
+//            this.taxpayerCode = buyer.getLegalDocument();
+            this.personType = PluginUtils.getPersonType(buyer.getLegalStatus());
+            this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
+            this.birthName = buyer.getFullName().getLastName();
+
+            if (this.honorificCode == 2 || this.honorificCode == 3) {
+                this.lastName = buyer.getFullName().getLastName();
+            }
+            this.firstName = buyer.getFullName().getFirstName();
+            if (buyer.getBirthday() != null) {
+                this.birthDate = new SimpleDateFormat("yyyy-MM-dd").format(buyer.getBirthday());
+            }
+            //Champs a mapper dans les prochains lots
+            this.givenNames = null;
+            this.birthMunicipalityCode = null;
+            this.birthArrondissementCode = null;
+            this.birthCountryCode = null;
+            this.cityzenshipCountryCode = null;
+            this.companyName = null;
+
             return this;
         }
 
@@ -204,7 +236,7 @@ public class CustomerIdentity extends OneyBean {
             if (this.personType == 1 && this.companyName == null) {
                 throw new IllegalStateException("CustomerIdentity must have a companyName when built");
             }
-            if (this.birthDate != null && !this.birthDate.matches("\\d{4}-\\d{2}-\\d{2}") ) {
+            if (this.birthDate != null && !this.birthDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 throw new IllegalStateException("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built");
             }
             return this;

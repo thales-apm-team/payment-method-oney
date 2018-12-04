@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultCustomerIdentity;
+import static com.payline.payment.oney.utils.TestUtils.createDefaultPaymentRequest;
 
 public class CustomerTest {
 
@@ -62,6 +63,17 @@ public class CustomerTest {
 
     }
 
+
+    @Test
+    public void fromPaylineRequest(){
+       customer = Customer.Builder.aCustomBuilder()
+       .fromPaylineRequest(createDefaultPaymentRequest())
+       .build();
+        System.out.println(customer);
+
+
+
+    }
     @Test
     public void testToString(){
         customer = Customer.Builder.aCustomBuilder()
@@ -77,5 +89,7 @@ public class CustomerTest {
         Assert.assertTrue(customer.toString().contains("identity"));
 
     }
+
+
 
 }

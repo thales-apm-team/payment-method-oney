@@ -1,4 +1,4 @@
-package com.payline.payment.oney.bean.common.payment;
+package com.payline.payment.oney.bean.common.enums;
 
 public enum BusinessTransactionType {
 

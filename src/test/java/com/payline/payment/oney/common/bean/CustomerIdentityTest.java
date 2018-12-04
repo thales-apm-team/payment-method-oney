@@ -2,11 +2,14 @@ package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.LoyaltyInformation;
+import com.payline.pmapi.bean.common.Buyer;
 import com.sun.media.sound.InvalidFormatException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
 public class CustomerIdentityTest {
 
@@ -27,6 +30,7 @@ public class CustomerIdentityTest {
              .withGivenNames("GN")
              .withBithDate("1990-12-11")
              .build();
+     Assert.assertNotNull(customerIdentity);
     }
 
 
@@ -89,6 +93,24 @@ public class CustomerIdentityTest {
                 .withFirstName("John")
                 .withBithDate("1990-ZZ12-11")
                 .build();
+    }
+
+
+    @Test
+    public void fromPaylineBuyer(){
+        Buyer buyer  =createDefaultBuyer();
+        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+               .fromPayline(buyer)
+                .build();
+        Assert.assertNotNull(customerIdentity.getFirstName());
+        Assert.assertNotNull(customerIdentity.getBirthDate());
+        Assert.assertNotNull(customerIdentity.getHonorificCode());
+        Assert.assertNotNull(customerIdentity.getPersonType());
+        //Champs pas encore mappés
+        Assert.assertNull(customerIdentity.getGivenNames());
+        Assert.assertNull(customerIdentity.getBirthMunicipalityCode());
+        Assert.assertNull(customerIdentity.getCityzenshipCountryCode());
+
     }
 
     @Test

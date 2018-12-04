@@ -1,6 +1,9 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.pmapi.bean.Request;
+import com.payline.pmapi.bean.common.Buyer;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public class Customer extends OneyBean {
     @SerializedName("trust_flag")
@@ -76,6 +79,17 @@ public class Customer extends OneyBean {
                 throw new IllegalStateException("Customer must have a identity when built");
             }
             else return this;
+        }
+
+        public Customer.Builder fromPaylineRequest(PaymentRequest request){
+            this.trustFlag = null;
+            this.customerExternalCode = request.getBuyer().getCustomerIdentifier();
+            this.languageCode = request.getLocale().getLanguage();
+            this.identity =CustomerIdentity.Builder.aCustomerIdentity()
+            .fromPayline(request.getBuyer())
+            .build();
+
+            return this;
         }
 
         public Customer build(){

@@ -279,6 +279,8 @@ public class TestUtils {
                 .withFullName(fullName)
                 .withCustomerIdentifier("subscriber1")
                 .withExtendedData(createDefaultExtendedData())
+                .withBirthday(new Date(1991,1,1))
+                .withLegalStatus(Buyer.LegalStatus.PERSON)
                 .build();
     }
 

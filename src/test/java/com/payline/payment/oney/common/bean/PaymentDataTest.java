@@ -1,7 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.payment.PaymentData;
-import com.payline.payment.oney.bean.common.payment.PaymentType;
+import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.pmapi.bean.common.Amount;
 import org.junit.Assert;
 import org.junit.Rule;
