@@ -57,6 +57,7 @@ public class OneyConstants {
 
     //0 immediate, 1 deferred, 2 check card
     public static final int PAYMENT_TYPE = 0;
+    public static final String BUSINESS_TRANSACTION_TYPE = "OPC";
 
 
 

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.pmapi.bean.common.Amount;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 
 public class PaymentData extends OneyBean {
@@ -95,13 +96,15 @@ public class PaymentData extends OneyBean {
             return new PaymentData(this.verifyIntegrity());
         }
 
-        public PaymentData.Builder fromAmount(Amount amount) {
-//todo mapper businessTransactionData et payment type (une constante ??)
+        public PaymentData.Builder fromPayline(PaymentRequest request) {
+//todo mapper payment type (une constante ??)
             return PaymentData.Builder.aPaymentData()
-                    .withAmount(amount.getAmountInSmallestUnit().floatValue())
-                    .withCurrency(amount.getCurrency().getCurrencyCode())
+                    .withAmount(request.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withCurrency(request.getAmount().getCurrency().getCurrencyCode())
                     .withPaymentType(PaymentType.CHECK_CARD)
-                    //     .withBusinessTransactionList(businessTransactionList)
+                         .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
+                         .fromPayline(request.getContractConfiguration())
+                         .build())
 //                    .withPaymentType(PAYMENT_TYPE)
                     ;
 

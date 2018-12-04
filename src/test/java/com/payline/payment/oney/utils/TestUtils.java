@@ -15,6 +15,8 @@ import com.payline.pmapi.bean.reset.request.ResetRequest;
 import java.math.BigInteger;
 import java.util.*;
 
+import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
+
 
 /**
  * Class with method to generate mock easier
@@ -212,9 +214,8 @@ public class TestUtils {
 
     public static ContractConfiguration createContractConfiguration() {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
-//        contractConfiguration.getContractProperties().put(CONTRACT_CONFIG_CREDITOR_ID, new ContractProperty(GOOD_CREDITOR_ID));
-//        contractConfiguration.getContractProperties().put(CONFIG_HOST, new ContractProperty("https://espaceclient.sepalia.fr/rcte"));
-//        contractConfiguration.getContractProperties().put(CONFIG_PATH_WSMANDATE_MANDATE_CREATE, new ContractProperty("mandate"));
+        contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_TYPE, new ContractProperty("OPC"));
+
 //        contractConfiguration.getContractProperties().put(PARTNER_CONFIG_AUTH_LOGIN, new ContractProperty(GOOD_LOGIN));
 //        contractConfiguration.getContractProperties().put(PARTNER_CONFIG_AUTH_PASS, new ContractProperty(GOOD_PWD));
         return contractConfiguration;

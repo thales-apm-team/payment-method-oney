@@ -12,6 +12,8 @@ import java.math.BigInteger;
 import java.util.Currency;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
+import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
+import static com.payline.payment.oney.utils.TestUtils.createDefaultPaymentRequest;
 
 public class PaymentDataTest {
 
@@ -32,12 +34,12 @@ public class PaymentDataTest {
     }
 
     @Test
-    public void paymentDataFromAmount() {
+    public void paymentDataFromPayline() {
         paymentdata = PaymentData.Builder.aPaymentData()
-                .fromAmount(new Amount(BigInteger.ONE, Currency.getInstance("EUR")))
+                .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Assert.assertEquals(1, paymentdata.getAmount().floatValue(),0.001);
+        Assert.assertEquals(10, paymentdata.getAmount().floatValue(),0.001);
         Assert.assertEquals("EUR", paymentdata.getCurrency());
     }
 

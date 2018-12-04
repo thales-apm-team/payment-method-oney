@@ -239,7 +239,7 @@ public class OneyPaymentRequest extends OneyRequest {
                             .build())
                     .withPaymentdata(PaymentData.Builder
                             .aPaymentData()
-                            .fromAmount(paymentRequest.getAmount())
+                            .fromPayline(paymentRequest)
                             .build())
                     .withCustomer(Customer.Builder.aCustomBuilder()
                             .fromPaylineRequest(paymentRequest)

@@ -2,6 +2,10 @@ package com.payline.payment.oney.bean.common.payment;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
+
+import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
 
 public class BusinessTransactionData extends OneyBean {
 
@@ -64,6 +68,18 @@ public class BusinessTransactionData extends OneyBean {
             } else return this;
         }
 
+        public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract){
+
+            if (contract.getProperty(BUSINESS_TRANSACTION_TYPE) == null) {
+                throw new IllegalStateException("Property "+ BUSINESS_TRANSACTION_TYPE+" doesn't exists");
+            }
+
+            this.code =  contract.getProperty(BUSINESS_TRANSACTION_TYPE).getValue();
+            //Todo mapper version et business transactionType
+            this.version = null;
+            this.businessTransactionType = null;
+            return this;
+        }
         public BusinessTransactionData build(){
             return new BusinessTransactionData(this.verifyIntegrity());
         }
