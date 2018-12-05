@@ -1,13 +1,12 @@
 package com.payline.payment.oney.common.bean;
 
-import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.payline.payment.oney.utils.BeanUtils.*;
+import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
 public class PurchaseMerchantTest {
 
@@ -16,7 +15,7 @@ public class PurchaseMerchantTest {
     public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
-    public void purchaseMerchantOK(){
+    public void purchaseMerchantOK() {
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                 .withCompanyName("cie")
                 .withExternalReference("ref")
@@ -35,7 +34,7 @@ public class PurchaseMerchantTest {
 
 
     @Test
-    public void withoutExternalRef(){
+    public void withoutExternalRef() {
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("PurchaseMerchant must have a externalReference when built");
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
@@ -50,7 +49,7 @@ public class PurchaseMerchantTest {
     }
 
     @Test
-    public void withoutMerchantGuid(){
+    public void withoutMerchantGuid() {
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("PurchaseMerchant must have a merchantGuid when built");
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
@@ -60,6 +59,16 @@ public class PurchaseMerchantTest {
                 .build();
     }
 
+    @Test
+    public void fromPayline() {
+
+        purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                .fromPayline(createCompletePaymentBuilder().build())
+                .build();
+
+        Assert.assertNotNull(purchaseMerchant.getExternalReference());
+        Assert.assertNotNull(purchaseMerchant.getMerchantGuid());
+    }
 
 
 

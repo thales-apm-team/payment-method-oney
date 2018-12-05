@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.payline.pmapi.bean.common.Buyer.Civility.*;
-
 public class PluginUtils {
 
 
@@ -78,8 +76,64 @@ public class PluginUtils {
         }
         return null;
     }
+
+    //Decoupe le texte en 5 renvoi un tableau
+    public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
+    Map<String, String> textTruncated = new HashMap();
+
+        String line1, line2, line3, line4, line5;
+        int fromIndex = size;
+        int fromIndex2 = size;
+        int firstCharPosition = 0;
+        int firstCharPosition2 = 0;
+
+        //-------------------- address 1
+        if(longText.length()<size)
+        {
+            textTruncated.put("line1", longText);
+
+        }
+        else {
+            int end1 = longText.lastIndexOf(' ', fromIndex);
+            line1 = longText.substring(firstCharPosition, end1);
+            fromIndex += line1.length();
+            firstCharPosition += line1.length();
+            textTruncated.put("line1", line1);
+
+            int end2 = longText.lastIndexOf(' ', fromIndex);
+            line2 = longText.substring(firstCharPosition, end2);
+            fromIndex += line2.length();
+            firstCharPosition += line2.length();
+            textTruncated.put("line2", line2);
+
+            int end3 = longText.lastIndexOf(' ', fromIndex);
+            line3 = longText.substring(firstCharPosition, end3);
+            textTruncated.put("line3", line3);
+        }
+        //-------------------- address 2
+        if(longText2.length()<size)
+        {
+            textTruncated.put("line4", longText2);
+
+        }
+        else {
+            int end4 = longText2.lastIndexOf(' ', fromIndex2);
+            line4 = longText2.substring(firstCharPosition2, end4);
+            fromIndex2 += line4.length();
+            firstCharPosition2 += line4.length();
+            textTruncated.put("line4", line4);
+
+            int end5 = longText2.lastIndexOf(' ', fromIndex2);
+            line5 = longText2.substring(firstCharPosition2, end5);
+            textTruncated.put("line5", line5);
+        }
+        return textTruncated;
+
+    }
+
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
     /**
      * Global validation method.
      * for childObjects, syntax is childObject.fieldName

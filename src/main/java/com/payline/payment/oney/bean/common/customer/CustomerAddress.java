@@ -4,6 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.common.Buyer;
 
+import java.util.Map;
+
+import static com.payline.payment.oney.utils.PluginUtils.truncateLongText;
+
 public class CustomerAddress extends OneyBean {
 
     private String line1;
@@ -168,7 +172,7 @@ public class CustomerAddress extends OneyBean {
 
             String street = buyer.getAddressForType(Buyer.AddressType.BILLING).getStreet1();
             String street2 = buyer.getAddressForType(Buyer.AddressType.BILLING).getStreet2();
-            this.refractorAdresse(street, street2);
+            this.truncateAddress(street, street2);
 
             this.municipality = buyer.getAddressForType(Buyer.AddressType.BILLING).getCity();
             this.postalCode = buyer.getAddressForType(Buyer.AddressType.BILLING).getZipCode();
@@ -181,17 +185,25 @@ public class CustomerAddress extends OneyBean {
             return this;
         }
 
+// Découpe l'adresse intelligemment
+        private void truncateAddress(String street1, String street2) {
+          Map addressTruncated =  truncateLongText(street1, street2, 38);
 
-        private void refractorAdresse(String street1, String street2) {
-
-            //todo découpage adresse à moins de 38 caractères par champs
-            this.line1 = street1;
-            this.line2 = "";
-            this.line3 = "";
-            if (street2 != null)
-                this.line4 = street2;
-            this.line5 = "";
-
+            if(addressTruncated.get("line1")!=null) {
+                this.line1 = addressTruncated.get("line1").toString();
+            }
+            if(addressTruncated.get("line2")!=null) {
+                this.line2 = addressTruncated.get("line2").toString();
+            }
+            if(addressTruncated.get("line3")!=null) {
+                this.line3 = addressTruncated.get("line3").toString();
+            }
+            if(addressTruncated.get("line4")!=null) {
+                this.line4 = addressTruncated.get("line4").toString();
+            }
+            if(addressTruncated.get("line5")!=null) {
+                this.line5 = addressTruncated.get("line5").toString();
+            }
         }
 
         public CustomerAddress build() {

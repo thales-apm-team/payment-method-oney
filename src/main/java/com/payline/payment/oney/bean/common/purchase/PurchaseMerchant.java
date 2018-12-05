@@ -5,6 +5,8 @@ import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
+import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
+
 public class PurchaseMerchant extends OneyBean {
 
     @SerializedName("merchant_guid")
@@ -83,7 +85,7 @@ public class PurchaseMerchant extends OneyBean {
 
         public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest){
             //todo mapping companyName (v2?)
-            this.merchantGuid = paymentRequest.getContractConfiguration().getProperty("").getValue();
+            this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
             this.externalReference = paymentRequest.getOrder().getReference();
 //            this.companyName = null;
 //            this.municipality = paymentRequest.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getCity();

@@ -29,7 +29,7 @@ public class PaymentDataTest {
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 
-        Assert.assertEquals(100, paymentdata.getAmount().floatValue(),0.001);
+        Assert.assertEquals(100, paymentdata.getAmount(),0.001);
         Assert.assertEquals("EUR", paymentdata.getCurrency());
     }
 
@@ -39,7 +39,7 @@ public class PaymentDataTest {
                 .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Assert.assertEquals(10, paymentdata.getAmount().floatValue(),0.001);
+        Assert.assertEquals(10, paymentdata.getAmount(),0.001);
         Assert.assertEquals("EUR", paymentdata.getCurrency());
     }
 

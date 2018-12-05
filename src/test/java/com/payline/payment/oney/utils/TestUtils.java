@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
+import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 
 
 /**
@@ -216,7 +217,7 @@ public class TestUtils {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_TYPE, new ContractProperty("OPC"));
 
-//        contractConfiguration.getContractProperties().put(PARTNER_CONFIG_AUTH_LOGIN, new ContractProperty(GOOD_LOGIN));
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("MymerchantGuid"));
 //        contractConfiguration.getContractProperties().put(PARTNER_CONFIG_AUTH_PASS, new ContractProperty(GOOD_PWD));
         return contractConfiguration;
     }
