@@ -1,7 +1,9 @@
 package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public class Customer extends OneyBean {
@@ -16,7 +18,7 @@ public class Customer extends OneyBean {
     @SerializedName("contact_details")
     private ContactDetails contactDetails;
     @SerializedName("customer_address")
-    private CustomerAddress customerAddress;
+    private OneyAddress customerAddress;
 
     // a implementer plus tard  maybe
     @SerializedName("purchase_history")
@@ -45,7 +47,7 @@ public class Customer extends OneyBean {
         return contactDetails;
     }
 
-    public CustomerAddress getCustomerAddress() {
+    public OneyAddress getCustomerAddress() {
         return customerAddress;
     }
 
@@ -78,7 +80,7 @@ public class Customer extends OneyBean {
         private String languageCode;
         private CustomerIdentity identity;
         private ContactDetails contactDetails;
-        private CustomerAddress customerAddress;
+        private OneyAddress customerAddress;
         private PurchaseHistory purchaseHistory;
         private SupportingDocuments supportingDocuments;
 
@@ -107,7 +109,7 @@ public class Customer extends OneyBean {
             return this;
         }
 
-        public Customer.Builder withCustomerAddress(CustomerAddress adr) {
+        public Customer.Builder withCustomerAddress(OneyAddress adr) {
             this.customerAddress = adr;
             return this;
         }
@@ -146,8 +148,8 @@ public class Customer extends OneyBean {
             this.contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                     .fromPayline(request.getBuyer())
                     .build();
-            this.customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
-                    .fromPayline(request.getBuyer())
+            this.customerAddress = OneyAddress.Builder.aOneyAddressBuilder()
+                    .fromPayline(request.getBuyer(), Buyer.AddressType.BILLING)
                     .build();
             return this;
         }

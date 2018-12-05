@@ -2,7 +2,7 @@ package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.bean.common.customer.ContactDetails;
 import com.payline.payment.oney.bean.common.customer.Customer;
-import com.payline.payment.oney.bean.common.customer.CustomerAddress;
+import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 
@@ -36,8 +36,8 @@ public class BeanUtils {
                 .build();
     }
 
-    public static CustomerAddress createDefaultCustomerAdress(){
-        return CustomerAddress.Builder.aCustomerAddressBuilder()
+    public static OneyAddress createDefaultCustomerAdress(){
+        return OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withLine2("residence ABC")
                 .withLine3("bat D")

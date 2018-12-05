@@ -1,14 +1,13 @@
-package com.payline.payment.oney.bean.common.customer;
+package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.Map;
 
 import static com.payline.payment.oney.utils.PluginUtils.truncateLongText;
 
-public class CustomerAddress extends OneyBean {
+public class OneyAddress extends OneyBean {
 
     private String line1;
     private String line2;
@@ -66,10 +65,10 @@ public class CustomerAddress extends OneyBean {
         return arrondissementCode;
     }
 
-    private CustomerAddress() {
+    private OneyAddress() {
     }
 
-    private CustomerAddress(CustomerAddress.Builder builder) {
+    private OneyAddress(OneyAddress.Builder builder) {
         this.line1 = builder.line1;
         this.line2 = builder.line2;
         this.line3 = builder.line3;
@@ -95,90 +94,90 @@ public class CustomerAddress extends OneyBean {
         private Integer arrondissementCode;
 
 
-        public static CustomerAddress.Builder aCustomerAddressBuilder() {
-            return new CustomerAddress.Builder();
+        public static OneyAddress.Builder aOneyAddressBuilder() {
+            return new OneyAddress.Builder();
         }
 
-        public CustomerAddress.Builder withLine1(String line) {
+        public OneyAddress.Builder withLine1(String line) {
             this.line1 = line;
             return this;
         }
 
-        public CustomerAddress.Builder withLine2(String line) {
+        public OneyAddress.Builder withLine2(String line) {
             this.line2 = line;
             return this;
         }
 
-        public CustomerAddress.Builder withLine3(String line) {
+        public OneyAddress.Builder withLine3(String line) {
             this.line3 = line;
             return this;
         }
 
-        public CustomerAddress.Builder withLine4(String line) {
+        public OneyAddress.Builder withLine4(String line) {
             this.line4 = line;
             return this;
         }
 
-        public CustomerAddress.Builder withLine5(String line) {
+        public OneyAddress.Builder withLine5(String line) {
             this.line5 = line;
             return this;
         }
 
-        public CustomerAddress.Builder withPostalCode(String code) {
+        public OneyAddress.Builder withPostalCode(String code) {
             this.postalCode = code;
             return this;
         }
 
-        public CustomerAddress.Builder withMunicipality(String municipality) {
+        public OneyAddress.Builder withMunicipality(String municipality) {
             this.municipality = municipality;
             return this;
         }
 
-        public CustomerAddress.Builder withCountryCode(String code) {
+        public OneyAddress.Builder withCountryCode(String code) {
             this.countryCode = code;
             return this;
         }
 
-        public CustomerAddress.Builder withCountryLabel(String label) {
+        public OneyAddress.Builder withCountryLabel(String label) {
             this.countryLabel = label;
             return this;
         }
 
-        public CustomerAddress.Builder withArrondissmentCode(Integer code) {
+        public OneyAddress.Builder withArrondissmentCode(Integer code) {
             this.arrondissementCode = code;
             return this;
         }
 
-        private CustomerAddress.Builder checkIntegrity() {
+        private OneyAddress.Builder checkIntegrity() {
             if (this.line1 == null) {
-                throw new IllegalStateException("CustomerAddress must have a line1 when built");
+                throw new IllegalStateException("OneyAddress must have a line1 when built");
             }
             if (this.countryLabel == null) {
-                throw new IllegalStateException("CustomerAddress must have a countryLabel when built");
+                throw new IllegalStateException("OneyAddress must have a countryLabel when built");
             }
             if (this.postalCode == null) {
-                throw new IllegalStateException("CustomerAddress must have a postalCode when built");
+                throw new IllegalStateException("OneyAddress must have a postalCode when built");
             }
             if (this.municipality == null) {
-                throw new IllegalStateException("CustomerAddress must have a municipality when built");
+                throw new IllegalStateException("OneyAddress must have a municipality when built");
             }
             if (this.countryCode == null) {
-                throw new IllegalStateException("CustomerAddress must have a countryCode when built");
+                throw new IllegalStateException("OneyAddress must have a countryCode when built");
             } else return this;
 
         }
 
-        public CustomerAddress.Builder fromPayline(Buyer buyer) {
+        public OneyAddress.Builder fromPayline(Buyer buyer, Buyer.AddressType addressType) {
 
-            String street = buyer.getAddressForType(Buyer.AddressType.BILLING).getStreet1();
-            String street2 = buyer.getAddressForType(Buyer.AddressType.BILLING).getStreet2();
+            String street = buyer.getAddressForType(addressType).getStreet1();
+            String street2 = buyer.getAddressForType(addressType).getStreet2();
             this.truncateAddress(street, street2);
 
-            this.municipality = buyer.getAddressForType(Buyer.AddressType.BILLING).getCity();
-            this.postalCode = buyer.getAddressForType(Buyer.AddressType.BILLING).getZipCode();
-            this.countryLabel = buyer.getAddressForType(Buyer.AddressType.BILLING).getCountry();
+            this.municipality = buyer.getAddressForType(addressType).getCity();
+            this.postalCode = buyer.getAddressForType(addressType).getZipCode();
+            this.countryLabel = buyer.getAddressForType(addressType).getCountry();
             //todo CountryCODE ISO alpha-3 a partir du country label
-            this.countryCode = buyer.getAddressForType(Buyer.AddressType.BILLING).getCountry();
+            this.countryCode = buyer.getAddressForType(addressType).getCountry();
 //            this.arrondissementCode = buyer.getAddressForType(Buyer.AddressType.BILLING);
 
 
@@ -206,8 +205,8 @@ public class CustomerAddress extends OneyBean {
             }
         }
 
-        public CustomerAddress build() {
-            return new CustomerAddress(this.checkIntegrity());
+        public OneyAddress build() {
+            return new OneyAddress(this.checkIntegrity());
         }
     }
 

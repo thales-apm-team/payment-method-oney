@@ -1,6 +1,7 @@
 package com.payline.payment.oney.common.bean;
 
-import com.payline.payment.oney.bean.common.customer.CustomerAddress;
+import com.payline.payment.oney.bean.common.OneyAddress;
+import com.payline.pmapi.bean.common.Buyer;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,33 +9,33 @@ import org.junit.rules.ExpectedException;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
-public class CustomerAddressTest {
+public class OneyAddressTest {
 
-    private CustomerAddress customerAddress;
+    private OneyAddress oneyAddress;
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
 
     @Test
     public void customerAddressOK(){
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
-                .fromPayline(createDefaultBuyer())
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
+                .fromPayline(createDefaultBuyer(), Buyer.AddressType.BILLING)
                 .build();
 
-        Assert.assertNotNull(customerAddress);
-        Assert.assertTrue(customerAddress.getLine1().length()<39);
-        Assert.assertTrue(customerAddress.getLine2().length()<39);
-        Assert.assertTrue(customerAddress.getLine3().length()<39);
-        Assert.assertTrue(customerAddress.getLine4().length()<39);
-        Assert.assertTrue(customerAddress.getLine5().length()<39);
+        Assert.assertNotNull(oneyAddress);
+        Assert.assertTrue(oneyAddress.getLine1().length()<39);
+        Assert.assertTrue(oneyAddress.getLine2() ==null || oneyAddress.getLine2().length()<39);
+        Assert.assertTrue(oneyAddress.getLine3() ==null || oneyAddress.getLine3().length()<39);
+        Assert.assertTrue(oneyAddress.getLine4() ==null || oneyAddress.getLine4().length()<39);
+        Assert.assertTrue(oneyAddress.getLine5() ==null || oneyAddress.getLine5().length()<39);
     }
 
     @Test
     public void withoutLine1(){
         expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerAddress must have a line1 when built");
+        expectedEx.expectMessage("OneyAddress must have a line1 when built");
 
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withCountryCode("FRA")
                 .withCountryLabel("France")
                 .withPostalCode("34000")
@@ -45,9 +46,9 @@ public class CustomerAddressTest {
     @Test
     public void withoutPostalCode(){
         expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerAddress must have a postalCode when built");
+        expectedEx.expectMessage("OneyAddress must have a postalCode when built");
 
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withCountryCode("FRA")
                 .withCountryLabel("France")
@@ -59,9 +60,9 @@ public class CustomerAddressTest {
     @Test
     public void withoutCountryCode(){
         expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerAddress must have a countryCode when built");
+        expectedEx.expectMessage("OneyAddress must have a countryCode when built");
 
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withCountryLabel("France")
                 .withPostalCode("34000")
@@ -73,9 +74,9 @@ public class CustomerAddressTest {
     @Test
     public void withoutMunicipality(){
         expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerAddress must have a municipality when built");
+        expectedEx.expectMessage("OneyAddress must have a municipality when built");
 
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withCountryCode("FRA")
                 .withCountryLabel("France")
@@ -86,7 +87,7 @@ public class CustomerAddressTest {
     @Test
     public void testToString(){
 
-        customerAddress = CustomerAddress.Builder.aCustomerAddressBuilder()
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withLine2("residence ABC")
                 .withLine3("bat D")
@@ -97,15 +98,15 @@ public class CustomerAddressTest {
                 .withPostalCode("34000")
                 .withMunicipality("mtp")
                 .build();
-        Assert.assertTrue(customerAddress.toString().contains("line1"));
-        Assert.assertTrue(customerAddress.toString().contains("line2"));
-        Assert.assertTrue(customerAddress.toString().contains("line3"));
-        Assert.assertTrue(customerAddress.toString().contains("line4"));
-        Assert.assertTrue(customerAddress.toString().contains("line5"));
-        Assert.assertTrue(customerAddress.toString().contains("postal_code"));
-        Assert.assertTrue(customerAddress.toString().contains("municipality"));
-        Assert.assertTrue(customerAddress.toString().contains("country_code"));
-        Assert.assertTrue(customerAddress.toString().contains("country_label"));
+        Assert.assertTrue(oneyAddress.toString().contains("line1"));
+        Assert.assertTrue(oneyAddress.toString().contains("line2"));
+        Assert.assertTrue(oneyAddress.toString().contains("line3"));
+        Assert.assertTrue(oneyAddress.toString().contains("line4"));
+        Assert.assertTrue(oneyAddress.toString().contains("line5"));
+        Assert.assertTrue(oneyAddress.toString().contains("postal_code"));
+        Assert.assertTrue(oneyAddress.toString().contains("municipality"));
+        Assert.assertTrue(oneyAddress.toString().contains("country_code"));
+        Assert.assertTrue(oneyAddress.toString().contains("country_label"));
 
 
     }

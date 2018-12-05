@@ -2,7 +2,6 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
@@ -54,26 +53,28 @@ public class PurchaseMerchant extends OneyBean {
             return new PurchaseMerchant.Builder();
         }
 
-        public  PurchaseMerchant.Builder withMerchantGuid(String guid) {
+        public PurchaseMerchant.Builder withMerchantGuid(String guid) {
             this.merchantGuid = guid;
             return this;
         }
 
-        public  PurchaseMerchant.Builder withExternalReference(String ref) {
+        public PurchaseMerchant.Builder withExternalReference(String ref) {
             this.externalReference = ref;
             return this;
         }
-        public  PurchaseMerchant.Builder withCompanyName(String name) {
+
+        public PurchaseMerchant.Builder withCompanyName(String name) {
             this.companyName = name;
             return this;
         }
-        public  PurchaseMerchant.Builder withMunicipality(String city) {
+
+        public PurchaseMerchant.Builder withMunicipality(String city) {
             this.municipality = city;
             return this;
         }
 
 
-        private PurchaseMerchant.Builder checkIntegrity(){
+        private PurchaseMerchant.Builder checkIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("PurchaseMerchant must have a merchantGuid when built");
             }
@@ -83,7 +84,7 @@ public class PurchaseMerchant extends OneyBean {
             return this;
         }
 
-        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest){
+        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) {
             //todo mapping companyName (v2?)
             this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
             this.externalReference = paymentRequest.getOrder().getReference();
@@ -92,7 +93,8 @@ public class PurchaseMerchant extends OneyBean {
 
             return this;
         }
-        public PurchaseMerchant build(){
+
+        public PurchaseMerchant build() {
             return new PurchaseMerchant(this.checkIntegrity());
         }
     }

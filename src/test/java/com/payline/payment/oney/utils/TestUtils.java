@@ -12,6 +12,7 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationReques
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.reset.request.ResetRequest;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -63,8 +64,6 @@ public class TestUtils {
                 .withSoftDescriptor(softDescriptor)
                 .build();
     }
-
-
 
 
     /**
@@ -156,12 +155,6 @@ public class TestUtils {
     }
 
 
-
-
-
-
-
-
     public static String createTransactionId() {
         return "transactionID" + Calendar.getInstance().getTimeInMillis();
     }
@@ -192,7 +185,23 @@ public class TestUtils {
     }
 
     public static Order createOrder(String transactionID) {
-        return Order.OrderBuilder.anOrder().withReference(transactionID).withAmount(createAmount("EUR")).build();
+        return Order.OrderBuilder.anOrder()
+                .withReference(transactionID)
+                .withAmount(createAmount("EUR"))
+                .withDate(new Date())
+                .build();
+    }
+
+    public static Order.OrderItem createOrderItem(String transactionID, Amount amount) {
+        return Order.OrderItem.OrderItemBuilder.anOrderItem()
+                .withAmount(amount)
+                .withQuantity(4L)
+                .withCategory(Order.OrderItemCategory.THINGS)
+                .withComment("some label")
+                .withBrand("someBrand")
+                .withReference(transactionID)
+                .withTaxRatePercentage(BigDecimal.TEN)
+                .build();
     }
 
     public static Order createOrder(String transactionID, Amount amount) {
@@ -282,7 +291,7 @@ public class TestUtils {
                 .withFullName(fullName)
                 .withCustomerIdentifier("subscriber1")
                 .withExtendedData(createDefaultExtendedData())
-                .withBirthday(new Date(1991,1,1))
+                .withBirthday(new Date(1991, 1, 1))
                 .withLegalStatus(Buyer.LegalStatus.PERSON)
                 .build();
     }
