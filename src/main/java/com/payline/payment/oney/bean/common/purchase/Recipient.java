@@ -74,7 +74,7 @@ public class Recipient extends OneyBean {
             this.surname=buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getLastName();
             this.firstName =buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getFirstName();
             this.phoneNumber =buyer.getPhoneNumberForType(Buyer.PhoneNumberType.BILLING);
-            //todo mapping honorific code- payline Oney
+            //todo mapping honorific code-payline Oney
 //            this.honorificCode =buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility().;
             return this;
         }

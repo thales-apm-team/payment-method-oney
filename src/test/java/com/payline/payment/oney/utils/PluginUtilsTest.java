@@ -1,5 +1,6 @@
 package com.payline.payment.oney.utils;
 
+import com.payline.payment.oney.bean.common.purchase.Item;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,5 +22,31 @@ public class PluginUtilsTest {
         Assert.assertTrue(textCutted.get("line4")==null ||textCutted.get("line4").toString().length()<20);
         Assert.assertTrue(textCutted.get("line5")==null ||textCutted.get("line5").toString().length()<20);
 
+    }
+
+    @Test
+    public void itemComparator(){
+        ItemComparator comp = new ItemComparator();
+        Item  item1 = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(110f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+        Item  item2 = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(40f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+
+        int highest = comp.compare(item1,item2);
+        Assert.assertEquals(1,highest);
     }
 }

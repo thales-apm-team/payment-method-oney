@@ -5,21 +5,30 @@ import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
+import com.payline.payment.oney.bean.common.purchase.Delivery;
+import com.payline.payment.oney.bean.common.purchase.Item;
+import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
+import com.payline.pmapi.bean.common.Buyer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
 public class BeanUtils {
 
-    public static BusinessTransactionData createDefaultBusinessTransactionData(String code){
+    public static BusinessTransactionData createDefaultBusinessTransactionData(String code) {
 
-        return  BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
+        return BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                 .withCode(code)
                 .withVersion(1)
                 .withBusinessTransactionType("type")
                 .build();
     }
 
-    public static Customer createDefaultCustomer(){
+    public static Customer createDefaultCustomer() {
 
-        return  Customer.Builder.aCustomBuilder()
+        return Customer.Builder.aCustomBuilder()
                 .withLanguageCode("FR")
                 .withCustumerExternalCode("extCode")
                 .withCustomerIdentity(createDefaultCustomerIdentity())
@@ -28,7 +37,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static ContactDetails createDefaultContactDetails(){
+    public static ContactDetails createDefaultContactDetails() {
         return ContactDetails.Builder.aContactDetailsBuilder()
                 .withLandLineNumber("0436656565")
                 .withMobilePhoneNumber("0636656565")
@@ -36,7 +45,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static OneyAddress createDefaultCustomerAdress(){
+    public static OneyAddress createDefaultCustomerAdress() {
         return OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withLine2("residence ABC")
@@ -50,13 +59,62 @@ public class BeanUtils {
                 .build();
 
     }
-    public static CustomerIdentity createDefaultCustomerIdentity(){
 
-        return  CustomerIdentity.Builder.aCustomerIdentity()
+    public static CustomerIdentity createDefaultCustomerIdentity() {
+
+        return CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)
                 .withHonorificCode(1)
                 .withFirstName("John")
                 .build();
     }
+
+    public static PurchaseMerchant createPurchaseMerchant() {
+        return PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                .withCompanyName("cie")
+                .withExternalReference("ref")
+                .withMerchantGuid("guid")
+                .withMunicipality("city")
+                .build();
+    }
+
+    public static Delivery createDelivery() {
+
+        return Delivery.Builder.aDeliveryBuilder()
+                .withDeliveryDate("1998-07-12")
+                .withDeliveryModeCode(1)
+                .withDeliveryOption(1)
+                .withAddressType(1)
+                .withRecipient(null)
+                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                        .build())
+                .build();
+    }
+
+    public static List<Item> createItemList() {
+        List<Item> itemList = new ArrayList<>();
+        itemList.add(Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(110f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build());
+        itemList.add(Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(40f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build());
+        return itemList;
+
+    }
+
 }

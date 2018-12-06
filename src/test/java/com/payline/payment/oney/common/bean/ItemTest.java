@@ -7,6 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.payline.payment.oney.utils.TestUtils.createAmount;
 import static com.payline.payment.oney.utils.TestUtils.createOrderItem;
 
@@ -69,6 +72,44 @@ public class ItemTest {
         System.out.println(item);
 
 
+    }
+    @Test
+    public void defineMainItem() {
+       //to implement
+        List<Item> itemList = new ArrayList<>();
+        itemList.add(Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label1")
+                .withPrice(10f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build());
+        itemList.add(Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label2")
+                .withPrice(25f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build());
+        itemList.add(Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label3")
+                .withPrice(15f)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build());
+
+
+        Item.defineMainItem(itemList);
+        Assert.assertEquals(0, (int) itemList.get(0).getIsMainItem());
+        Assert.assertEquals(1, (int) itemList.get(1).getIsMainItem());
+        Assert.assertEquals(0, (int) itemList.get(2).getIsMainItem());
     }
 
 }

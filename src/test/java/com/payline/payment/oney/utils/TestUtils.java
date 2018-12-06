@@ -94,10 +94,6 @@ public class TestUtils {
 
     }
 
-    public static PaymentRequest createCompletePaymentRequest() {
-        return createCompletePaymentBuilder().build();
-
-    }
 
 //    public static RefundRequest createRefundRequest(String transactionId) {
 //        final PaylineEnvironment paylineEnvironment = new PaylineEnvironment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
@@ -163,9 +159,6 @@ public class TestUtils {
         return "signatureID" + Calendar.getInstance().getTimeInMillis();
     }
 
-    public static String createRUM() {
-        return "RUM" + Calendar.getInstance().getTimeInMillis();
-    }
 
     public static Map<Buyer.AddressType, Address> createAddresses(Address address) {
         Map<Buyer.AddressType, Address> addresses = new HashMap<>();
@@ -185,21 +178,25 @@ public class TestUtils {
     }
 
     public static Order createOrder(String transactionID) {
+        List<Order.OrderItem> orderItems = new ArrayList<>();
+        orderItems.add(createOrderItem("item1", createAmount("EUR")));
+        orderItems.add(createOrderItem("item2", createAmount("EUR")));
         return Order.OrderBuilder.anOrder()
                 .withReference(transactionID)
                 .withAmount(createAmount("EUR"))
                 .withDate(new Date())
+                .withItems(orderItems)
                 .build();
     }
 
-    public static Order.OrderItem createOrderItem(String transactionID, Amount amount) {
+    public static Order.OrderItem createOrderItem(String reference, Amount amount) {
         return Order.OrderItem.OrderItemBuilder.anOrderItem()
                 .withAmount(amount)
                 .withQuantity(4L)
                 .withCategory(Order.OrderItemCategory.THINGS)
                 .withComment("some label")
                 .withBrand("someBrand")
-                .withReference(transactionID)
+                .withReference(reference)
                 .withTaxRatePercentage(BigDecimal.TEN)
                 .build();
     }
@@ -218,6 +215,7 @@ public class TestUtils {
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "+33606060606");
         phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+33707070707");
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+33708070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "+33708070708");
 
         return phoneNumbers;
     }
@@ -272,6 +270,7 @@ public class TestUtils {
                 .withCity(city)
                 .withZipCode(zip)
                 .withCountry(country)
+                .withFullName(createFullName())
                 .build();
     }
 

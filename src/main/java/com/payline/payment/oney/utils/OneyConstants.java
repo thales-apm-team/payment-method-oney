@@ -59,6 +59,8 @@ public class OneyConstants {
     public static final int PAYMENT_TYPE = 0;
     public static final String BUSINESS_TRANSACTION_TYPE = "OPC";
 
+    public static final String EXTERNAL_REFERENCE_TYPE = "CMDE";
+
 
 
 }

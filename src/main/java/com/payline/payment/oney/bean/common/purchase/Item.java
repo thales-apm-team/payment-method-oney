@@ -2,8 +2,12 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.utils.ItemComparator;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Item extends OneyBean {
 
@@ -82,6 +86,30 @@ public class Item extends OneyBean {
         this.marketplaceName = builder.marketplaceName;
         this.travel = builder.travel;
         this.isMainItem = builder.isMainItem;
+    }
+
+    /**
+     * Compare the price of each item and set main item to 1
+     * for the most expensive item
+     * @param listItems a list of Item
+     *
+     */
+    public static void defineMainItem(List<Item> listItems){
+        if( listItems.isEmpty() ){
+            throw new IllegalArgumentException("This list not contain any item");
+        }
+        if( listItems.size()==1){
+            listItems.get(0).setIsMainItem(1);
+        }
+        else {
+            Item maxItem = Collections.max(listItems, new ItemComparator());
+            listItems.forEach(item -> {
+                if (item.equals(maxItem)) {
+                    item.setIsMainItem(1);
+                }
+            });
+        }
+
     }
 
     //Builder
