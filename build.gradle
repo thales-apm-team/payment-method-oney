@@ -1,3 +1,4 @@
+import org.apache.tools.ant.filters.EscapeUnicode
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -108,6 +109,9 @@ task printVersion {
 
 /* Replace tokens in resources files after compilation */
 processResources {
+    filesMatching('messages_fr.properties') {
+        filter(EscapeUnicode)
+    }
     filesMatching('release.properties') {
         filter(ReplaceTokens, tokens: [
                 'version': project.version.replaceFirst("-.*", ""),
