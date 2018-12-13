@@ -1,13 +1,14 @@
 package com.payline.payment.oney.service.impl.request;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Base64;
 
-public abstract class OneyRequest {
+public abstract class OneyRequest extends OneyBean {
     //Construit une requête Oney
 
     private static final Logger logger = LogManager.getLogger(OneyRequest.class);
@@ -51,21 +52,6 @@ public abstract class OneyRequest {
         return  crypto.encrypt(toEncrypt);
     }
 
-    /**
-     * Decrypt a request  message
-     * @param toDecrypt, the String to decrypt
-     * @param key, String,  the chiffrement key
-     * @return
-     */
-    public static String decryptMessage(String toDecrypt, String key) {
-        if (toDecrypt == null || toDecrypt.equals("")){
-            logger.error("Message to decrypt is empty");
-            return "";
-        }
 
-        OneyCrypto crypto = new OneyCrypto(key);
-        return  crypto.decrypt(toDecrypt);
-
-    }
 
 }

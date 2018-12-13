@@ -62,8 +62,8 @@ public class PaymentFormConfigurationServiceImplTest {
         Assert.assertTrue(paymentFormLogoResponse instanceof PaymentFormLogoResponseFile);
 
         PaymentFormLogoResponseFile casted = (PaymentFormLogoResponseFile) paymentFormLogoResponse;
-        Assert.assertEquals(200, casted.getHeight());
-        Assert.assertEquals(200, casted.getWidth());
+        Assert.assertEquals(17, casted.getHeight());
+        Assert.assertEquals(54, casted.getWidth());
     }
 
     @Test

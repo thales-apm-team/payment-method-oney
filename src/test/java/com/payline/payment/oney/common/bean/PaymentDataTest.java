@@ -1,19 +1,14 @@
 package com.payline.payment.oney.common.bean;
 
-import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.enums.PaymentType;
-import com.payline.pmapi.bean.common.Amount;
+import com.payline.payment.oney.bean.common.payment.PaymentData;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.math.BigInteger;
-import java.util.Currency;
-
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
-import static com.payline.payment.oney.utils.TestUtils.createDefaultPaymentRequest;
 
 public class PaymentDataTest {
 
@@ -79,7 +74,7 @@ public class PaymentDataTest {
     public void paymentDataOKWithoutBusinessTransactionData() {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
-                .withPaymentType(PaymentType.CHECK_CARD)
+                .withPaymentType(PaymentType.CHECK_CARD.getValue())
                 .withCurrency("EUR")
                 .build();
         Assert.assertNotNull(paymentdata);
@@ -90,7 +85,7 @@ public class PaymentDataTest {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withCurrency("EUR")
-                .withPaymentType(PaymentType.DEFERRED)
+                .withPaymentType(PaymentType.DEFERRED.getValue())
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 

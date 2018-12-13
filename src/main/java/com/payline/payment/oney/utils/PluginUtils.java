@@ -2,6 +2,7 @@ package com.payline.payment.oney.utils;
 
 
 import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
 import com.payline.pmapi.bean.Request;
@@ -10,7 +11,9 @@ import com.payline.pmapi.bean.configuration.request.ContractParametersCheckReque
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -77,11 +80,22 @@ public class PluginUtils {
         return null;
     }
 
-    //Decoupe le texte en 5 renvoi un tableau
+    /**
+     *     Decoupe le texte en 5 renvoi un tableau
+     * @param longText
+     * @param longText2
+     * @param size
+     * @return
+     */
     public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
     Map<String, String> textTruncated = new HashMap();
 
-        String line1, line2, line3, line4, line5;
+        String line1;
+        String line2;
+        String line3;
+        String line4;
+        String line5;
+
         int fromIndex = size;
         int fromIndex2 = size;
         int firstCharPosition = 0;
@@ -131,69 +145,38 @@ public class PluginUtils {
 
     }
 
+    public static String generateMerchantRequestId(String merchantId){
+        //Todo define a better rule to generate id
+        String prefix = "Oney";
+        prefix  = prefix+"_"+ merchantId.substring(0,(merchantId.length()/4) );
+        return  prefix +"_" + Calendar.getInstance().getTimeInMillis();
+    }
+
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
+
     /**
-     * Global validation method.
-     * for childObjects, syntax is childObject.fieldName
-     * for Map key, syntax is childObject#.keyName or childObject#.fieldName.keyName
-     *
-     * @param toValidate the object to validate
-     * @param ifNull     error message if object is null
-     * @param fields     String[] [] field name, error message
-     *                   one field per line : [0] = field name and [1] = error message
-     * @throws InvalidRequestException if the corresponding field is null
+     * Return a ISO-3166 alpha 3 code  from a ISO-3166 alpha 2 code
+     * @param code
+     * @return
      */
-    public static void validate(Object toValidate, String ifNull, String[][] fields) throws InvalidRequestException {
-
-        PluginUtils.requireNonNull(toValidate, ifNull);
-
-        Class clz = toValidate.getClass();
-        Object obj;
-        Object parent = toValidate;
-        Map<String, Object> checkedObject = new HashMap<>();
-        String fieldName = "";
-        String key;
-        try {
-            for (String[] fieldNameAndError : fields) {
-                if (fieldNameAndError[0].contains(".")) {
-                    String[] objNames = fieldNameAndError[0].split("\\.");
-                    fieldName = objNames[objNames.length - 1];
-                    if (fieldName.contains("#")) {
-                        String[] mapKey = objNames[objNames.length - 1].split("#");
-                        parent = checkedObject.get(mapKey[0]);
-                        key = mapKey[1];
-                        if (!(parent instanceof Map<?, ?>)) {
-                            throw new InvalidRequestException("Validation failure, \'#\' detected, but "
-                                    + parent.getClass().getSimpleName() + " is not a Map<?,?>");
-                        }
-                        PluginUtils.requireNonNull((Map) parent, key, fieldNameAndError[1]);
-                        continue;
-                    } else {
-                        parent = checkedObject.get(objNames[objNames.length - 2]);
-                    }
-                } else {
-                    fieldName = fieldNameAndError[0];
-                    parent = toValidate;
-                }
-                clz = parent.getClass();
-                Field f = clz.getDeclaredField(fieldName);
-                if (!Modifier.isPublic(f.getModifiers())) {
-                    f.setAccessible(true);
-                }
-                obj = f.get(parent);
-                PluginUtils.requireNonNull(obj, fieldNameAndError[1]);
-                checkedObject.put(fieldName, obj);
-            }
-        } catch (NoSuchFieldException e) {
-            throw new InvalidRequestException("Validation failure, field " + fieldName + " not found for class "
-                    + clz.getSimpleName());
-        } catch (IllegalAccessException e) {
-            throw new InvalidRequestException("Validation failure, field " + fieldName + " not readable for class "
-                    + clz.getSimpleName());
-        }
+    public static String getIsoAlpha3CodeFromCountryCode2(String code){
+        Locale locale = new Locale("",code);
+        return locale.getISO3Country();
     }
 
+    /**
+     * Return a country name from a ISO-3166 alpha 2 code
+     * @param code
+     * @return
+     */
+    public static String getCountryNameCodeFromCountryCode2(String code){
+        Locale locale = new Locale("",code);
+        return locale.getDisplayCountry();
+    }
+    public static String generateReference(OneyPaymentRequest request){
 
+        return request.getPurchase().getExternalReferenceType()+"|"+request.getPurchase().getExternalReference();
+    }
 }

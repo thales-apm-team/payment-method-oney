@@ -11,6 +11,10 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
+import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
+import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
+
 public class OneyPaymentRequest extends OneyRequest {
 
     //todo definir les objets qui composent une requete de payment
@@ -183,15 +187,12 @@ public class OneyPaymentRequest extends OneyRequest {
             return this;
         }
 
-        public Builder withLoyaltyInformation(LoyaltyInformation loyaltyInformation) {
-            this.loyaltyInformation = loyaltyInformation;
-            return this;
-        }
 
         public Builder withNavigation(NavigationData navigationData) {
             this.navigationData = navigationData;
             return this;
         }
+
 
         public Builder withMerchantContext(String merchantContext) {
             this.merchantContext = merchantContext;
@@ -206,6 +207,9 @@ public class OneyPaymentRequest extends OneyRequest {
         private Builder verifyIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
+            }
+            if (this.merchantRequestId == null) {
+                throw new IllegalStateException("OneyPaymentRequest must have a merchantRequestId when built");
             }
             if (this.pspGuid == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a pspGuid when built");
@@ -229,10 +233,13 @@ public class OneyPaymentRequest extends OneyRequest {
 
         public Builder fromPaylineRequest(PaymentRequest paymentRequest) throws InvalidRequestException {
 
+            String merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+
             return OneyPaymentRequest.Builder.aOneyPaymentRequest()
-                    .withLanguageCode("")
-                    .withPspGuid("")
-                    .withMerchantGuid("")
+                    .withLanguageCode(paymentRequest.getLocale().getLanguage())
+                    .withMerchantRequestId(generateMerchantRequestId(merchantGuid))
+                  .withPspGuid(paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY))
+                    .withMerchantGuid(merchantGuid)
                     .withNavigation(NavigationData.Builder
                             .aNavigationDataBuilder()
                             .fromEnvironment(paymentRequest.getEnvironment())
@@ -244,7 +251,15 @@ public class OneyPaymentRequest extends OneyRequest {
                     .withCustomer(Customer.Builder.aCustomBuilder()
                             .fromPaylineRequest(paymentRequest)
                             .build())
-                    .withPurchase(null)
+                    .withPurchase(Purchase.Builder.aPurchaseBuilder()
+                            .fromPayline(paymentRequest)
+                            .build())
+                    .withMerchantLanguageCode(paymentRequest.getLocale().getLanguage())
+//  Optional fields  pas encore mappes
+//                    .withMerchantContext("")
+//                    .withPspContext("")
+//                    .withOrigin("WEB")
+//                    .withSkinId(3)
 
                     ;
 

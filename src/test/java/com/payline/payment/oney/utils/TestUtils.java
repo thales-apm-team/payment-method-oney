@@ -1,5 +1,6 @@
 package com.payline.payment.oney.utils;
 
+import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.common.Buyer.Address;
@@ -10,14 +11,12 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
-import com.payline.pmapi.bean.reset.request.ResetRequest;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
-import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
-import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
+import static com.payline.payment.oney.utils.OneyConstants.*;
 
 
 /**
@@ -28,9 +27,7 @@ public class TestUtils {
     private static final String SUCCESS_URL = "https://succesurl.com/";
     private static final String CANCEL_URL = "http://localhost/cancelurl.com/";
     private static final String NOTIFICATION_URL = "http://google.com/";
-    public static final String GOOD_CREDITOR_ID = "MARCHAND1"; //testItSlimpay //democreditor01
-    public static final String GOOD_LOGIN = "payline@docapost.fr"; //
-    public static final String GOOD_PWD = "J:[ef8dccma";
+
     public static String PHONE_NUMBER_TEST = "06060606";
     public HashMap<String, String> extendedData;
 
@@ -73,7 +70,10 @@ public class TestUtils {
      */
     public static PaymentFormContext createDefaultPaymentFormContext(String phoneNumber) {
         Map<String, String> paymentFormParameter = new HashMap<>();
+        paymentFormParameter.put(PSP_GUID_KEY,"Psp_id_test");
+
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
+        sensitivePaymentFormParameter.put(SECRET_KEY,"x-oney-secret-Value");
 
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
@@ -95,22 +95,23 @@ public class TestUtils {
     }
 
 
-//    public static RefundRequest createRefundRequest(String transactionId) {
-//        final PaylineEnvironment paylineEnvironment = new PaylineEnvironment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
-////       final String transactionID = createTransactionId();
-//        final Amount amount = createAmount("EUR");
-//        final Map<String, String> partnerConfiguration = new HashMap<>();
-//        return RefundRequest.RefundRequestBuilder.aRefundRequest()
-//                .withAmount(amount)
-//                .withOrder(createOrder(transactionId, amount))
-//                .withBuyer(createDefaultBuyer())
-//                .withContractConfiguration(createContractConfiguration())
-//                .withPaylineEnvironment(paylineEnvironment)
-//                .withTransactionId(transactionId)
-//                .withPartnerTransactionId("toto")
-//                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration))
-//                .build();
-//    }
+    public static RefundRequest createRefundRequest(String transactionId) {
+        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
+//       final String transactionID = createTransactionId();
+        final Amount amount = createAmount("EUR");
+        final Map<String, String> partnerConfiguration = new HashMap<>();
+        final Map<String, String> sensitiveConfig = new HashMap<>();
+        return RefundRequest.RefundRequestBuilder.aRefundRequest()
+                .withAmount(amount)
+                .withOrder(createOrder(transactionId, amount))
+                .withBuyer(createDefaultBuyer())
+                .withContractConfiguration(createContractConfiguration())
+                .withEnvironment(paylineEnvironment)
+                .withTransactionId(transactionId)
+                .withPartnerTransactionId("toto")
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitiveConfig))
+                .build();
+    }
 
     public static RedirectionPaymentRequest createRedirectionPaymentRequest() {
         RedirectionPaymentRequest request = RedirectionPaymentRequest.builder().build();
@@ -148,6 +149,46 @@ public class TestUtils {
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer());
+    }
+
+    //Cree une redirection payment par defaut
+    public static RedirectionPaymentRequest.Builder createCompleteRedirectionPaymentBuilder() {
+        final Amount amount = createAmount("EUR");
+        final ContractConfiguration contractConfiguration = createContractConfiguration();
+
+        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
+        final String transactionID = createTransactionId();
+        final Order order = createOrder(transactionID);
+        final String softDescriptor = "softDescriptor";
+        final Locale locale = new Locale("FR");
+
+        Map<String, String> requestData = new HashMap<>();
+        requestData.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        requestData.put(SECRET_KEY,"Method-body");
+        requestData.put(EXTERNAL_REFERENCE_KEY, "mareference");
+
+
+        final RequestContext requestContext = RequestContext.RequestContextBuilder
+                .aRequestContext()
+                .withRequestData(requestData)
+                .build();
+        return (RedirectionPaymentRequest.Builder) RedirectionPaymentRequest.builder()
+                .withAmount(amount)
+                .withBrowser(new Browser("", Locale.FRANCE))
+                .withContractConfiguration(contractConfiguration)
+                .withEnvironment(paylineEnvironment)
+                .withOrder(order)
+                .withLocale(locale)
+                .withTransactionId(transactionID)
+                .withSoftDescriptor(softDescriptor)
+                .withPaymentFormContext(createDefaultPaymentFormContext(PHONE_NUMBER_TEST))
+                .withPartnerConfiguration(createDefaultPartnerConfiguration())
+                .withLocale(Locale.FRANCE)
+                .withBuyer(createDefaultBuyer())
+                //propre a la redirectionPayment
+//                .withPaymentFormContext()
+                .withRequestContext(requestContext)
+                ;
     }
 
 
@@ -222,10 +263,17 @@ public class TestUtils {
 
     public static ContractConfiguration createContractConfiguration() {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
-        contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_TYPE, new ContractProperty("OPC"));
+        contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_CODE, new ContractProperty("3x002"));
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
+        contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
+        contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("OPC"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FRA")); //3 caractères
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
+        contractConfiguration.getContractProperties().put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
+//used for Confirm
 
-        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("MymerchantGuid"));
-//        contractConfiguration.getContractProperties().put(PARTNER_CONFIG_AUTH_PASS, new ContractProperty(GOOD_PWD));
         return contractConfiguration;
     }
 
@@ -318,6 +366,9 @@ public class TestUtils {
 
     public static PartnerConfiguration createDefaultPartnerConfiguration() {
         Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        partnerConfiguration.put(SECRET_KEY,"Method-body");
+
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
 
 
@@ -336,5 +387,14 @@ public class TestUtils {
 
                 .build();
     }
+
+    public static StringResponse createStringResponse(int code, String message, String content) {
+        StringResponse response = new StringResponse();
+        response.setCode(code);
+        response.setMessage(message);
+        response.setContent(content);
+        return response;
+    }
+
 
 }

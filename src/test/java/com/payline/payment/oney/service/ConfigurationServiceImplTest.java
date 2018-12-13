@@ -1,9 +1,9 @@
 package com.payline.payment.oney.service;
 
 import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
+import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import com.payline.pmapi.bean.payment.ContractConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,10 +26,10 @@ public class ConfigurationServiceImplTest {
         List<AbstractParameter> parameters = service.getParameters(Locale.FRANCE);
         //Assert we have 3 parameters
         Assert.assertNotNull(parameters);
-        Assert.assertEquals(3, parameters.size());
-        Assert.assertEquals(X_ONEY_AUTHORIZATION_KEY, parameters.get(0).getKey());
-        Assert.assertEquals(PSP_ID_KEY, parameters.get(1).getKey());
-        Assert.assertEquals(MERCHANT_GUID_KEY, parameters.get(2).getKey());
+        Assert.assertEquals(9, parameters.size());
+        Assert.assertEquals(X_ONEY_AUTHORIZATION_KEY, parameters.get(1).getKey());
+        Assert.assertEquals(PSP_GUID_KEY, parameters.get(2).getKey());
+        Assert.assertEquals(MERCHANT_GUID_KEY, parameters.get(0).getKey());
 
     }
     @Test
@@ -37,7 +37,7 @@ public class ConfigurationServiceImplTest {
 
         Map<String,String> accountInfo = new HashMap<>();
         accountInfo.put(X_ONEY_AUTHORIZATION_KEY,"mykey");
-        accountInfo.put(PSP_ID_KEY,"psp_id_test");
+        accountInfo.put(PSP_GUID_KEY,"psp_id_test");
         accountInfo.put(MERCHANT_GUID_KEY,"merchant_guid_test");
 
 
@@ -70,10 +70,32 @@ public class ConfigurationServiceImplTest {
         Map<String, String> errors = service.check(contractParametersCheckRequest);
         Assert.assertEquals(3, errors.size());
         Assert.assertNotNull(errors.get(X_ONEY_AUTHORIZATION_KEY));
-        Assert.assertNotNull(errors.get(PSP_ID_KEY));
+        Assert.assertNotNull(errors.get(PSP_GUID_KEY));
         Assert.assertNotNull(errors.get(MERCHANT_GUID_KEY));
-
-
-
     }
+
+    @Test
+    public void testGetReleaseInformation_ok() {
+        // when: getReleaseInformation method is called
+        ReleaseInformation releaseInformation = service.getReleaseInformation();
+
+        // then: result is not null
+        Assert.assertNotNull(releaseInformation);
+        // then: assert release version and release date are not null
+        Assert.assertNotNull(releaseInformation.getVersion());
+        Assert.assertFalse(releaseInformation.getVersion().isEmpty());
+        Assert.assertNotNull(releaseInformation.getDate());
+    }
+
+    //
+    @Test
+    public void testGetReleaseInformation_versionFormat() {
+        // when: getReleaseInformation method is called
+        ReleaseInformation releaseInformation = service.getReleaseInformation();
+
+        // then: the version has a valid format
+        Assert.assertNotNull(releaseInformation);
+        Assert.assertTrue(releaseInformation.getVersion().matches("^\\d\\.\\d(\\.\\d)?$"));
+    }
+
 }

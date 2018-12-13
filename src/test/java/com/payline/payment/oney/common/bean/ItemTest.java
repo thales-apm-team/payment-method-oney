@@ -42,9 +42,109 @@ public class ItemTest {
     }
 
     @Test
+    public void withoutLabel() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a label when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withPrice(175F)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+    @Test
+    public void withoutIsMainItem() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a isMainItem when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(175F)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+    @Test
+    public void withoutCategoryCode() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a categoryCode when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withLabel("label")
+                .withPrice(175F)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+
+    @Test
+    public void withoutItemexternalCode() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a itemExternalcode when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(175F)
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .build();
+    }
+    @Test
+    public void withoutQuantity() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a quantity when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(175F)
+                .withMarketplaceFlag(0)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+    @Test
+    public void withoutPrice() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a price when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withMarketplaceFlag(0)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+    @Test
+    public void withoutMarketPlaceName() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item must have a marketplaceName when built");
+
+        item = Item.Builder.aItemBuilder()
+                .withMainItem(0)
+                .withCategoryCode(0)
+                .withLabel("label")
+                .withPrice(175F)
+                .withMarketplaceFlag(1)
+                .withQuantity(5)
+                .withItemExternalCode("externalCode")
+                .build();
+    }
+    @Test
     public void itemFromPaylineRequest() {
         item = Item.Builder.aItemBuilder()
-                .fromPayline(createOrderItem("someRefe", createAmount("EUR")))
+                .fromPayline(createOrderItem("someRef", createAmount("EUR")))
                 .build();
 
         Assert.assertNotNull(item.getIsMainItem());
@@ -69,7 +169,6 @@ public class ItemTest {
         Assert.assertTrue(item.toString().contains("item_external_code"));
         Assert.assertTrue(item.toString().contains("quantity"));
         Assert.assertTrue(item.toString().contains("price"));
-        System.out.println(item);
 
 
     }

@@ -27,8 +27,8 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
 
 
     private static final String LOGO_CONTENT_TYPE = "image/png";
-    private static final int LOGO_HEIGHT = 200;//25
-    private static final int LOGO_WIDTH = 200;//141
+    private static final int LOGO_HEIGHT = 17;//25
+    private static final int LOGO_WIDTH = 54;//141
     private static final Logger LOGGER = LogManager.getLogger(PaymentFormConfigurationServiceImpl.class);
     private I18nService i18n = I18nService.getInstance();
 
