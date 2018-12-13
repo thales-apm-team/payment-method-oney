@@ -1,8 +1,6 @@
 package com.payline.payment.oney.utils.http;
 
-import org.apache.http.Header;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

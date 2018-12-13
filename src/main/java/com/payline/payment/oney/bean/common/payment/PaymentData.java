@@ -3,7 +3,6 @@ package com.payline.payment.oney.bean.common.payment;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.PaymentType;
-import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 
@@ -107,7 +106,7 @@ public class PaymentData extends OneyBean {
             return PaymentData.Builder.aPaymentData()
                     .withAmount(request.getAmount().getAmountInSmallestUnit().floatValue())
                     .withCurrency(request.getAmount().getCurrency().getCurrencyCode())
-                    //todo mapper payment type (une constante ??)
+                    //todo mapper payment type (une constante  ou contract config ??)
                     .withPaymentType(PaymentType.IMMEDIATE.getValue())
                          .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                          .fromPayline(request.getContractConfiguration())

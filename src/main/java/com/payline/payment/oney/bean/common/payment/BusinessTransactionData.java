@@ -5,8 +5,6 @@ import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
 
 import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_CODE;
-import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
-import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_VERSION;
 
 public class BusinessTransactionData extends OneyBean {
 
@@ -75,7 +73,7 @@ public class BusinessTransactionData extends OneyBean {
             }
 
             this.code =  contract.getProperty(BUSINESS_TRANSACTION_CODE).getValue();
-            //optional ajouter dans les contract configuration ??
+            //optional ajouter dans les contract configuration  v2 ??
 //            this.version = BUSINESS_TRANSACTION_VERSION;
 //            this.businessTransactionType = BUSINESS_TRANSACTION_TYPE;
             return this;

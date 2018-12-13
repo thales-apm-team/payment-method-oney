@@ -1,7 +1,6 @@
 package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
-import com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 
@@ -21,7 +20,7 @@ public class OneyErrorHandler {
     }
 
     public static FailureCause handleOneyFailureResponse(OneyFailureResponse failureResponse) {
-
+//todo recuperer error code de la payment response
         int failureCode = failureResponse.getCode();
         FailureCause paylineCause = null;
         switch (failureCode) {

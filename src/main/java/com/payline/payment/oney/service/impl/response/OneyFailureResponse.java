@@ -3,9 +3,6 @@ package com.payline.payment.oney.service.impl.response;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.pmapi.bean.common.FailureCause;
-
-import java.util.List;
 
 import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 
@@ -19,6 +16,7 @@ public class OneyFailureResponse extends OneyBean {
     private String message;
     @SerializedName("content")
     private String content;
+
     @SerializedName("Payment_Error_Response")
     private PaymentErrorResponse paymentErrorContent;
 
@@ -44,6 +42,10 @@ public class OneyFailureResponse extends OneyBean {
         this.message = message;
         this.paymentErrorContent = paymentErrorResponseFromJson(responseError);
 
+    }
+
+    public void setPaymentErrorContent(String jsonErrorResponse) {
+        this.paymentErrorContent =paymentErrorResponseFromJson(jsonErrorResponse);
     }
 
     public static OneyFailureResponse fromJson(String json) {

@@ -5,9 +5,6 @@ import com.payline.payment.oney.bean.common.purchase.Item;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;

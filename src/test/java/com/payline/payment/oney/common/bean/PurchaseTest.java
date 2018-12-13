@@ -6,9 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
-import static com.payline.payment.oney.utils.BeanUtils.createItemList;
-import static com.payline.payment.oney.utils.BeanUtils.createPurchaseMerchant;
+import static com.payline.payment.oney.utils.BeanUtils.*;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
 public class PurchaseTest {

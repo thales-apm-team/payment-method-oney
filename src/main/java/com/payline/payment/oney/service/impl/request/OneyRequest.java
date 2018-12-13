@@ -6,8 +6,6 @@ import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Base64;
-
 public abstract class OneyRequest extends OneyBean {
     //Construit une requête Oney
 

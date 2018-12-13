@@ -70,10 +70,10 @@ public class TestUtils {
      */
     public static PaymentFormContext createDefaultPaymentFormContext(String phoneNumber) {
         Map<String, String> paymentFormParameter = new HashMap<>();
-        paymentFormParameter.put(PSP_GUID_KEY,"Psp_id_test");
+        paymentFormParameter.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
 
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
-        sensitivePaymentFormParameter.put(SECRET_KEY,"x-oney-secret-Value");
+        sensitivePaymentFormParameter.put(SECRET_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
 
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
@@ -267,7 +267,7 @@ public class TestUtils {
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
         contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
-        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("OPC"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FRA")); //3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
@@ -332,7 +332,7 @@ public class TestUtils {
 
     public static Buyer createBuyer(Map<Buyer.PhoneNumberType, String> phoneNumbers, Map<Buyer.AddressType, Address> addresses, Buyer.FullName fullName) {
         return Buyer.BuyerBuilder.aBuyer()
-                .withEmail("testdocapost@yopmail.com")
+                .withEmail("testoney1@yopmail.com")
                 .withPhoneNumbers(phoneNumbers)
                 .withAddresses(addresses)
                 .withFullName(fullName)
@@ -347,10 +347,6 @@ public class TestUtils {
     public static Map<String, String> createDefaultExtendedData() {
 
         HashMap<String, String> extData = new HashMap<>();
-        extData.put("bic", "TESTFRP1");
-        extData.put("iban", "FR7630076020821234567890186");
-        extData.put("country", "FR");
-        extData.put("institutionName", "Bank Test");
         return extData;
 
     }
@@ -379,7 +375,7 @@ public class TestUtils {
         return PaymentFormConfigurationRequest.PaymentFormConfigurationRequestBuilder.aPaymentFormConfigurationRequest()
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer())
-                .withAmount(new Amount(null, Currency.getInstance("EUR")))
+                .withAmount(new Amount(new BigInteger("600"), Currency.getInstance("EUR")))
                 .withContractConfiguration(createContractConfiguration())
                 .withOrder(createOrder("007"))
                 .withEnvironment(createDefaultEnvironment())

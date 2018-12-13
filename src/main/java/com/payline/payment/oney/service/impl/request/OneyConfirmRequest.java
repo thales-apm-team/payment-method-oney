@@ -2,7 +2,6 @@ package com.payline.payment.oney.service.impl.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
-import com.payline.payment.oney.service.impl.response.PaymentErrorResponse;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;

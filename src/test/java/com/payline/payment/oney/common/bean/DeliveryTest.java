@@ -2,7 +2,6 @@ package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
-import com.payline.payment.oney.bean.common.purchase.Recipient;
 import com.payline.pmapi.bean.common.Buyer;
 import org.junit.Assert;
 import org.junit.Rule;
