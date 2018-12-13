@@ -3,13 +3,13 @@ package com.payline.payment.oney.bean.common.payment;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
-import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
+import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_CODE;
 import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_TYPE;
+import static com.payline.payment.oney.utils.OneyConstants.BUSINESS_TRANSACTION_VERSION;
 
 public class BusinessTransactionData extends OneyBean {
 
-    //todo objet doit s'appeler business transaction
 
     private String code;
     private Integer version;
@@ -31,7 +31,7 @@ public class BusinessTransactionData extends OneyBean {
     private BusinessTransactionData() {
     }
 
-    public BusinessTransactionData(BusinessTransactionData.Builder builder) {
+    private BusinessTransactionData(BusinessTransactionData.Builder builder) {
         this.code = builder.code;
         this.version = builder.version;
         this.businessTransactionType = builder.businessTransactionType;
@@ -70,14 +70,14 @@ public class BusinessTransactionData extends OneyBean {
 
         public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract){
 
-            if (contract.getProperty(BUSINESS_TRANSACTION_TYPE) == null) {
-                throw new IllegalStateException("Property "+ BUSINESS_TRANSACTION_TYPE+" doesn't exists");
+            if (contract.getProperty(BUSINESS_TRANSACTION_CODE) == null) {
+                throw new IllegalStateException("Property "+ BUSINESS_TRANSACTION_CODE +" doesn't exists");
             }
 
-            this.code =  contract.getProperty(BUSINESS_TRANSACTION_TYPE).getValue();
-            //Todo mapper version et business transactionType
-            this.version = null;
-            this.businessTransactionType = null;
+            this.code =  contract.getProperty(BUSINESS_TRANSACTION_CODE).getValue();
+            //optional ajouter dans les contract configuration ??
+//            this.version = BUSINESS_TRANSACTION_VERSION;
+//            this.businessTransactionType = BUSINESS_TRANSACTION_TYPE;
             return this;
         }
         public BusinessTransactionData build(){

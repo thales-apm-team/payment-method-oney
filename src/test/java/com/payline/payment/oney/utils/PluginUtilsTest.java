@@ -1,5 +1,6 @@
 package com.payline.payment.oney.utils;
 
+import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.payment.oney.bean.common.purchase.Item;
 import org.junit.Assert;
 import org.junit.Test;
@@ -71,23 +72,18 @@ public class PluginUtilsTest {
 
 
     }
+
+
     @Test
     public void testCategoryHandler(){
-        int catCodePayline = 17;
-        int catCodeOney = findCategory(catCodePayline);
-        Assert.assertEquals(1, catCodeOney);
-
-
-    }
-
-    @Test
-    public void testParseInteger(){
         int catCodePayline = 17;
         int catCodePayline2 = 964;
         int catCodeOney = findCategory(catCodePayline);
         int catCodeOney2 = findCategory(catCodePayline2);
+
         Assert.assertEquals(1, catCodeOney);
         Assert.assertEquals(5, catCodeOney2);
 
+        System.out.println(PaymentType.CHECK_CARD.getValue());
     }
 }

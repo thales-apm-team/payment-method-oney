@@ -12,9 +12,9 @@ public class PaymentData extends OneyBean {
     @SerializedName("payment_amount")
     private Float amount;
     @SerializedName("currency_code")
-    private String currency; //a convertir ISO 4217
+    private String currency; // ISO 4217
     @SerializedName("payment_type")
-    private PaymentType paymentType; // enum de 0 à 2 ?
+    private Integer paymentType;
     @SerializedName("business_transaction")
     private BusinessTransactionData businessTransaction;
 
@@ -27,7 +27,7 @@ public class PaymentData extends OneyBean {
         return currency;
     }
 
-    public PaymentType getPaymentType() {
+    public int getPaymentType() {
         return paymentType;
     }
 
@@ -48,7 +48,7 @@ public class PaymentData extends OneyBean {
     public static class Builder {
         private Float amount;
         private String currency;
-        private PaymentType paymentType;
+        private Integer paymentType;
         private BusinessTransactionData businessTransaction;
 
         public static PaymentData.Builder aPaymentData() {
@@ -65,7 +65,7 @@ public class PaymentData extends OneyBean {
             return this;
         }
 
-        public PaymentData.Builder withPaymentType(PaymentType paymentType) {
+        public PaymentData.Builder withPaymentType(int paymentType) {
             this.paymentType = paymentType;
             return this;
         }
@@ -84,7 +84,7 @@ public class PaymentData extends OneyBean {
                 throw new IllegalStateException("PaymentData must have a currency when built");
             }
 
-            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != PaymentType.CHECK_CARD) ){
+            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != PaymentType.CHECK_CARD.getValue()) ){
                 throw new IllegalStateException("PaymentData must have a businessTransaction when built");
 
             }else {
@@ -96,12 +96,19 @@ public class PaymentData extends OneyBean {
             return new PaymentData(this.verifyIntegrity());
         }
 
+        public PaymentData buildForConfirmRequest() {
+            if (this.amount == null) {
+                throw new IllegalStateException("PaymentData must have a amount when built");
+            }
+            return new PaymentData(this);
+        }
+
         public PaymentData.Builder fromPayline(PaymentRequest request) {
-//todo mapper payment type (une constante ??)
             return PaymentData.Builder.aPaymentData()
                     .withAmount(request.getAmount().getAmountInSmallestUnit().floatValue())
                     .withCurrency(request.getAmount().getCurrency().getCurrencyCode())
-                    .withPaymentType(PaymentType.CHECK_CARD)
+                    //todo mapper payment type (une constante ??)
+                    .withPaymentType(PaymentType.IMMEDIATE.getValue())
                          .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                          .fromPayline(request.getContractConfiguration())
                          .build())

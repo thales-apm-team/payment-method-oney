@@ -2,14 +2,10 @@ package com.payline.payment.oney.service;
 
 import com.payline.payment.oney.InvalidRequestException;
 import com.payline.payment.oney.service.impl.PaymentServiceImpl;
-import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
-import com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse;
-import com.payline.payment.oney.service.impl.response.PaymentErrorResponse;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
-import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
 import org.junit.Assert;
@@ -17,13 +13,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Locale;
 
-import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 

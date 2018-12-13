@@ -9,11 +9,12 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import java.util.Collections;
 import java.util.List;
 
+import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
+
 public class Item extends OneyBean {
 
     @SerializedName("is_main_item")
     private Integer isMainItem; // faire booleen  ??
-    //fixme mapping payline oney compliqué, pas assez detaillé coté Payline
     @SerializedName("category_code")
     private Integer categoryCode; // faire Oney value - Payline  ??
     private String label; // faire Oney value - Payline  ??
@@ -175,7 +176,9 @@ public class Item extends OneyBean {
 
         public Item.Builder fromPayline(Order.OrderItem item) {
             this.isMainItem = 0;
-            this.categoryCode = 0;
+            //todo mapper avec payline getCategory lorsque les categories payline seront implementees
+//            this.categoryCode = findCategory(item.getCategory());
+            this.categoryCode = 1;
             this.label = item.getComment(); //or get Brand +" "+ get comment ?
             this.itemExternalcode = item.getReference();
             this.quantity = item.getQuantity().intValue();

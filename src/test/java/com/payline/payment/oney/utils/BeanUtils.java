@@ -8,6 +8,7 @@ import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.payment.oney.bean.common.purchase.Item;
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
+import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.ArrayList;
@@ -117,4 +118,8 @@ public class BeanUtils {
 
     }
 
+    public static OneyConfirmRequest createOneyConfirmRequest(){
+
+        return null;
+    }
 }

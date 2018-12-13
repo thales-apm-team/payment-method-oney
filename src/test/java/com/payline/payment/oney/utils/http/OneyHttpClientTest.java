@@ -42,6 +42,7 @@ public class OneyHttpClientTest {
 
         StringResponse response = this.client.doPost("https", "oney-staging.azure-api.net", "/staging/payments/v1/purchase/facilypay_url", requestContent);
 
+        System.out.println(response);
         //Assert we have a response
         Assert.assertNotNull(response);
         Assert.assertEquals(400, response.getCode());
@@ -61,4 +62,17 @@ public class OneyHttpClientTest {
         Assert.assertEquals(pathAttempted,path);
     }
 
+    @Test
+    public void buildConfirmOrderPath(){
+
+        this.client = OneyHttpClient.getInstance();
+        Map<String, String> param = new HashMap<>();
+        param.put("psp_guid", "val1");
+        param.put("merchant_guid", "val2");
+        param.put("reference", "val3");
+
+        String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3/action/confirm" ;
+        String path = client.buildConfirmOrderPath("somePath/",param);
+        Assert.assertEquals(pathAttempted,path);
+    }
 }
