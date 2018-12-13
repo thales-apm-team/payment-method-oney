@@ -9,13 +9,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponse parse(NotificationRequest notificationRequest) {
-        //todo
         return null;
 
     }
 
     @Override
     public void notifyTransactionStatus(NotifyTransactionStatusRequest notifyTransactionStatusRequest) {
-    //todo
     }
 }

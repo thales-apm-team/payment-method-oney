@@ -2,9 +2,7 @@ package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.AdditionalData;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
-import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
-import com.payline.payment.oney.service.impl.response.OneyResponse;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.payment.oney.utils.i18n.I18nService;
@@ -13,6 +11,7 @@ import com.payline.pmapi.bean.common.Message;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.EmptyTransactionDetails;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import com.payline.pmapi.service.PaymentWithRedirectionService;
@@ -22,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static com.payline.payment.oney.service.impl.response.OneyFailureResponse.createOneyFailureResponse;
+import static com.payline.payment.oney.service.impl.response.OneyFailureResponse.fromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.getPaymentResponseFailure;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
@@ -78,7 +77,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws IOException, URISyntaxException {
 
         StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox);
-        //todo tester reponse
 
         if (oneyResponse == null) {
             LOGGER.debug("InitiateSignatureResponse StringResponse is null !");
@@ -87,7 +85,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         }
 
         if (oneyResponse.getCode() != HTTP_OK) {
-            OneyFailureResponse failureResponse = createOneyFailureResponse(oneyResponse.toString());
+            OneyFailureResponse failureResponse = fromJson(oneyResponse.toString());
             LOGGER.error("Payment failed {} ", failureResponse.getContent());
 
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
@@ -105,7 +103,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .withTransactionAdditionalData(additionalData.toJson())
                     .withPartnerTransactionId(confirmRequest.getPurchaseReference())
                     .withStatusCode(String.valueOf(oneyResponse.getCode()))
-                    .withMessage(new Message(SUCCESS,oneyResponse.getMessage()))
+                    .withMessage(new Message(SUCCESS,additionalData.getPurchase().getStatusLabel()))
+                    .withTransactionDetails(new EmptyTransactionDetails())
                     .build();
         }
     }

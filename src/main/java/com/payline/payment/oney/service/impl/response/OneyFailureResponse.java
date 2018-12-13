@@ -7,6 +7,8 @@ import com.payline.pmapi.bean.common.FailureCause;
 
 import java.util.List;
 
+import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
+
 public class OneyFailureResponse extends OneyBean {
 
 
@@ -17,10 +19,8 @@ public class OneyFailureResponse extends OneyBean {
     private String message;
     @SerializedName("content")
     private String content;
-    //todo implementContent to make mapping with Payline error
     @SerializedName("Payment_Error_Response")
     private PaymentErrorResponse paymentErrorContent;
-
 
 
     public Integer getCode() {
@@ -39,15 +39,21 @@ public class OneyFailureResponse extends OneyBean {
         return paymentErrorContent;
     }
 
-    public OneyFailureResponse() {
+    public OneyFailureResponse(int code, String message,String responseError) {
+        this.code = code;
+        this.message = message;
+        this.paymentErrorContent = paymentErrorResponseFromJson(responseError);
+
     }
 
-
-
-    public static OneyFailureResponse createOneyFailureResponse(String json) {
+    public static OneyFailureResponse fromJson(String json) {
         Gson parser = new Gson();
         return parser.fromJson(json, OneyFailureResponse.class);
     }
+
+
+
+
 
 
 }

@@ -142,7 +142,7 @@ public class Delivery extends OneyBean {
         }
 
         public Delivery.Builder fromPayline(PaymentRequest request) {
-            // todo later mapping avec Oney non defini + modif  à venir avec la RC4
+            //note mapping avec Oney non defini + modif  à venir avec la RC4
             this.deliveryDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //            this.deliveryDate = buyer.getOrder.getDeliveryExpectedDate();
             this.deliveryModeCode = 1;

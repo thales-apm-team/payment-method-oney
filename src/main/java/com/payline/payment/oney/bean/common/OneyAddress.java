@@ -5,7 +5,7 @@ import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.Map;
 
-import static com.payline.payment.oney.utils.PluginUtils.truncateLongText;
+import static com.payline.payment.oney.utils.PluginUtils.*;
 
 public class OneyAddress extends OneyBean {
 
@@ -167,7 +167,7 @@ public class OneyAddress extends OneyBean {
 
         }
 
-        public OneyAddress.Builder fromPayline(Buyer buyer, Buyer.AddressType addressType) {
+        public Builder fromPayline(Buyer buyer, Buyer.AddressType addressType) {
 
             String street = buyer.getAddressForType(addressType).getStreet1();
             String street2 = buyer.getAddressForType(addressType).getStreet2();
@@ -175,9 +175,8 @@ public class OneyAddress extends OneyBean {
 
             this.municipality = buyer.getAddressForType(addressType).getCity();
             this.postalCode = buyer.getAddressForType(addressType).getZipCode();
-            this.countryLabel = buyer.getAddressForType(addressType).getCountry();
-            //todo CountryCODE ISO alpha-3 a partir du country label
-            this.countryCode = buyer.getAddressForType(addressType).getCountry();
+            this.countryLabel = getCountryNameCodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
+            this.countryCode = getIsoAlpha3CodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
 //            this.arrondissementCode = buyer.getAddressForType(Buyer.AddressType.BILLING);
 
 

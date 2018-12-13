@@ -146,9 +146,8 @@ public class PluginUtils {
     }
 
     public static String generateMerchantRequestId(String merchantId){
-        //Todo define a better rule to generate id
         String prefix = "Oney";
-        prefix  = prefix+"_"+ merchantId.substring(0,(merchantId.length()/4) );
+        prefix  = prefix+"_"+ merchantId.substring(0,4);
         return  prefix +"_" + Calendar.getInstance().getTimeInMillis();
     }
 

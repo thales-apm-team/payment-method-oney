@@ -40,7 +40,7 @@ public class OneyEncryptedRequest extends OneyBean {
          return encryptedRequest;
      }
 
-    public static OneyEncryptedRequest fromOneyPaymentRequest (OneyConfirmRequest request) {
+    public static OneyEncryptedRequest fromOneyConfirmRequest (OneyConfirmRequest request) {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
 //         encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), ConfigProperties.get(CHIFFREMENT_KEY));
         encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), CHIFFREMENT_KEY);

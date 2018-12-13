@@ -17,7 +17,6 @@ import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequest
 
 public class OneyPaymentRequest extends OneyRequest {
 
-    //todo definir les objets qui composent une requete de payment
     //v1 pour le moment
     private static final Logger logger = LogManager.getLogger(OneyPaymentRequest.class);
 

@@ -7,7 +7,7 @@ public class CategoryCodeHandler {
     public static int findCategory(int paylineProductCode) {
 
 
-//todo parser en char pour eviter le probleme de taille des charactères
+//fixme parser en char pour eviter le probleme de taille des charactères
             int oneyCategoryCode = 5;
 
             switch (paylineProductCode) {
@@ -26,6 +26,7 @@ public class CategoryCodeHandler {
                 case 19:
                 case 24:
                 case 24001:
+// integer trop grande parser en int les valeurs ?
 //                case 2400010001:
 //                case 2400010002:
                 case 25:

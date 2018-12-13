@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class AdditionalData extends OneyBean {
 
+
     @SerializedName("language_code")
     private String languageCode;
     @SerializedName("purchase")

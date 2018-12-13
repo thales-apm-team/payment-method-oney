@@ -25,7 +25,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private static final Logger LOGGER = LogManager.getLogger(ConfigurationServiceImpl.class);
 
     private I18nService i18n = I18nService.getInstance();
-    //todo define  contract config we need to add
 
     @Override
     public List<AbstractParameter> getParameters(Locale locale) {

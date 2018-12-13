@@ -2,7 +2,6 @@ package com.payline.payment.oney.service.impl.request;
 
 public class OneyRefundRequest extends OneyRequest {
 
-    //todo definir les objets qui composent une requete de payment
 
     private String languageCode;
 

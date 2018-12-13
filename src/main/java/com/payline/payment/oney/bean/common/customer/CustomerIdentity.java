@@ -195,8 +195,8 @@ public class CustomerIdentity extends OneyBean {
         }
 
         public CustomerIdentity.Builder fromPayline(Buyer buyer) {
-            //todo
             this.taxpayerCode = null;
+            //Not used
 //            this.taxpayerCode = buyer.getLegalDocument();
             this.personType = PluginUtils.getPersonType(buyer.getLegalStatus());
             this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());

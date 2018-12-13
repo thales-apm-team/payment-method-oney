@@ -176,16 +176,16 @@ public class Item extends OneyBean {
 
         public Item.Builder fromPayline(Order.OrderItem item) {
             this.isMainItem = 0;
-            //todo mapper avec payline getCategory lorsque les categories payline seront implementees
+            //note HME  mapper avec payline getCategory lorsque les categories payline seront implementees
 //            this.categoryCode = findCategory(item.getCategory());
             this.categoryCode = 1;
             this.label = item.getComment(); //or get Brand +" "+ get comment ?
             this.itemExternalcode = item.getReference();
             this.quantity = item.getQuantity().intValue();
             this.price = item.getAmount().getAmountInSmallestUnit().floatValue();
-            //todo mapper selon marketplace
-            this.marketplaceFlag = 0;
-            this.marketplaceName = null;
+            //note HME  mapper selon marketplace lot 2
+//            this.marketplaceFlag = 0;
+//            this.marketplaceName = null;
             this.travel = null;
 
             return this;

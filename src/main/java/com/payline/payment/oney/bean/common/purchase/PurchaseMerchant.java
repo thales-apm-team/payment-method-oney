@@ -85,7 +85,7 @@ public class PurchaseMerchant extends OneyBean {
         }
 
         public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) {
-            //todo mapping companyName (v2?)
+            //Note HME mapping companyName (lot 2?)
             this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
             this.externalReference = paymentRequest.getOrder().getReference();
 //            this.companyName = null;

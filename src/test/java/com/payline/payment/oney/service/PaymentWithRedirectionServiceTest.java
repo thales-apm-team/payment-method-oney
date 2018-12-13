@@ -8,9 +8,11 @@ import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
+import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -23,7 +25,8 @@ import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
 public class PaymentWithRedirectionServiceTest {
 
-    private PaymentWithRedirectionServiceImpl service;
+    @InjectMocks
+    public PaymentWithRedirectionServiceImpl service;
 
     @Spy
     OneyHttpClient httpClient;
@@ -36,7 +39,7 @@ public class PaymentWithRedirectionServiceTest {
 
     @Test
     public void confirmPaymentTest() throws IOException, URISyntaxException {
-        StringResponse responseMocked = createStringResponse(200,"OK", "{\"content\":\"{ \"statusCode\": 404, \"message\": \"Resource not found\" }\",\"code\":404,\"message\":\"Resource Not Found\"}");
+        StringResponse responseMocked = createStringResponse(200, "OK", "{language_code:FR,purchase:{status_code:FAVORABLE,status_label:\"La demande de paiement est dans un etat favorable pour financement\",reason_code:FAVORABLE,reason_label:\"My label \"}}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString());
 
@@ -44,17 +47,16 @@ public class PaymentWithRedirectionServiceTest {
                 .fromPaylineRedirectionPaymentRequest((RedirectionPaymentRequest) createCompleteRedirectionPaymentBuilder().build())
                 .build();
 
-        PaymentResponse response = service.validatePayment(paymentRequest,true);
+        PaymentResponseSuccess response = (PaymentResponseSuccess) service.validatePayment(paymentRequest, true);
 
-        System.out.println(response);
-
-        Assert.fail();
-
+        Assert.assertEquals("200", response.getStatusCode());
+        Assert.assertEquals("La demande de paiement est dans un etat favorable pour financement", response.getMessage().getMessage());
+        Assert.assertNotNull( response.getTransactionAdditionalData());
     }
 
     @Test
     public void confirmPaymentTestKO() throws IOException, URISyntaxException {
-        StringResponse responseMocked = createStringResponse(404,"Bad request", "{\"content\":\"{ \"statusCode\": 404, \"message\": \"Resource not found\" }\",\"code\":404,\"message\":\"Resource Not Found\"}");
+        StringResponse responseMocked = createStringResponse(404, "Bad request", "{\"content\":\"{ \"statusCode\": 404, \"message\": \"Resource not found\" }\",\"code\":404,\"message\":\"Resource Not Found\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString());
 
@@ -62,10 +64,10 @@ public class PaymentWithRedirectionServiceTest {
                 .fromPaylineRedirectionPaymentRequest((RedirectionPaymentRequest) createCompleteRedirectionPaymentBuilder().build())
                 .build();
 
-        PaymentResponseFailure response = (PaymentResponseFailure)service.validatePayment(paymentRequest,true);
+        PaymentResponseFailure response = (PaymentResponseFailure) service.validatePayment(paymentRequest, true);
 
-        Assert.assertEquals("404", response.getErrorCode() );
-        Assert.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause() );
+        Assert.assertEquals("404", response.getErrorCode());
+        Assert.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
 
 
     }

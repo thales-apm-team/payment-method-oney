@@ -1,6 +1,13 @@
 package com.payline.payment.oney.utils.http;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
+import com.payline.payment.oney.service.impl.request.OneyEncryptedRequest;
+import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
+import com.payline.payment.oney.utils.OneyConstants;
+import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.payment.oney.utils.config.ConfigProperties;
 import org.apache.http.Header;
@@ -9,6 +16,7 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
@@ -17,12 +25,17 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
  * Created by Thales on  27/11/2018
  */
 public class OneyHttpClient extends AbstractHttpClient {
+    private Gson parser;
+    private OneyCrypto crypto;
 
     /**
      * Instantiate a HTTP client with default values.
      */
     private OneyHttpClient() {
         super();
+        this.parser = new GsonBuilder().create();
+        this.crypto =new OneyCrypto(CHIFFREMENT_KEY);
+//        this.crypto =new OneyCrypto(ConfigProperties.get(CHIFFREMENT_KEY));
     }
 
     /**
@@ -93,6 +106,11 @@ public class OneyHttpClient extends AbstractHttpClient {
         return path+ finalPath;
     }
 
+    public String buildConfirmOrderPath(String path, Map<String, String> param){
+
+        return buildGetOrderPath(path,param) +"/action/confirm";
+    }
+
     /**
      * Create header for POST/GET methdod
      * @param authentication authentication credential
@@ -106,6 +124,42 @@ public class OneyHttpClient extends AbstractHttpClient {
         headers[2] = new BasicHeader(COUNTRY_CODE_KEY, ConfigProperties.get(countryCode, env));
         headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
 
+
         return headers;
     }
+    private String getHost(boolean isSandbox) {
+        return isSandbox ? OneyConstants.SANDBOX_URL : OneyConstants.PRODUCTION_URL;
+    }
+
+    private String getConfirmHost(boolean isSandbox) {
+        return isSandbox ? OneyConstants.CONFIRM_SANDBOX_URL : OneyConstants.CONFIRM_PRODUCTION_URL;
+    }
+
+    public StringResponse initiatePayment(OneyPaymentRequest request, boolean isSandbox) throws IOException, URISyntaxException {
+        String host = getHost(isSandbox);
+        String path = PAYMENT_REQUEST_URL;
+        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
+        String jsonBody = requestEncrypted.toString();
+        // do the request
+        return doPost(SCHEME,  host, path, jsonBody) ;
+
+    }
+
+    public StringResponse initiateConfirmationPayment(OneyConfirmRequest request, boolean isSandbox) throws IOException, URISyntaxException {
+        String host = getConfirmHost(isSandbox);
+        String url = CONFIRM_REQUEST_URL;
+        Map<String, String> parameters  = new HashMap<>();
+        parameters.put("psp_guid", request.getPspGuid());
+        parameters.put("merchant_guid", request.getMerchantGuid());
+        parameters.put("reference", request.getPurchaseReference());
+        String path = buildGetOrderPath(url, parameters);
+        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
+        String jsonBody = requestEncrypted.toString();
+        // do the request
+
+        return doPost(SCHEME,  host, path, jsonBody) ;
+
+
+    }
+
 }
