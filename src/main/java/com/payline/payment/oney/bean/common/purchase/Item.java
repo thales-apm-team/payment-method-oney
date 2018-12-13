@@ -4,12 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.ItemComparator;
 import com.payline.pmapi.bean.payment.Order;
-import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import java.util.Collections;
 import java.util.List;
-
-import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
 
 public class Item extends OneyBean {
 
@@ -92,17 +89,16 @@ public class Item extends OneyBean {
     /**
      * Compare the price of each item and set main item to 1
      * for the most expensive item
-     * @param listItems a list of Item
      *
+     * @param listItems a list of Item
      */
-    public static void defineMainItem(List<Item> listItems){
-        if( listItems.isEmpty() ){
+    public static void defineMainItem(List<Item> listItems) {
+        if (listItems.isEmpty()) {
             throw new IllegalArgumentException("This list not contain any item");
         }
-        if( listItems.size()==1){
+        if (listItems.size() == 1) {
             listItems.get(0).setIsMainItem(1);
-        }
-        else {
+        } else {
             Item maxItem = Collections.max(listItems, new ItemComparator());
             listItems.forEach(item -> {
                 if (item.equals(maxItem)) {
@@ -210,8 +206,10 @@ public class Item extends OneyBean {
             if (this.price == null) {
                 throw new IllegalStateException("Item must have a price when built");
             }
-            if (this.marketplaceFlag == 1 && this.marketplaceName == null) {
-                throw new IllegalStateException("Item must have a marketplaceName when built");
+            if (this.marketplaceFlag != null) {
+                if (this.marketplaceFlag == 1 && this.marketplaceName == null) {
+                    throw new IllegalStateException("Item must have a marketplaceName when built");
+                }
             }
             return this;
         }

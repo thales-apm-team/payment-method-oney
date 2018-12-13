@@ -35,7 +35,6 @@ public class OneyHttpClient extends AbstractHttpClient {
         super();
         this.parser = new GsonBuilder().create();
         this.crypto =new OneyCrypto(CHIFFREMENT_KEY);
-//        this.crypto =new OneyCrypto(ConfigProperties.get(CHIFFREMENT_KEY));
     }
 
     /**

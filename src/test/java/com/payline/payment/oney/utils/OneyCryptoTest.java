@@ -3,7 +3,6 @@ package com.payline.payment.oney.utils;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.junit.Assert;
 import org.junit.Rule;
-
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 

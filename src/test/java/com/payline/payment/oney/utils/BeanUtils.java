@@ -1,8 +1,8 @@
 package com.payline.payment.oney.utils;
 
+import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.customer.ContactDetails;
 import com.payline.payment.oney.bean.common.customer.Customer;
-import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.purchase.Delivery;

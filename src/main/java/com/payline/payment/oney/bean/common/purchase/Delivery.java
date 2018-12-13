@@ -9,7 +9,6 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class Delivery extends OneyBean {
 

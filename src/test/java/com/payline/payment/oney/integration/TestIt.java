@@ -3,7 +3,6 @@ package com.payline.payment.oney.integration;
 import com.payline.payment.oney.service.impl.PaymentServiceImpl;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
 import com.payline.payment.oney.utils.TestUtils;
-import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.bean.payment.PaymentFormContext;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -13,7 +12,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.HashMap;
@@ -22,8 +20,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
-import static com.payline.payment.oney.utils.OneyConstants.ID_INTERNATIONAL_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.LANGUAGE_CODE_KEY;
 
 public class TestIt extends AbstractPaymentIntegration {
     private PaymentServiceImpl paymentService = new PaymentServiceImpl();

@@ -9,8 +9,6 @@ import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;

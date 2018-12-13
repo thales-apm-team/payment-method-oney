@@ -2,8 +2,6 @@ package com.payline.payment.oney.service.impl.response;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.utils.config.ConfigProperties;
-import com.payline.payment.oney.utils.http.StringResponse;
 
 import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
 

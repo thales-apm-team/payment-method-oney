@@ -1,7 +1,6 @@
 package com.payline.payment.oney.utils.config;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

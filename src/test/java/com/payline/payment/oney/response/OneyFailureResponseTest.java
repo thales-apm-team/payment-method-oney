@@ -6,9 +6,6 @@ import com.payline.pmapi.bean.common.FailureCause;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponseFromCause;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
