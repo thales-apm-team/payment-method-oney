@@ -37,6 +37,7 @@ public class OneyFailureResponseTest {
         StringResponse stringResponse = createStringResponse(400, "Bad request", json);
 
         OneyFailureResponse failureCause = OneyFailureResponse.fromJson(stringResponse.toString());
+        failureCause.setPaymentErrorContent(stringResponse.getContent());
 
         paylineFailureResponse = handleOneyFailureResponseFromCause(failureCause);
         Assert.assertEquals(FailureCause.INVALID_FIELD_FORMAT, paylineFailureResponse);

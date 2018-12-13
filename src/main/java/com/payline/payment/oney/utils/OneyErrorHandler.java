@@ -21,7 +21,7 @@ public class OneyErrorHandler {
     }
 
     public static FailureCause handleOneyFailureResponse(OneyFailureResponse failureResponse) {
-
+//todo recuperer error code de la payment response
         int failureCode = failureResponse.getCode();
         FailureCause paylineCause = null;
         switch (failureCode) {
