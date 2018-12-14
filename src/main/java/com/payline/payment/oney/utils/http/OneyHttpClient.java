@@ -58,10 +58,12 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doPost(String scheme, String host, String path, String requestContent) throws IOException, URISyntaxException {
+    public StringResponse doPost(String scheme, String host, String path, String requestContent, boolean isSandbox) throws IOException, URISyntaxException {
 
         StringEntity entity = new StringEntity(requestContent);
-        Header[] headers = createHeaders(ConfigEnvironment.DEV);
+        ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
+
+        Header[] headers = createHeaders(env);
 
 
         return super.doPost(scheme, host, path, headers, entity);
@@ -78,12 +80,15 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doGet(String scheme, String host, String path, Map<String, String> param) throws IOException, URISyntaxException {
+    public StringResponse doGet(String scheme, String host, String path, Map<String, String> param, boolean isSandbox) throws IOException, URISyntaxException {
 
 
         //build Request
         String finalPath = this.buildGetOrderPath(path, param);
-        Header[] headers = createHeaders(ConfigEnvironment.DEV);
+
+        ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
+
+        Header[] headers = createHeaders(env);
 
 
         return super.doGet(scheme, host, finalPath, headers);
@@ -130,7 +135,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody);
+        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody, isSandbox);
 
     }
 
@@ -145,7 +150,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         String jsonBody = requestEncrypted.toString();
         // do the request
 
-        return doPost(SCHEME, host, path, jsonBody);
+        return doPost(SCHEME, host, path, jsonBody,isSandbox);
 
 
     }
