@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service;
 
+import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
@@ -37,7 +38,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void confirmPaymentTest() throws IOException, URISyntaxException {
+    public void confirmPaymentTest() throws IOException, URISyntaxException, DecryptException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{language_code:FR,purchase:{status_code:FAVORABLE,status_label:\"La demande de paiement est dans un etat favorable pour financement\",reason_code:FAVORABLE,reason_label:\"My label \"}}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString());
@@ -50,11 +51,11 @@ public class PaymentWithRedirectionServiceTest {
 
         Assert.assertEquals("200", response.getStatusCode());
         Assert.assertEquals("La demande de paiement est dans un etat favorable pour financement", response.getMessage().getMessage());
-        Assert.assertNotNull( response.getTransactionAdditionalData());
+        Assert.assertNotNull(response.getTransactionAdditionalData());
     }
 
     @Test
-    public void confirmPaymentTestKO() throws IOException, URISyntaxException {
+    public void confirmPaymentTestKO() throws IOException, URISyntaxException, DecryptException {
         StringResponse responseMocked = createStringResponse(404, "Bad request", "{\"content\":\"{ \"statusCode\": 404, \"message\": \"Resource not found\" }\",\"code\":404,\"message\":\"Resource Not Found\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString());

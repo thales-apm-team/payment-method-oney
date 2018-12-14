@@ -1,12 +1,12 @@
 package com.payline.payment.oney.service.impl.request;
 
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.InvalidRequestException;
 import com.payline.payment.oney.bean.common.LoyaltyInformation;
 import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +18,7 @@ import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequest
 public class OneyPaymentRequest extends OneyRequest {
 
     //v1 pour le moment
-    private static final Logger logger = LogManager.getLogger(OneyPaymentRequest.class);
+    private static final Logger LOGGER = LogManager.getLogger(OneyPaymentRequest.class);
 
     @SerializedName("language_code")
     private String languageCode;
@@ -232,13 +232,13 @@ public class OneyPaymentRequest extends OneyRequest {
 
         public Builder fromPaylineRequest(PaymentRequest paymentRequest) throws InvalidRequestException {
 
-            String merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
             return OneyPaymentRequest.Builder.aOneyPaymentRequest()
                     .withLanguageCode(paymentRequest.getLocale().getLanguage())
-                    .withMerchantRequestId(generateMerchantRequestId(merchantGuid))
-                  .withPspGuid(paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY))
-                    .withMerchantGuid(merchantGuid)
+                    .withMerchantRequestId(generateMerchantRequestId(merchGuid))
+                    .withPspGuid(paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY))
+                    .withMerchantGuid(merchGuid)
                     .withNavigation(NavigationData.Builder
                             .aNavigationDataBuilder()
                             .fromEnvironment(paymentRequest.getEnvironment())

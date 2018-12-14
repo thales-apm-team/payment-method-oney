@@ -1,7 +1,7 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.pmapi.bean.payment.Environment;
 
 public class NavigationData extends OneyBean {
@@ -91,11 +91,11 @@ public class NavigationData extends OneyBean {
             }
             if (this.failUrl == null) {
                 throw new IllegalStateException("NavigationData must have a failUrl when built");
-            }
-            else {
+            } else {
                 return this;
             }
         }
+
         public NavigationData build() {
             return new NavigationData(this.verifyIntegrity());
         }

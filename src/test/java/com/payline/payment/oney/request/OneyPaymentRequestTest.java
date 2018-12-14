@@ -1,6 +1,6 @@
 package com.payline.payment.oney.request;
 
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package com.payline.payment.oney.request;
 
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import org.junit.Assert;
@@ -17,7 +17,7 @@ public class OneyConfirmRequestTest {
 
         paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
                 .fromPaylineRedirectionPaymentRequest((RedirectionPaymentRequest) createCompleteRedirectionPaymentBuilder().build())
-        .build();
+                .build();
 
         Assert.assertTrue(paymentRequest.toString().contains("merchant_guid"));
         Assert.assertTrue(paymentRequest.toString().contains("psp_guid"));

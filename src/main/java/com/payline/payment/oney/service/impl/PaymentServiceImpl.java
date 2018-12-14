@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
 import com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse;
@@ -82,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
                 oneyContext.put(OneyConstants.MERCHANT_GUID_KEY, oneyRequest.getMerchantGuid());
                 oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, generateReference(oneyRequest));
                 oneyContext.put(OneyConstants.PAYMENT_AMOUNT_KEY, oneyRequest.getPaymentData().getAmount().toString());
-               //Ajout language code ??
+                //Ajout language code ??
                 oneyContext.put(OneyConstants.LANGUAGE_CODE_KEY, paymentRequest.getLocale().getLanguage());
 
                 RequestContext requestContext = RequestContext.RequestContextBuilder.aRequestContext()
@@ -97,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .build();
             }
 
-        } catch (IOException | URISyntaxException | InvalidRequestException e) {
+        } catch (IOException | URISyntaxException | InvalidRequestException | DecryptException e) {
             LOGGER.error("unable init the payment: {}", e.getMessage(), e);
             return getPaymentResponseFailure(FailureCause.INTERNAL_ERROR);
         }

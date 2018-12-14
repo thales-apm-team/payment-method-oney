@@ -75,7 +75,7 @@ public class OneyConfirmRequest extends OneyRequest {
             return this;
         }
 
-//Not sure
+        //Not sure
         public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
@@ -110,7 +110,7 @@ public class OneyConfirmRequest extends OneyRequest {
 
         }
 
-        public  OneyConfirmRequest build(){
+        public OneyConfirmRequest build() {
             return new OneyConfirmRequest(this.verifyIntegrity());
         }
 

@@ -37,7 +37,7 @@ public class OneyFailureResponse extends OneyBean {
         return paymentErrorContent;
     }
 
-    public OneyFailureResponse(int code, String message,String responseError) {
+    public OneyFailureResponse(int code, String message, String responseError) {
         this.code = code;
         this.message = message;
         this.paymentErrorContent = paymentErrorResponseFromJson(responseError);
@@ -52,10 +52,6 @@ public class OneyFailureResponse extends OneyBean {
         Gson parser = new Gson();
         return parser.fromJson(json, OneyFailureResponse.class);
     }
-
-
-
-
 
 
 }

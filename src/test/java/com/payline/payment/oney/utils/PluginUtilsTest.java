@@ -56,7 +56,7 @@ public class PluginUtilsTest {
     public void testGetIsoAlpha3CodeFromCountryCode2() {
         String country = "FR";
         String pays = getIsoAlpha3CodeFromCountryCode2(country);
-        Assert.assertEquals("FRA",pays);
+        Assert.assertEquals("FRA", pays);
 
     }
 
@@ -64,15 +64,14 @@ public class PluginUtilsTest {
     public void testGetCountryNameCodeFromCountryCode2() {
         String country = "FR";
         String pays = getCountryNameCodeFromCountryCode2(country);
-        Assert.assertEquals("France",pays);
-
+        Assert.assertEquals("France", pays);
 
 
     }
 
 
     @Test
-    public void testCategoryHandler(){
+    public void testCategoryHandler() {
         int catCodePayline = 17;
         int catCodePayline2 = 964;
         int catCodeOney = findCategory(catCodePayline);

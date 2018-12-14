@@ -12,6 +12,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.HashMap;
@@ -27,7 +29,7 @@ public class TestIt extends AbstractPaymentIntegration {
 
     @Override
     protected Map<String, ContractProperty> generateParameterContract() {
-        HashMap <String, ContractProperty> contractConfiguration = new HashMap();
+        HashMap<String, ContractProperty> contractConfiguration = new HashMap();
         contractConfiguration.put(BUSINESS_TRANSACTION_CODE, new ContractProperty("3x002"));
         contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
         contractConfiguration.put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
@@ -37,13 +39,13 @@ public class TestIt extends AbstractPaymentIntegration {
         contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("FRA")); //3 caractères
         contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
-    return    contractConfiguration;
+        return contractConfiguration;
     }
 
     @Override
     protected PaymentFormContext generatePaymentFormContext() {
         Map<String, String> paymentFormParameter = new HashMap<>();
-        paymentFormParameter.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
@@ -55,7 +57,6 @@ public class TestIt extends AbstractPaymentIntegration {
     @Override
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Thales\\Documents\\HME\\moyens de paiement\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
@@ -65,13 +66,21 @@ public class TestIt extends AbstractPaymentIntegration {
             driver.get(partnerUrl);
 //            driver.findElement(By.id("classicPin-addPinField")).sendKeys(Utils.PAYMENT_TOKEN);
 
-
+            String struct = "//*[@id='wt1_wt7_Oney_Theme_wt158_block_wtMainContent_WebPatterns_wtStructure";
             //Id du bouton nouveau client
-            driver.findElement(By.xpath("//*[@id='wt1_wt7_Oney_Theme_wt158_block_wtMainContent_WebPatterns_wtStructure_block_wtColumn1_wtWithoutAccount_rb2']")).click();
+            driver.findElement(By.xpath(struct + "_block_wtColumn1_wtWithoutAccount_rb2']")).click();
 //            driver.findElement(By.name("wt1_wt7$1105887523")).click();
             //champs date de naissance
-            driver.findElement(By.xpath("//*[@id='wt1_wt7_Oney_Theme_wt158_block_wtMainContent_WebPatterns_wtStructure_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_wtCustomerData_Dateofbirth']")).sendKeys("1993-04-01");
+            new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowDay']"))).selectByVisibleText("1");
+            WebDriverWait wait = new WebDriverWait(driver, 30);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
+            new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']"))).selectByVisibleText("Avr");
 
+            WebDriverWait wait2 = new WebDriverWait(driver, 30);
+            wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']")));
+            new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
+
+            driver.switchTo().frame("cko-iframe-id");
             //numero de CB
             driver.findElement(By.xpath("//*[@data-checkout='card-number']")).sendKeys("4543474002249996");
 
@@ -80,20 +89,18 @@ public class TestIt extends AbstractPaymentIntegration {
             //annne expiration de CB
             driver.findElement(By.xpath("//*[@data-checkout='expiry-year']")).sendKeys("25");
             //CVV CB
-            driver.findElement(By.xpath("//*[@data-checkout='CVV']")).sendKeys("956");
+            driver.findElement(By.xpath("//*[@data-checkout='cvv']")).sendKeys("956");
 
+            driver.switchTo().defaultContent();
             //Checkboxes a cocher
             List<WebElement> els = driver.findElements(By.xpath("//input[@type='checkbox']"));
-            for ( WebElement el : els ) {
-                if ( !el.isSelected() ) {
-                    el.click();
-                }
-            }
+            els.get(1).click();
+            els.get(2).click();
             // validate payment
-            driver.findElement(By.xpath("//*[@type='submit']")).click();
+            driver.findElement(By.xpath("//*[@value='Accepter']")).click();
             // Wait for redirection to success or cancel url
-            WebDriverWait wait = new WebDriverWait(driver, 60);
-         //   wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+            WebDriverWait wait3 = new WebDriverWait(driver, 60);
+            //   wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
             return driver.getCurrentUrl();
         } finally {
             driver.quit();

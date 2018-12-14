@@ -83,7 +83,7 @@ public class PurchaseMerchant extends OneyBean {
             }
             return this;
         }
-
+        
         public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) {
             //Note HME mapping companyName (lot 2?)
             this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();

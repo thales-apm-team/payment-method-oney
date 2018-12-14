@@ -1,7 +1,7 @@
 package com.payline.payment.oney.utils;
 
 
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
@@ -79,14 +79,15 @@ public class PluginUtils {
     }
 
     /**
-     *     Decoupe le texte en 5 renvoi un tableau
+     * Decoupe le texte en 5 renvoi un tableau
+     *
      * @param longText
      * @param longText2
      * @param size
      * @return
      */
     public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
-    Map<String, String> textTruncated = new HashMap();
+        Map<String, String> textTruncated = new HashMap();
 
         String line1;
         String line2;
@@ -100,12 +101,10 @@ public class PluginUtils {
         int firstCharPosition2 = 0;
 
         //-------------------- address 1
-        if(longText.length()<size)
-        {
+        if (longText.length() < size) {
             textTruncated.put("line1", longText);
 
-        }
-        else {
+        } else {
             int end1 = longText.lastIndexOf(' ', fromIndex);
             line1 = longText.substring(firstCharPosition, end1);
             fromIndex += line1.length();
@@ -123,12 +122,10 @@ public class PluginUtils {
             textTruncated.put("line3", line3);
         }
         //-------------------- address 2
-        if(longText2.length()<size)
-        {
+        if (longText2.length() < size) {
             textTruncated.put("line4", longText2);
 
-        }
-        else {
+        } else {
             int end4 = longText2.lastIndexOf(' ', fromIndex2);
             line4 = longText2.substring(firstCharPosition2, end4);
             fromIndex2 += line4.length();
@@ -143,10 +140,10 @@ public class PluginUtils {
 
     }
 
-    public static String generateMerchantRequestId(String merchantId){
+    public static String generateMerchantRequestId(String merchantId) {
         String prefix = "Oney";
-        prefix  = prefix+"_"+ merchantId.substring(0,4);
-        return  prefix +"_" + Calendar.getInstance().getTimeInMillis();
+        prefix = prefix + "_" + merchantId.substring(0, 4);
+        return prefix + "_" + Calendar.getInstance().getTimeInMillis();
     }
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
@@ -155,25 +152,28 @@ public class PluginUtils {
 
     /**
      * Return a ISO-3166 alpha 3 code  from a ISO-3166 alpha 2 code
+     *
      * @param code
      * @return
      */
-    public static String getIsoAlpha3CodeFromCountryCode2(String code){
-        Locale locale = new Locale("",code);
+    public static String getIsoAlpha3CodeFromCountryCode2(String code) {
+        Locale locale = new Locale("", code);
         return locale.getISO3Country();
     }
 
     /**
      * Return a country name from a ISO-3166 alpha 2 code
+     *
      * @param code
      * @return
      */
-    public static String getCountryNameCodeFromCountryCode2(String code){
-        Locale locale = new Locale("",code);
+    public static String getCountryNameCodeFromCountryCode2(String code) {
+        Locale locale = new Locale("", code);
         return locale.getDisplayCountry();
     }
-    public static String generateReference(OneyPaymentRequest request){
 
-        return request.getPurchase().getExternalReferenceType()+"|"+request.getPurchase().getExternalReference();
+    public static String generateReference(OneyPaymentRequest request) {
+
+        return request.getPurchase().getExternalReferenceType() + "|" + request.getPurchase().getExternalReference();
     }
 }

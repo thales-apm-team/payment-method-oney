@@ -83,10 +83,10 @@ public class PaymentData extends OneyBean {
                 throw new IllegalStateException("PaymentData must have a currency when built");
             }
 
-            if (this.businessTransaction == null && (this.paymentType == null ||this.paymentType != PaymentType.CHECK_CARD.getValue()) ){
+            if (this.businessTransaction == null && (this.paymentType == null || this.paymentType != PaymentType.CHECK_CARD.getValue())) {
                 throw new IllegalStateException("PaymentData must have a businessTransaction when built");
 
-            }else {
+            } else {
                 return this;
             }
         }
@@ -108,9 +108,9 @@ public class PaymentData extends OneyBean {
                     .withCurrency(request.getAmount().getCurrency().getCurrencyCode())
                     //todo mapper payment type (une constante  ou contract config ??)
                     .withPaymentType(PaymentType.IMMEDIATE.getValue())
-                         .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
-                         .fromPayline(request.getContractConfiguration())
-                         .build())
+                    .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
+                            .fromPayline(request.getContractConfiguration())
+                            .build())
 //                    .withPaymentType(PAYMENT_TYPE)
                     ;
 

@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.AdditionalData;
+import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
@@ -45,21 +46,20 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 .build();
         boolean isSandbox = redirectionPaymentRequest.getEnvironment().isSandbox();
         try {
-            PaymentResponse response =  validatePayment(confirmRequest, isSandbox);
+            PaymentResponse response = validatePayment(confirmRequest, isSandbox);
 
             if (PaymentResponseSuccess.class.equals(response.getClass())) {
                 return response;
-            }
-            else {
+            } else {
                 // second try
                 return validatePayment(confirmRequest, isSandbox);
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | DecryptException e) {
             LOGGER.error("unable to confirm the payment: {}", e.getMessage(), e);
-          return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                  .withFailureCause(FailureCause.COMMUNICATION_ERROR)
-                  .withErrorCode("503")
-                  .build();
+            return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                    .withFailureCause(FailureCause.COMMUNICATION_ERROR)
+                    .withErrorCode("503")
+                    .build();
         }
 
     }
@@ -74,7 +74,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
      *
      * @return
      */
-    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws IOException, URISyntaxException {
+    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
 
         StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox);
 
@@ -103,7 +103,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .withTransactionAdditionalData(additionalData.toJson())
                     .withPartnerTransactionId(confirmRequest.getPurchaseReference())
                     .withStatusCode(String.valueOf(oneyResponse.getCode()))
-                    .withMessage(new Message(SUCCESS,additionalData.getPurchase().getStatusLabel()))
+                    .withMessage(new Message(SUCCESS, additionalData.getPurchase().getStatusLabel()))
                     .withTransactionDetails(new EmptyTransactionDetails())
                     .build();
         }

@@ -1,6 +1,6 @@
 package com.payline.payment.oney.utils;
 
-import com.payline.payment.oney.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -27,7 +27,7 @@ public class Validate {
 
         Class clz = toValidate.getClass();
         Object obj;
-        Object parent = toValidate;
+        Object parent;
         Map<String, Object> checkedObject = new HashMap<>();
         String fieldName = "";
         String key;

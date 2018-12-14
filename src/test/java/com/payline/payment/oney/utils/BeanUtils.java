@@ -118,7 +118,7 @@ public class BeanUtils {
 
     }
 
-    public static OneyConfirmRequest createOneyConfirmRequest(){
+    public static OneyConfirmRequest createOneyConfirmRequest() {
 
         return null;
     }

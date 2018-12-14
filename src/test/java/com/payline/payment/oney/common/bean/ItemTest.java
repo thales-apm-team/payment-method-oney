@@ -27,7 +27,7 @@ public class ItemTest {
                 .withMainItem(0)
                 .withCategoryCode(0)
                 .withLabel("label")
-                .withPrice(new Float(175))
+                .withPrice(175f)
                 .withMarketplaceFlag(0)
                 .withQuantity(5)
                 .withItemExternalCode("externalCode")
@@ -55,6 +55,7 @@ public class ItemTest {
                 .withItemExternalCode("externalCode")
                 .build();
     }
+
     @Test
     public void withoutIsMainItem() {
         expectedEx.expect(IllegalStateException.class);
@@ -69,6 +70,7 @@ public class ItemTest {
                 .withItemExternalCode("externalCode")
                 .build();
     }
+
     @Test
     public void withoutCategoryCode() {
         expectedEx.expect(IllegalStateException.class);
@@ -98,6 +100,7 @@ public class ItemTest {
                 .withQuantity(5)
                 .build();
     }
+
     @Test
     public void withoutQuantity() {
         expectedEx.expect(IllegalStateException.class);
@@ -112,6 +115,7 @@ public class ItemTest {
                 .withItemExternalCode("externalCode")
                 .build();
     }
+
     @Test
     public void withoutPrice() {
         expectedEx.expect(IllegalStateException.class);
@@ -126,6 +130,7 @@ public class ItemTest {
                 .withItemExternalCode("externalCode")
                 .build();
     }
+
     @Test
     public void withoutMarketPlaceName() {
         expectedEx.expect(IllegalStateException.class);
@@ -141,6 +146,7 @@ public class ItemTest {
                 .withItemExternalCode("externalCode")
                 .build();
     }
+
     @Test
     public void itemFromPaylineRequest() {
         item = Item.Builder.aItemBuilder()
@@ -172,9 +178,10 @@ public class ItemTest {
 
 
     }
+
     @Test
     public void defineMainItem() {
-       //to implement
+        //to implement
         List<Item> itemList = new ArrayList<>();
         itemList.add(Item.Builder.aItemBuilder()
                 .withMainItem(0)

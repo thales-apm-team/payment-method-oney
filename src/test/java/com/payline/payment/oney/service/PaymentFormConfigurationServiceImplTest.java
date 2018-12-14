@@ -44,8 +44,8 @@ public class PaymentFormConfigurationServiceImplTest {
         PaymentFormConfigurationResponseSpecific paymentFormConfigurationResponse = (PaymentFormConfigurationResponseSpecific) service.getPaymentFormConfiguration(paymentFormConfigurationRequest);
 
         Assert.assertNotNull(paymentFormConfigurationResponse.getPaymentForm());
-        Assert.assertEquals("Oney 3x 4x",paymentFormConfigurationResponse.getPaymentForm().getButtonText());
-        Assert.assertEquals("Payer avec Oney 3x 4x",paymentFormConfigurationResponse.getPaymentForm().getDescription());
+        Assert.assertEquals("Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getButtonText());
+        Assert.assertEquals("Payer avec Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getDescription());
         Assert.assertTrue(paymentFormConfigurationResponse.getPaymentForm().isDisplayButton());
     }
 

@@ -32,7 +32,6 @@ public class PurchaseTest {
     }
 
 
-
     @Test
     public void fromPaymentRequest() {
         purchase = Purchase.Builder.aPurchaseBuilder()
@@ -62,6 +61,7 @@ public class PurchaseTest {
                 .build();
 
     }
+
     @Test
     public void withoutDelivery() {
         expectedEx.expect(IllegalStateException.class);
@@ -77,6 +77,7 @@ public class PurchaseTest {
                 .build();
 
     }
+
     @Test
     public void withoutExternalReferenceType() {
         expectedEx.expect(IllegalStateException.class);
@@ -92,6 +93,7 @@ public class PurchaseTest {
                 .build();
 
     }
+
     @Test
     public void withoutExternalReference() {
         expectedEx.expect(IllegalStateException.class);
@@ -107,6 +109,7 @@ public class PurchaseTest {
                 .build();
 
     }
+
     @Test
     public void withoutPuchaseAmount() {
         expectedEx.expect(IllegalStateException.class);
@@ -122,6 +125,7 @@ public class PurchaseTest {
                 .build();
 
     }
+
     @Test
     public void withoutCurrencyCode() {
         expectedEx.expect(IllegalStateException.class);

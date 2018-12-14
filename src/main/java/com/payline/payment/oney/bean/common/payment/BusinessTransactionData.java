@@ -63,22 +63,28 @@ public class BusinessTransactionData extends OneyBean {
         public BusinessTransactionData.Builder verifyIntegrity() {
             if (this.code == null) {
                 throw new IllegalStateException("BusinessTransactionData must have a code when built");
-            } else return this;
+            } else {
+                return this;
+            }
         }
 
-        public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract){
+        public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract) {
 
             if (contract.getProperty(BUSINESS_TRANSACTION_CODE) == null) {
-                throw new IllegalStateException("Property "+ BUSINESS_TRANSACTION_CODE +" doesn't exists");
+                throw new IllegalStateException("Property " + BUSINESS_TRANSACTION_CODE + " doesn't exists");
             }
 
-            this.code =  contract.getProperty(BUSINESS_TRANSACTION_CODE).getValue();
+            this.code = contract.getProperty(BUSINESS_TRANSACTION_CODE).getValue();
+
             //optional ajouter dans les contract configuration  v2 ??
-//            this.version = BUSINESS_TRANSACTION_VERSION;
-//            this.businessTransactionType = BUSINESS_TRANSACTION_TYPE;
+            /**
+             this.version = BUSINESS_TRANSACTION_VERSION;
+             this.businessTransactionType = BUSINESS_TRANSACTION_TYPE;
+             */
             return this;
         }
-        public BusinessTransactionData build(){
+
+        public BusinessTransactionData build() {
             return new BusinessTransactionData(this.verifyIntegrity());
         }
     }

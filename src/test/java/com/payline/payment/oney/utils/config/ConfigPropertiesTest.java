@@ -8,7 +8,7 @@ import org.junit.rules.ExpectedException;
 public class ConfigPropertiesTest {
 
     private ConfigProperties configProperties;
-    String key;
+    private String key;
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();

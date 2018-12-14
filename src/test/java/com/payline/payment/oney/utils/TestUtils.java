@@ -11,9 +11,13 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
@@ -23,13 +27,16 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
  * Class with method to generate mock easier
  */
 public class TestUtils {
+    private static final Logger LOGGER = LogManager.getLogger(TestUtils.class);
 
     private static final String SUCCESS_URL = "https://succesurl.com/";
     private static final String CANCEL_URL = "http://localhost/cancelurl.com/";
     private static final String NOTIFICATION_URL = "http://google.com/";
+    public static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
 
-    public static String PHONE_NUMBER_TEST = "06060606";
+    public static final String PHONE_NUMBER_TEST = "06060606";
     public HashMap<String, String> extendedData;
+    public static final String SOFT_DESCRIPTOR = "softDescriptor";
 
 
     /**
@@ -43,7 +50,6 @@ public class TestUtils {
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final String transactionID = "transactionID";
         final Order order = createOrder(transactionID);
-        final String softDescriptor = "softDescriptor";
 
 
         return PaymentRequest.builder()
@@ -55,10 +61,10 @@ public class TestUtils {
                 .withOrder(order)
                 .withBuyer(createDefaultBuyer())
                 .withTransactionId(transactionID)
-                .withSoftDescriptor(softDescriptor)
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(createDefaultEnvironment())
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withSoftDescriptor(softDescriptor)
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .build();
     }
 
@@ -70,10 +76,10 @@ public class TestUtils {
      */
     public static PaymentFormContext createDefaultPaymentFormContext(String phoneNumber) {
         Map<String, String> paymentFormParameter = new HashMap<>();
-        paymentFormParameter.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
 
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
-        sensitivePaymentFormParameter.put(SECRET_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        sensitivePaymentFormParameter.put(SECRET_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
 
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
@@ -114,10 +120,8 @@ public class TestUtils {
     }
 
     public static RedirectionPaymentRequest createRedirectionPaymentRequest() {
-        RedirectionPaymentRequest request = RedirectionPaymentRequest.builder().build();
+        return RedirectionPaymentRequest.builder().build();
 
-
-        return request;
     }
 
     /**
@@ -133,7 +137,6 @@ public class TestUtils {
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final String transactionID = createTransactionId();
         final Order order = createOrder(transactionID);
-        final String softDescriptor = "softDescriptor";
         final Locale locale = new Locale("FR");
 
         return PaymentRequest.builder()
@@ -144,7 +147,7 @@ public class TestUtils {
                 .withOrder(order)
                 .withLocale(locale)
                 .withTransactionId(transactionID)
-                .withSoftDescriptor(softDescriptor)
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withPaymentFormContext(createDefaultPaymentFormContext(PHONE_NUMBER_TEST))
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withLocale(Locale.FRANCE)
@@ -159,12 +162,11 @@ public class TestUtils {
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final String transactionID = createTransactionId();
         final Order order = createOrder(transactionID);
-        final String softDescriptor = "softDescriptor";
         final Locale locale = new Locale("FR");
 
         Map<String, String> requestData = new HashMap<>();
-        requestData.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
-        requestData.put(SECRET_KEY,"Method-body");
+        requestData.put(PSP_GUID_KEY, GUID_KEY);
+        requestData.put(SECRET_KEY, "Method-body");
         requestData.put(EXTERNAL_REFERENCE_KEY, "mareference");
 
 
@@ -180,7 +182,7 @@ public class TestUtils {
                 .withOrder(order)
                 .withLocale(locale)
                 .withTransactionId(transactionID)
-                .withSoftDescriptor(softDescriptor)
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withPaymentFormContext(createDefaultPaymentFormContext(PHONE_NUMBER_TEST))
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withLocale(Locale.FRANCE)
@@ -265,7 +267,7 @@ public class TestUtils {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_CODE, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
+        contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty(GUID_KEY));
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
@@ -278,16 +280,16 @@ public class TestUtils {
     }
 
     public static Map<String, String> createAccountInfo() {
-        Map<String, String> accountInfo = new HashMap<>();
+
 //        accountInfo.put(CONTRACT_CONFIG_CREDITOR_ID, GOOD_CREDITOR_ID);
 //        accountInfo.put(PARTNER_CONFIG_AUTH_LOGIN, GOOD_LOGIN);
 //        accountInfo.put(PARTNER_CONFIG_AUTH_PASS, GOOD_PWD);
-        return accountInfo;
+        return new HashMap<String, String>();
     }
 
     public static ContractParametersCheckRequest createContractParametersCheckRequest() {
 
-        final ContractParametersCheckRequest contractParametersCR = ContractParametersCheckRequest
+        return ContractParametersCheckRequest
                 .CheckRequestBuilder
                 .aCheckRequest()
                 .withContractConfiguration(createContractConfiguration())
@@ -296,8 +298,6 @@ public class TestUtils {
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .build();
-
-        return contractParametersCR;
     }
 
 
@@ -338,16 +338,24 @@ public class TestUtils {
                 .withFullName(fullName)
                 .withCustomerIdentifier("subscriber1")
                 .withExtendedData(createDefaultExtendedData())
-                .withBirthday(new Date(1991, 1, 1))
+                .withBirthday(getBirthdayDate())
                 .withLegalStatus(Buyer.LegalStatus.PERSON)
                 .build();
+    }
+
+    private static Date getBirthdayDate() {
+        try {
+            return new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1991");
+        } catch (ParseException e) {
+            LOGGER.error("pparsing de la date de naissance impossible", e);
+            return null;
+        }
     }
 
 
     public static Map<String, String> createDefaultExtendedData() {
 
-        HashMap<String, String> extData = new HashMap<>();
-        return extData;
+        return new HashMap<String, String>();
 
     }
 
@@ -362,8 +370,8 @@ public class TestUtils {
 
     public static PartnerConfiguration createDefaultPartnerConfiguration() {
         Map<String, String> partnerConfiguration = new HashMap<>();
-        partnerConfiguration.put(PSP_GUID_KEY,"6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
-        partnerConfiguration.put(SECRET_KEY,"Method-body");
+        partnerConfiguration.put(PSP_GUID_KEY, GUID_KEY);
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
 

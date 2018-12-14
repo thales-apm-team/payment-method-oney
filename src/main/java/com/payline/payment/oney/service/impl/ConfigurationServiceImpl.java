@@ -102,7 +102,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         parameters.add(internationalPartnerId);
 
 
-
         return parameters;
 
     }
@@ -138,14 +137,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public ReleaseInformation getReleaseInformation() {
         Properties props = new Properties();
         try {
-            props.load(ConfigurationServiceImpl.class.getClassLoader().getResourceAsStream(RELEASE_PROPERTIES));
+            props.load(ConfigurationServiceImpl.class.getClassLoader().getResourceAsStream("release.properties"));
         } catch (IOException e) {
-            LOGGER.error("An error occurred reading the file: {}" + RELEASE_PROPERTIES, e.getMessage(), e);
-            throw new RuntimeException("Failed to reading file release.properties: ", e);
-
+            LOGGER.error("An error occurred reading the file: release.properties");
+            props.setProperty("release.version", "unknown");
+            props.setProperty("release.date", "01/01/1900");
         }
 
-        LocalDate date = LocalDate.parse(props.getProperty(RELEASE_DATE), DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT));
+        LocalDate date = LocalDate.parse(props.getProperty("release.date"), DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT));
         return ReleaseInformation.ReleaseBuilder.aRelease()
                 .withDate(date)
                 .withVersion(props.getProperty(RELEASE_VERSION))
