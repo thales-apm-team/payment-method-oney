@@ -158,7 +158,6 @@ public class ItemTest {
         Assert.assertNotNull(item.getCategoryCode());
         Assert.assertNotNull(item.getLabel());
         Assert.assertNotNull(item.getPrice());
-        Assert.assertNotNull(item.getMarketplaceFlag());
         Assert.assertNotNull(item.getQuantity());
     }
 

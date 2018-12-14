@@ -56,8 +56,7 @@ public class OneyCryptoTest {
 
     @Test
     public void encryptWrongKey() throws DecryptException {
-        expectedEx.expect(RuntimeException.class);
-        //expectedEx.expectMessage("Unable to encrypt this message");
+        expectedEx.expect(DecryptException.class);
         crypto = new OneyCrypto("maCle");
 
         String message = "mon message a chiffrer";

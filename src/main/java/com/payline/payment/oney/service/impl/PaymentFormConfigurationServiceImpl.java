@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.exception.InvalidFileException;
 import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.pmapi.bean.paymentform.bean.PaymentFormLogo;
 import com.payline.pmapi.bean.paymentform.bean.form.NoFieldForm;
@@ -60,7 +61,7 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
                     .build();
         } catch (IOException e) {
             LOGGER.error("An error occurred reading the file: " + LOGO_PROPERTIES + " {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to reading file logo.properties: ", e);
+            throw new InvalidFileException("Failed to reading file logo.properties: ", e);
 
         }
     }
@@ -73,7 +74,7 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
             props.load(ConfigurationServiceImpl.class.getClassLoader().getResourceAsStream(LOGO_PROPERTIES));
         } catch (IOException e) {
             LOGGER.error("An error occurred reading the file: " + LOGO_PROPERTIES + " {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to reading file logo.properties: ", e);
+            throw new InvalidFileException("Failed to reading file logo.properties: ", e);
 
         }
         String fileName = props.getProperty(LOGO_FILE_NAME);

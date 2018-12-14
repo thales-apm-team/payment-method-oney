@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl.response;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -30,7 +31,16 @@ public class PaymentErrorResponse extends OneyBean {
         Type errorListType = new TypeToken<List<OneyError>>() {}.getType();
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-        return  new PaymentErrorResponse (gson.fromJson(((JsonObject)jsonObject.get("Payments_Error_Response")).get("error_list"), errorListType));
+        //debug
+
+        //case Oney uses "error_list " key for json error
+        JsonArray errorListWithKey1 = (JsonArray) ((JsonObject)jsonObject.get("Payments_Error_Response")).get("error_list ");
+        //case Oney uses "error_list" key for json error
+        JsonArray errorListWithKey2 = (JsonArray) ((JsonObject)jsonObject.get("Payments_Error_Response")).get("error_list");
+
+        //On essaie de recuperer "error_list " et "error_list" on parse ensuite la cle contenant des valeurs
+        return (errorListWithKey1 == null) ? new PaymentErrorResponse(gson.fromJson(errorListWithKey2, errorListType)) :new PaymentErrorResponse (gson.fromJson(errorListWithKey1, errorListType));
+
     }
 
 

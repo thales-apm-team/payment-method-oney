@@ -28,7 +28,7 @@ public class OneyErrorHandler {
     }
 
     public static FailureCause handleOneyFailureResponse(OneyFailureResponse failureResponse) {
-//todo recuperer error code de la payment response
+
         int failureCode = failureResponse.getCode();
         FailureCause paylineCause;
         switch (failureCode) {
@@ -65,10 +65,6 @@ public class OneyErrorHandler {
 
 
     public static FailureCause handleOneyFailureResponseFromCause(OneyFailureResponse failureResponse) {
-
-        //todo recuperer le champ Payment_Error_code -> error_list ->error_code  dans le json et comparer
-        //or do a regex pour recuperer error code dans le content de la reponse
-        String content = failureResponse.getContent();
         String failureCause = "";
         //Si le tableau contient plusieurs erreur on récupère la première. toutes les autres seront loggués
         if (failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
