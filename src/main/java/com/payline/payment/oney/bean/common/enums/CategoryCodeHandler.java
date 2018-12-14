@@ -86,7 +86,6 @@ public class CategoryCodeHandler {
 
             case 15:
             case 18:
-            case 13:
                 oneyCategoryCode = 7;
                 break;
 
@@ -115,6 +114,7 @@ public class CategoryCodeHandler {
 
             case 6:
             case 8:
+            case 13:
                 oneyCategoryCode = 13;
                 break;
 
