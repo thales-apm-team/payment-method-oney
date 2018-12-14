@@ -6,6 +6,7 @@ import com.payline.pmapi.bean.common.FailureCause;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponseFromCause;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
@@ -33,8 +34,7 @@ public class OneyFailureResponseTest {
 
         StringResponse stringResponse = createStringResponse(400, "Bad request", json);
 
-        OneyFailureResponse failureCause = OneyFailureResponse.fromJson(stringResponse.toString());
-        failureCause.setPaymentErrorContent(stringResponse.getContent());
+        OneyFailureResponse failureCause = new OneyFailureResponse (stringResponse.getCode(),stringResponse.getMessage(),stringResponse.getMessage(), paymentErrorResponseFromJson(stringResponse.getContent()));
 
         paylineFailureResponse = handleOneyFailureResponseFromCause(failureCause);
         Assert.assertEquals(FailureCause.INVALID_FIELD_FORMAT, paylineFailureResponse);

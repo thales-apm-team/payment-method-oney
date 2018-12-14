@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static com.payline.payment.oney.service.impl.response.OneyFailureResponse.fromJson;
+import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.getPaymentResponseFailure;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
@@ -85,7 +85,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         }
 
         if (oneyResponse.getCode() != HTTP_OK) {
-            OneyFailureResponse failureResponse = fromJson(oneyResponse.toString());
+            OneyFailureResponse failureResponse = new OneyFailureResponse (oneyResponse.getCode(),oneyResponse.getMessage(),oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
+
             LOGGER.error("Payment failed {} ", failureResponse.getContent());
 
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()

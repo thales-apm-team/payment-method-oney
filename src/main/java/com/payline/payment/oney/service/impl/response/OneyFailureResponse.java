@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 
-import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
-
 public class OneyFailureResponse extends OneyBean {
 
 
@@ -37,21 +35,20 @@ public class OneyFailureResponse extends OneyBean {
         return paymentErrorContent;
     }
 
-    public OneyFailureResponse(int code, String message, String responseError) {
+    public OneyFailureResponse(int code, String message, String content, PaymentErrorResponse responseError) {
         this.code = code;
         this.message = message;
-        this.paymentErrorContent = paymentErrorResponseFromJson(responseError);
+        this.content = content;
+        this.paymentErrorContent = responseError;
 
     }
 
-    public void setPaymentErrorContent(String jsonErrorResponse) {
-        this.paymentErrorContent =paymentErrorResponseFromJson(jsonErrorResponse);
-    }
 
     public static OneyFailureResponse fromJson(String json) {
         Gson parser = new Gson();
         return parser.fromJson(json, OneyFailureResponse.class);
     }
+
 
 
 }

@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.payline.payment.oney.service.impl.response.OneyFailureResponse.fromJson;
 import static com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse.paymentSuccessResponseFromJson;
+import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.getPaymentResponseFailure;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
@@ -60,8 +60,8 @@ public class PaymentServiceImpl implements PaymentService {
             }
             //Cas ou une erreur est renvoyée au moment du paiement
             if (oneyResponse.getCode() != HTTP_OK) {
-                //todo recupere error label
-                OneyFailureResponse failureResponse = fromJson(oneyResponse.toString());
+                OneyFailureResponse failureResponse = new OneyFailureResponse (oneyResponse.getCode(),oneyResponse.getMessage(),oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
+
                 LOGGER.error("Payment failed {} ", failureResponse.getContent());
 
                 return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
