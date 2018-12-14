@@ -66,8 +66,9 @@ public class OneyErrorHandler {
 
     public static FailureCause handleOneyFailureResponseFromCause(OneyFailureResponse failureResponse) {
         String failureCause = "";
-        //Si le tableau contient plusieurs erreur on récupère la première. toutes les autres seront loggués
-        if (failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
+
+        //Si le tableau contient plusieurs erreurs on récupère la première. toutes les autres seront loggués
+        if (failureResponse.getPaymentErrorContent() !=null && failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
             failureCause = failureResponse.getPaymentErrorContent().getErrorList().get(0).getErrorCode();
             LOGGER.warn(failureCause);
         }

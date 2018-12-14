@@ -9,6 +9,7 @@ import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.payment.oney.bean.common.purchase.Item;
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
+import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.ArrayList;
@@ -119,7 +120,16 @@ public class BeanUtils {
     }
 
     public static OneyConfirmRequest createOneyConfirmRequest() {
-
         return null;
+    }
+
+
+    public static OneyTransactionStatusRequest createDefaultTransactionStatusRequest() {
+        return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                .withLanguageCode("FR")
+                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
+                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
+                .withPurchaseReference("CMDE|455454545415451198114")
+                .build();
     }
 }

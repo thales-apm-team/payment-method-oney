@@ -1,15 +1,19 @@
 package com.payline.payment.oney.utils.http;
 
+import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class OneyHttpClientTest {
 
     private OneyHttpClient client;
-/*
+
     //ToDO  mock http call, not mocked now to check if they work
 
     @Test
@@ -44,7 +48,7 @@ public class OneyHttpClientTest {
         Assert.assertEquals(400, response.getCode());
 
     }
-*/
+
     @Test
     public void buildGetOrderPath() {
 
@@ -69,7 +73,26 @@ public class OneyHttpClientTest {
         param.put("reference", "val3");
 
         String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3/action/confirm";
-        String path = client.buildConfirmOrderPath("somePath/", param);
+        String path = this.client.buildConfirmOrderPath("somePath/", param);
         Assert.assertEquals(pathAttempted, path);
     }
+
+    @Test
+    public void initiateGetTransactionStatusTest() throws DecryptException, IOException, URISyntaxException {
+
+        OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                .withLanguageCode("FR")
+                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
+                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
+                .withPurchaseReference("CMDE|455454545415451198114")
+                .build();
+
+        this.client = OneyHttpClient.getInstance();
+        StringResponse transactStatus = this.client.initiateGetTransactionStatus(request, true);
+        System.out.println(transactStatus);
+        Assert.assertNotNull(transactStatus.getCode());
+    }
+
+
+
 }

@@ -5,6 +5,7 @@ import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import com.payline.payment.oney.service.impl.request.OneyEncryptedRequest;
 import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
+import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.payment.oney.utils.config.ConfigProperties;
@@ -96,7 +97,7 @@ public class OneyHttpClient extends AbstractHttpClient {
 
     public String buildGetOrderPath(String path, Map<String, String> param) {
 
-        return path + "psp_guid/" + param.get("psp_guid")
+        return path + "/psp_guid/" + param.get("psp_guid")
                 + "/merchant_guid/" + param.get("merchant_guid")
                 + "/reference/" + param.get("reference");
 
@@ -126,9 +127,9 @@ public class OneyHttpClient extends AbstractHttpClient {
         return isSandbox ? OneyConstants.SANDBOX_URL : OneyConstants.PRODUCTION_URL;
     }
 
-    private String getConfirmHost(boolean isSandbox) {
-        return isSandbox ? OneyConstants.CONFIRM_SANDBOX_URL : OneyConstants.CONFIRM_PRODUCTION_URL;
-    }
+//    private String getConfirmHost(boolean isSandbox) {
+//        return isSandbox ? OneyConstants.CONFIRM_SANDBOX_URL : OneyConstants.CONFIRM_PRODUCTION_URL;
+//    }
 
     public StringResponse initiatePayment(OneyPaymentRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
         String host = getHost(isSandbox);
@@ -140,7 +141,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateConfirmationPayment(OneyConfirmRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
-        String host = getConfirmHost(isSandbox);
+        String host = getHost(isSandbox);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("psp_guid", request.getPspGuid());
         parameters.put("merchant_guid", request.getMerchantGuid());
@@ -149,10 +150,18 @@ public class OneyHttpClient extends AbstractHttpClient {
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-
         return doPost(SCHEME, host, path, jsonBody,isSandbox);
-
 
     }
 
+    public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+        String host = getHost(isSandbox);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("psp_guid", request.getPspGuid());
+        parameters.put("merchant_guid", request.getMerchantGuid());
+        parameters.put("reference", request.getPurchaseReference());
+        // do the request
+        return doGet(SCHEME, host, STATUS_REQUEST_URL, parameters, isSandbox);
+
+    }
 }
