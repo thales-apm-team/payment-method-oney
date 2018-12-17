@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl.response;
 
+import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.request.OneyRequest;
@@ -10,6 +11,15 @@ import org.apache.logging.log4j.Logger;
 public abstract class OneyResponse extends OneyBean {
 
     private static final Logger logger = LogManager.getLogger(OneyRequest.class);
+
+    @SerializedName("encrypted_message")
+    protected String encryptedMessage;
+
+
+    public String getEncryptedMessage() {
+        return encryptedMessage;
+    }
+
 
     /**
      * Decrypt a request  message

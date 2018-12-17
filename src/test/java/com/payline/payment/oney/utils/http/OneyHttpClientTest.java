@@ -3,18 +3,32 @@ package com.payline.payment.oney.utils.http;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+
 public class OneyHttpClientTest {
 
-    private OneyHttpClient client;
 
     //ToDO  mock http call, not mocked now to check if they work
+    @Spy
+    OneyHttpClient client;
+
+
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void doGet() throws IOException, URISyntaxException {
@@ -80,6 +94,10 @@ public class OneyHttpClientTest {
     @Test
     public void initiateGetTransactionStatusTest() throws DecryptException, IOException, URISyntaxException {
 
+        StringResponse responseMockedOK = createStringResponse(200,"ZZOK","{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul41+5xLG5BBT+jV4I19n1BxNgTTBkgClTslC3pM/0UXrEOJt3Nv3LTMrGFG1pzsOP6gxM5c+lw57K0YUbQqoGgI\\u003d\\\"}\",\"code\":200,\"message\":\"OK\"}" );
+        Mockito.doReturn(responseMockedOK).when(client).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.any(Map.class),Mockito.anyBoolean());
+
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .withLanguageCode("FR")
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
@@ -87,9 +105,7 @@ public class OneyHttpClientTest {
                 .withPurchaseReference("CMDE|455454545415451198114")
                 .build();
 
-        this.client = OneyHttpClient.getInstance();
         StringResponse transactStatus = this.client.initiateGetTransactionStatus(request, true);
-        System.out.println(transactStatus);
         Assert.assertNotNull(transactStatus.getCode());
     }
 

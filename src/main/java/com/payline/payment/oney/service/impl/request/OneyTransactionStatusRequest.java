@@ -62,7 +62,8 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             return this;
         }
 
-        public OneyTransactionStatusRequest.Builder fromNotificationStatusRequest(TransactionStatusRequest transactionStatusRequest) {
+
+        public OneyTransactionStatusRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
                     .withMerchantGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())

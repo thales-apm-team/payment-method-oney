@@ -37,6 +37,9 @@ public class TestUtils {
     public static final String PHONE_NUMBER_TEST = "06060606";
     public HashMap<String, String> extendedData;
     public static final String SOFT_DESCRIPTOR = "softDescriptor";
+    public static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
+    public static final String CONFIRM_AMOUNT = "456";
+    public static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|455454545415451198119";
 
 
     /**
@@ -48,7 +51,7 @@ public class TestUtils {
         final Amount amount = createAmount("EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
-        final String transactionID = "transactionID";
+        final String transactionID = "125541459198198119";
         final Order order = createOrder(transactionID);
 
 
@@ -156,18 +159,19 @@ public class TestUtils {
 
     //Cree une redirection payment par defaut
     public static RedirectionPaymentRequest.Builder createCompleteRedirectionPaymentBuilder() {
-        final Amount amount = createAmount("EUR");
+        final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
-        final String transactionID = createTransactionId();
+        final String transactionID = MERCHANT_REQUEST_ID;
+//        final String transactionID = "125541459198198119";
         final Order order = createOrder(transactionID);
         final Locale locale = new Locale("FR");
 
         Map<String, String> requestData = new HashMap<>();
         requestData.put(PSP_GUID_KEY, GUID_KEY);
         requestData.put(SECRET_KEY, "Method-body");
-        requestData.put(EXTERNAL_REFERENCE_KEY, "mareference");
+        requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
 
         final RequestContext requestContext = RequestContext.RequestContextBuilder
@@ -195,11 +199,11 @@ public class TestUtils {
 
 
     public static String createTransactionId() {
-        return "transactionID" + Calendar.getInstance().getTimeInMillis();
+        return "141217" + Calendar.getInstance().getTimeInMillis();
     }
 
-    public static String createsignatureId() {
-        return "signatureID" + Calendar.getInstance().getTimeInMillis();
+    public static String createMerchantRequestId() {
+        return "131217" + Calendar.getInstance().getTimeInMillis();
     }
 
 
@@ -255,10 +259,10 @@ public class TestUtils {
 
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
-        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "+33606060606");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+33707070707");
-        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+33708070708");
-        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "+33708070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060606");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0707070707");
+        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070708");
 
         return phoneNumbers;
     }
@@ -271,7 +275,7 @@ public class TestUtils {
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FRA")); //3 caractères
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BEL")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.getContractProperties().put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
 //used for Confirm
@@ -327,7 +331,7 @@ public class TestUtils {
     }
 
     public static Address createDefaultCompleteAddress() {
-        return createCompleteAddress("12 rue Paradis", "residence azerty", "Paris", "75001", "FR");
+        return createCompleteAddress("12 rue neuve", "residence azerty", "Bruxelles", "1000", "BE");
     }
 
     public static Buyer createBuyer(Map<Buyer.PhoneNumberType, String> phoneNumbers, Map<Buyer.AddressType, Address> addresses, Buyer.FullName fullName) {
@@ -345,9 +349,9 @@ public class TestUtils {
 
     private static Date getBirthdayDate() {
         try {
-            return new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1991");
+            return new SimpleDateFormat("dd/MM/yyyy").parse("04/04/1991");
         } catch (ParseException e) {
-            LOGGER.error("pparsing de la date de naissance impossible", e);
+            LOGGER.error("parsing de la date de naissance impossible", e);
             return null;
         }
     }
@@ -401,4 +405,14 @@ public class TestUtils {
     }
 
 
+//    public static NotifyTransactionStatusRequest createTransactionStatusRequest(){
+//        return NotifyTransactionStatusRequest.NotifyTransactionStatusRequestBuilder
+//                .aNotifyTransactionStatusRequest()
+//                .withPartnerTransactionId()
+//                .withAmount()
+//                .withContractConfiguration()
+//                .withEnvironment()
+//                .withPartnerConfiguration()
+//                .build();
+//    }
 }

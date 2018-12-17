@@ -7,6 +7,7 @@ import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
+import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import org.junit.Assert;
@@ -39,7 +40,7 @@ public class PaymentWithRedirectionServiceTest {
 
     @Test
     public void confirmPaymentTest() throws IOException, URISyntaxException, DecryptException {
-        StringResponse responseMocked = createStringResponse(200, "OK", "{language_code:FR,purchase:{status_code:FAVORABLE,status_label:\"La demande de paiement est dans un etat favorable pour financement\",reason_code:FAVORABLE,reason_label:\"My label \"}}");
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(),Mockito.anyBoolean());
 
@@ -47,15 +48,36 @@ public class PaymentWithRedirectionServiceTest {
                 .fromPaylineRedirectionPaymentRequest((RedirectionPaymentRequest) createCompleteRedirectionPaymentBuilder().build())
                 .build();
 
-        PaymentResponseSuccess response = (PaymentResponseSuccess) service.validatePayment(paymentRequest, true);
+        PaymentResponse response =  service.validatePayment(paymentRequest, true);
 
-        Assert.assertEquals("200", response.getStatusCode());
-        Assert.assertEquals("La demande de paiement est dans un etat favorable pour financement", response.getMessage().getMessage());
-        Assert.assertNotNull(response.getTransactionAdditionalData());
+        if(response.getClass() == PaymentResponseSuccess.class){
+            PaymentResponseSuccess  success = (PaymentResponseSuccess) response;
+            Assert.assertEquals("200", success.getStatusCode());
+            Assert.assertEquals("Transaction is completed", success.getMessage().getMessage());
+            Assert.assertNotNull(success.getTransactionAdditionalData());
+        }
+
     }
 
     @Test
-    public void confirmPaymentTestKO() throws IOException, URISyntaxException, DecryptException {
+    public void confirmPaymentTestInvalidData() throws IOException, URISyntaxException, DecryptException {
+        StringResponse responseMocked = createStringResponse(400, "Bad Request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"Merchant_request_id\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{String}]\"}]}}");
+        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString(),Mockito.anyBoolean());
+
+        OneyConfirmRequest paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
+                .fromPaylineRedirectionPaymentRequest((RedirectionPaymentRequest) createCompleteRedirectionPaymentBuilder().build())
+                .build();
+
+        PaymentResponse response =  service.validatePayment(paymentRequest, true);
+            PaymentResponseFailure  fail = (PaymentResponseFailure) response;
+            Assert.assertEquals("400", fail.getErrorCode());
+            Assert.assertEquals(FailureCause.INVALID_DATA, fail.getFailureCause());
+    }
+
+
+    @Test
+    public void confirmPaymentTestNotFound() throws IOException, URISyntaxException, DecryptException {
         StringResponse responseMocked = createStringResponse(404, "Bad request", "{\"content\":\"{ \"statusCode\": 404, \"message\": \"Resource not found\" }\",\"code\":404,\"message\":\"Resource Not Found\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(),Mockito.anyBoolean());

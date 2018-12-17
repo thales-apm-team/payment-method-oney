@@ -4,6 +4,7 @@ import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.notification.response.NotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.IgnoreNotificationResponse;
 import com.payline.pmapi.bean.payment.request.NotifyTransactionStatusRequest;
 import com.payline.pmapi.service.NotificationService;
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +18,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponse parse(NotificationRequest notificationRequest) {
-        return null;
-
+        return new IgnoreNotificationResponse();
     }
 
     @Override

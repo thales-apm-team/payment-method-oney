@@ -10,8 +10,7 @@ public class OneySuccessPaymentResponse extends OneyResponse {
 
     @SerializedName("returned_url")
     private String returnedUrl;
-    @SerializedName("encrypted_message")
-    private String encryptedMessage;
+
 
     public String getReturnedUrl() {
         return returnedUrl;
@@ -19,10 +18,6 @@ public class OneySuccessPaymentResponse extends OneyResponse {
 
     public void setReturnedUrl(String url) {
         this.returnedUrl = url;
-    }
-
-    public String getEncryptedMessage() {
-        return encryptedMessage;
     }
 
 

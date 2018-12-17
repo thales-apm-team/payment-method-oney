@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
@@ -62,20 +61,6 @@ public class OneyConfirmRequest extends OneyRequest {
         }
 
 
-        //utile ??
-        public OneyConfirmRequest.Builder fromPaylineResponseRedirect(PaymentResponseRedirect paymentResponseRedirect) {
-            this.purchaseReference = paymentResponseRedirect.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
-            this.languageCode = paymentResponseRedirect.getRequestContext().getRequestData().get(OneyConstants.LANGUAGE_CODE_KEY);
-            this.merchantRequestId = paymentResponseRedirect.getPartnerTransactionId();
-            this.pspGuid = paymentResponseRedirect.getRequestContext().getRequestData().get(OneyConstants.PSP_GUID_KEY);
-            this.merchantGuid = paymentResponseRedirect.getRequestContext().getRequestData().get(OneyConstants.MERCHANT_GUID_KEY);
-            this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(Float.parseFloat(paymentResponseRedirect.getRequestContext().getRequestData().get(OneyConstants.PAYMENT_AMOUNT_KEY)))
-                    .buildForConfirmRequest();
-            return this;
-        }
-
-        //Not sure
         public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
@@ -84,7 +69,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(paymentRequest.getOrder().getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
                     .buildForConfirmRequest();
             return this;
         }
