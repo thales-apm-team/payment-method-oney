@@ -7,6 +7,7 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
+import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 public class OneyConfirmRequest extends OneyRequest {
 
@@ -62,12 +63,16 @@ public class OneyConfirmRequest extends OneyRequest {
 
 
         public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
-            this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
+
+            String merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+
+//            this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
+            this.purchaseReference = paymentRequest.getTransactionId();
             this.languageCode = paymentRequest.getLocale().getLanguage();
-            this.merchantRequestId = paymentRequest.getTransactionId();
+            this.merchantRequestId = generateMerchantRequestId(merchantGuid);
 
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            this.merchantGuid = merchantGuid;
             this.paymentData = PaymentData.Builder.aPaymentData()
                     .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
                     .buildForConfirmRequest();

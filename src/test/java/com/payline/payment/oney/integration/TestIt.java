@@ -36,9 +36,9 @@ public class TestIt extends AbstractPaymentIntegration {
         contractConfiguration.put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
-        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("FRA")); //3 caractères
+        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BEL")); //3 caractères
         contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
-        contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
+        contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("BE"));
         return contractConfiguration;
     }
 
@@ -57,6 +57,8 @@ public class TestIt extends AbstractPaymentIntegration {
     @Override
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Thales\\Documents\\HME\\moyens de paiement\\chromedriver.exe");
+
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
@@ -80,6 +82,17 @@ public class TestIt extends AbstractPaymentIntegration {
             wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
 
+            //nationalite
+            WebDriverWait wait4 = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
+
+            driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn2_wtCustomerData_NacionalityInput']")).sendKeys("Belge");
+
+            //birthplace
+            WebDriverWait wait5 = new WebDriverWait(driver, 10);
+            driver.findElement(By.xpath(struct + "_block_wtColumn1_wtCustomerData_BirthPlaceInput']")).sendKeys("Bruxelles");
+
+
             driver.switchTo().frame("cko-iframe-id");
             //numero de CB
             driver.findElement(By.xpath("//*[@data-checkout='card-number']")).sendKeys("4543474002249996");
@@ -99,11 +112,43 @@ public class TestIt extends AbstractPaymentIntegration {
             // validate payment
             driver.findElement(By.xpath("//*[@value='Accepter']")).click();
             // Wait for redirection to success or cancel url
-            WebDriverWait wait3 = new WebDriverWait(driver, 60);
-            //   wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+            WebDriverWait wait3 = new WebDriverWait(driver, 80);
+//               wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+
+            //page 2 confirmation de l'otp
+            WebDriverWait wait6 = new WebDriverWait(driver, 10);
+            wait6.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='txtPassword']")));
+            driver.findElement(By.xpath("//*[@id='txtPassword']")).sendKeys("Checkout1!");
+
+            //confirmer
+            WebDriverWait wait7 = new WebDriverWait(driver, 10);
+            wait7.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='txtButton']")));
+            driver.findElement(By.xpath("//*[@id='txtButton']")).click();
+
+            //page 3 creation d'un compte Oney
+            WebDriverWait wait8 = new WebDriverWait(driver, 10);
+            wait8.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW3']")));
+            driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW3']")).sendKeys("Azerty1!");
+
+            WebDriverWait wait9 = new WebDriverWait(driver, 10);
+            wait9.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW4']")));
+            driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn2_wtPW4']")).sendKeys("Azerty1!");
+
+
+            //valider  creation de compte Oney
+            WebDriverWait wait10 = new WebDriverWait(driver, 10);
+            wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")));
+            driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")).click();
+
+            wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+            // attendre la page suivante
             return driver.getCurrentUrl();
+            //debug
+
         } finally {
-            driver.quit();
+//            driver.quit();
+            System.out.println(driver.getCurrentUrl());
+
         }
 
 
@@ -118,6 +163,7 @@ public class TestIt extends AbstractPaymentIntegration {
     public void fullPaymentTest() {
         PaymentRequest request = createDefaultPaymentRequest();
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
+
     }
 
     @Override

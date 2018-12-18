@@ -44,23 +44,4 @@ public class TransactionStatusResponse extends OneyResponse {
     }
 
 
-//    public PaymentResponse handleStatusResponse(TransactionStatusResponse response) {
-//        switch (response.getStatusPurchase().getStatusCode()) {
-//            case "PENDING":
-//                break;
-//            case "ABORTED":
-//                break;
-//            case "REFUSED":
-//                break;
-//            case "FAVORABLE":
-//                break;
-//            case "FUNDED":
-//                break;
-//            case "CANCELLED":
-//                break;
-//
-//        }
-//        return null;
-//
-//    }
 }

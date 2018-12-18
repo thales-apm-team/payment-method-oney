@@ -140,10 +140,13 @@ public class PluginUtils {
 
     }
 
+    /**
+     * Genere un merchant request id qui doit etre unique pour chaque requete
+     * @param merchantId
+     * @return
+     */
     public static String generateMerchantRequestId(String merchantId) {
-        String prefix = "Oney";
-        prefix = prefix + "_" + merchantId.substring(0, 4);
-        return prefix + "_" + Calendar.getInstance().getTimeInMillis();
+        return merchantId + Calendar.getInstance().getTimeInMillis();
     }
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =

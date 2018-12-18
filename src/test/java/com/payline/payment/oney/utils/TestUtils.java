@@ -32,14 +32,15 @@ public class TestUtils {
     private static final String SUCCESS_URL = "https://succesurl.com/";
     private static final String CANCEL_URL = "http://localhost/cancelurl.com/";
     private static final String NOTIFICATION_URL = "http://google.com/";
-    public static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
+    private static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
 
-    public static final String PHONE_NUMBER_TEST = "06060606";
+    private static final String PHONE_NUMBER_TEST = "06060606";
     public HashMap<String, String> extendedData;
-    public static final String SOFT_DESCRIPTOR = "softDescriptor";
-    public static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
-    public static final String CONFIRM_AMOUNT = "456";
-    public static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|455454545415451198119";
+    private static final String SOFT_DESCRIPTOR = "softDescriptor";
+    private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
+    private static final String CONFIRM_AMOUNT = "456";
+    private static final String TRANSACTION_ID = "455454545415451198120";
+    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|"+TRANSACTION_ID;
 
 
     /**
@@ -48,11 +49,10 @@ public class TestUtils {
      * @return paymentRequest created
      */
     public static PaymentRequest createDefaultPaymentRequest() {
-        final Amount amount = createAmount("EUR");
+        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
-        final String transactionID = "125541459198198119";
-        final Order order = createOrder(transactionID);
+        final Order order = createOrder(TRANSACTION_ID);
 
 
         return PaymentRequest.builder()
@@ -63,11 +63,10 @@ public class TestUtils {
                 .withEnvironment(paylineEnvironment)
                 .withOrder(order)
                 .withBuyer(createDefaultBuyer())
-                .withTransactionId(transactionID)
+                .withTransactionId(TRANSACTION_ID)
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(createDefaultEnvironment())
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .build();
     }
 
@@ -93,21 +92,10 @@ public class TestUtils {
     }
 
 
-    public static PaymentFormContext createCustomPaymentFormContext(Map<String, String> customPaymentFormParameter, Map<String, String> customSensitivePaymentFormParameter) {
-        //Ajout du numero de telephone et IBAN a la requête
-        return PaymentFormContext.PaymentFormContextBuilder
-                .aPaymentFormContext()
-                .withPaymentFormParameter(customPaymentFormParameter)
-                .withSensitivePaymentFormParameter(customSensitivePaymentFormParameter)
-                .build();
-
-    }
-
-
     public static RefundRequest createRefundRequest(String transactionId) {
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
 //       final String transactionID = createTransactionId();
-        final Amount amount = createAmount("EUR");
+        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         final Map<String, String> partnerConfiguration = new HashMap<>();
         final Map<String, String> sensitiveConfig = new HashMap<>();
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
@@ -134,7 +122,7 @@ public class TestUtils {
      */
 
     public static PaymentRequest.Builder createCompletePaymentBuilder() {
-        final Amount amount = createAmount("EUR");
+        final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
@@ -158,13 +146,12 @@ public class TestUtils {
     }
 
     //Cree une redirection payment par defaut
-    public static RedirectionPaymentRequest.Builder createCompleteRedirectionPaymentBuilder() {
+    public static RedirectionPaymentRequest createCompleteRedirectionPaymentBuilder() {
         final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final String transactionID = MERCHANT_REQUEST_ID;
-//        final String transactionID = "125541459198198119";
         final Order order = createOrder(transactionID);
         final Locale locale = new Locale("FR");
 
@@ -178,7 +165,7 @@ public class TestUtils {
                 .aRequestContext()
                 .withRequestData(requestData)
                 .build();
-        return (RedirectionPaymentRequest.Builder) RedirectionPaymentRequest.builder()
+        return (RedirectionPaymentRequest) RedirectionPaymentRequest.builder()
                 .withAmount(amount)
                 .withBrowser(new Browser("", Locale.FRANCE))
                 .withContractConfiguration(contractConfiguration)
@@ -194,7 +181,9 @@ public class TestUtils {
                 //propre a la redirectionPayment
 //                .withPaymentFormContext()
                 .withRequestContext(requestContext)
-                ;
+                .build();
+
+
     }
 
 
@@ -225,12 +214,13 @@ public class TestUtils {
     }
 
     public static Order createOrder(String transactionID) {
+
         List<Order.OrderItem> orderItems = new ArrayList<>();
         orderItems.add(createOrderItem("item1", createAmount("EUR")));
         orderItems.add(createOrderItem("item2", createAmount("EUR")));
         return Order.OrderBuilder.anOrder()
                 .withReference(transactionID)
-                .withAmount(createAmount("EUR"))
+                .withAmount(new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR")))
                 .withDate(new Date())
                 .withItems(orderItems)
                 .build();
@@ -254,15 +244,16 @@ public class TestUtils {
 
 
     public static Buyer.FullName createFullName() {
-        return new Buyer.FullName("foo", "bar", Buyer.Civility.MR);
+        return new Buyer.FullName("Robin", "Hood", Buyer.Civility.MR);
     }
 
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
-        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060606");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0707070707");
-        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070708");
-        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060607");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0707070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070704");
+        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070709");
+        phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0708070709");
 
         return phoneNumbers;
     }
@@ -310,7 +301,7 @@ public class TestUtils {
                 .withStreet1(street)
                 .withCity(city)
                 .withZipCode(zip)
-                .withCountry("FR")
+                .withCountry("BE")
                 .build();
     }
 
@@ -331,25 +322,29 @@ public class TestUtils {
     }
 
     public static Address createDefaultCompleteAddress() {
-        return createCompleteAddress("12 rue neuve", "residence azerty", "Bruxelles", "1000", "BE");
+        return createCompleteAddress("120 rue neuve", "residence azert", "Bruxelles", "1000", "BE");
     }
 
     public static Buyer createBuyer(Map<Buyer.PhoneNumberType, String> phoneNumbers, Map<Buyer.AddressType, Address> addresses, Buyer.FullName fullName) {
         return Buyer.BuyerBuilder.aBuyer()
-                .withEmail("testoney1@yopmail.com")
+                .withEmail(generateRamdomEmail())
                 .withPhoneNumbers(phoneNumbers)
                 .withAddresses(addresses)
                 .withFullName(fullName)
-                .withCustomerIdentifier("subscriber1")
+                .withCustomerIdentifier("subscriber12")
                 .withExtendedData(createDefaultExtendedData())
                 .withBirthday(getBirthdayDate())
                 .withLegalStatus(Buyer.LegalStatus.PERSON)
                 .build();
     }
 
+    private static String generateRamdomEmail(){
+
+        return "testoney"+ Calendar.getInstance().getTimeInMillis() +"@gmail.com";
+    }
     private static Date getBirthdayDate() {
         try {
-            return new SimpleDateFormat("dd/MM/yyyy").parse("04/04/1991");
+            return new SimpleDateFormat("dd/MM/yyyy").parse("04/05/1991");
         } catch (ParseException e) {
             LOGGER.error("parsing de la date de naissance impossible", e);
             return null;
@@ -369,7 +364,8 @@ public class TestUtils {
 
 
     public static Environment createDefaultEnvironment() {
-        return new Environment("http://notificationURL.com", "http://redirectionURL.com", "http://redirectionCancelURL.com", true);
+//        return new Environment("http://notificationURL.com", "http://redirectionURL.com", "http://redirectionCancelURL.com", true);
+        return new Environment("https://succesurl.com/", "http://redirectionURL.com", "http://redirectionCancelURL.com", true);
     }
 
     public static PartnerConfiguration createDefaultPartnerConfiguration() {
@@ -387,7 +383,7 @@ public class TestUtils {
         return PaymentFormConfigurationRequest.PaymentFormConfigurationRequestBuilder.aPaymentFormConfigurationRequest()
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer())
-                .withAmount(new Amount(new BigInteger("600"), Currency.getInstance("EUR")))
+                .withAmount(new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR")))
                 .withContractConfiguration(createContractConfiguration())
                 .withOrder(createOrder("007"))
                 .withEnvironment(createDefaultEnvironment())

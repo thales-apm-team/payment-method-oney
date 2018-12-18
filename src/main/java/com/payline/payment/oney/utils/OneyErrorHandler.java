@@ -14,16 +14,16 @@ public class OneyErrorHandler {
         super();
     }
 
-
-    public static PaymentResponseFailure getPaymentResponseFailure(String errorCode, final FailureCause failureCause) {
-        return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                .withFailureCause(failureCause)
-                .withErrorCode(errorCode).build();
-    }
-
     public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause) {
         return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                 .withFailureCause(failureCause)
+                .build();
+    }
+
+    public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause, String externalReference) {
+        return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                .withFailureCause(failureCause)
+                .withPartnerTransactionId(externalReference)
                 .build();
     }
 

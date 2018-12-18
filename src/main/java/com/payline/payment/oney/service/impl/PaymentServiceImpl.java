@@ -6,6 +6,7 @@ import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
 import com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse;
 import com.payline.payment.oney.utils.OneyConstants;
+import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -55,7 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");
                 LOGGER.error("Payment is null");
-                return getPaymentResponseFailure(FailureCause.INTERNAL_ERROR);
+                return OneyErrorHandler.getPaymentResponseFailure(FailureCause.INTERNAL_ERROR, oneyRequest.getPurchase().getExternalReference());
 
             }
             //Cas ou une erreur est renvoyée au moment du paiement
