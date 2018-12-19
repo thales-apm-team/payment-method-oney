@@ -129,6 +129,15 @@ public class PaymentWithRedirectionServiceTest {
         Assertions.assertNotNull(failure.getFailureCause());
         Assertions.assertEquals(FailureCause.REFUSED, failure.getFailureCause());
 
+    }
+
+    @Test
+    public void handleSessionExpiredTest(){
+
+
+
+
+
 
     }
 

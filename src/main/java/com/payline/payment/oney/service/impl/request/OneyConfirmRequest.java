@@ -3,6 +3,7 @@ package com.payline.payment.oney.service.impl.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
+import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
@@ -76,6 +77,24 @@ public class OneyConfirmRequest extends OneyRequest {
                     .buildForConfirmRequest();
             return this;
         }
+
+
+        public OneyConfirmRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) {
+
+            String merchantGuidValue = transactionStatusRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+
+            this.purchaseReference = transactionStatusRequest.getTransactionId();
+//            this.languageCode = transactionStatusRequest.getLocale().getLanguage();
+            this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
+
+            this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            this.merchantGuid = merchantGuidValue;
+            this.paymentData = PaymentData.Builder.aPaymentData()
+                    .withAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .buildForConfirmRequest();
+            return this;
+        }
+
 
         private OneyConfirmRequest.Builder verifyIntegrity() {
             if (this.merchantGuid == null) {

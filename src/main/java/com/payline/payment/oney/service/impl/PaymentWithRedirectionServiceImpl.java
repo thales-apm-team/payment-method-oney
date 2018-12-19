@@ -11,12 +11,13 @@ import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.Message;
+import com.payline.pmapi.bean.common.OnHoldCause;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.EmptyTransactionDetails;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
+import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import com.payline.pmapi.service.PaymentWithRedirectionService;
 import org.apache.logging.log4j.LogManager;
@@ -76,24 +77,21 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent());
-                //gerer les cas PENDING, FAVORABLE,
                 switch (response.getStatusPurchase().getStatusCode()) {
+                    //renvoi d'un paymentResponseOnHold
                     case "PENDING":
-                        //renvoi  à l'utilisateur ??
-                        //renvoi d'une paymentResponseRedirect ??
-                        return PaymentResponseRedirect.PaymentResponseRedirectBuilder.aPaymentResponseRedirect()
-                                .withStatusCode("200")
+                        //renvoi d'une PaymentResponseOnHold ??
+                        return PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
                                 .withPartnerTransactionId(transactionStatusRequest.getTransactionId())
+                                .withOnHoldCause(OnHoldCause.SCORING_ASYNC)
                                 .build();
                     case "FAVORABLE":
-                        //todo confirmer la demande ? ou pas
-                        //renvoyer une paymentResponseSuccess avec donnees ?
                         //confirmer la requete
-                        return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
-                                .withStatusCode("200")
-                                .withMessage(new Message(Message.MessageType.SUCCESS, "FAVORABLE"))
-                                .withPartnerTransactionId(transactionStatusRequest.getTransactionId())
+                        OneyConfirmRequest confirmRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
+                                .fromTransactionStatusRequest(transactionStatusRequest)
                                 .build();
+                        return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox());
+
                     case "FUNDED":
                         // demande deja acceptée renvoyer une paymentResponseSuccess avec donnees
                         return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
@@ -107,6 +105,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     case "CANCELLED":
                         //demande rejetee ou annuléee ou
                         //change value
+                        return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
+                    default:
                         return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
 
                 }
@@ -124,7 +124,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .withErrorCode(e.getMessage())
                     .build();
         }
-        return null;
 
 
     }
