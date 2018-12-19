@@ -8,19 +8,21 @@ import com.payline.pmapi.bean.payment.Order;
 import java.util.Collections;
 import java.util.List;
 
+import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
+
 public class Item extends OneyBean {
 
     @SerializedName("is_main_item")
-    private Integer isMainItem; // faire booleen  ??
+    private Integer isMainItem;
     @SerializedName("category_code")
-    private Integer categoryCode; // faire Oney value - Payline  ??
-    private String label; // faire Oney value - Payline  ??
+    private Integer categoryCode;
+    private String label;
     @SerializedName("item_external_code")
-    private String itemExternalcode; // faire Oney value - Payline  ??
+    private String itemExternalcode;
     private Integer quantity;
     private Float price;
     @SerializedName("marketplace_merchant_flag")
-    private Integer marketplaceFlag; // faire booleen  ??
+    private Integer marketplaceFlag;
     @SerializedName("marketplace_merchant_name")
     private String marketplaceName;
     @SerializedName("travel")
@@ -172,9 +174,7 @@ public class Item extends OneyBean {
 
         public Item.Builder fromPayline(Order.OrderItem item) {
             this.isMainItem = 0;
-            //note HME  mapper avec payline getCategory lorsque les categories payline seront implementees
-//            this.categoryCode = findCategory(item.getCategory());
-            this.categoryCode = 1;
+            this.categoryCode = findCategory(item.getCategory());
             this.label = item.getComment(); //or get Brand +" "+ get comment ?
             this.itemExternalcode = item.getReference();
             this.quantity = item.getQuantity().intValue();

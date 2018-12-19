@@ -72,8 +72,8 @@ public class PluginUtilsTest {
 
     @Test
     public void testCategoryHandler() {
-        int catCodePayline = 17;
-        int catCodePayline2 = 964;
+        String catCodePayline = "17";
+        String catCodePayline2 = "964";
         int catCodeOney = findCategory(catCodePayline);
         int catCodeOney2 = findCategory(catCodePayline2);
 
@@ -82,4 +82,46 @@ public class PluginUtilsTest {
 
         System.out.println(PaymentType.CHECK_CARD.getValue());
     }
+
+    @Test
+    public void testDeliveryModeCode() {
+        String catCodePayline = "1";
+        String catCodePayline2 = "4";
+        int catCodeOney = getOneyDeliveryModeCode(catCodePayline);
+        int catCodeOney2 = getOneyDeliveryModeCode(catCodePayline2);
+
+        Assertions.assertEquals(1, catCodeOney);
+        Assertions.assertEquals(4, catCodeOney2);
+    }
+
+    @Test
+    public void testDeliveryOption() {
+        String mode1 = "Express";
+        String mode2 = "Strandard";
+        String mode3 = "inconnu";
+        int catCodeOney = getOneyDeliveryOption(mode1);
+        int catCodeOney2 = getOneyDeliveryOption(mode2);
+        int catCodeOney3 = getOneyDeliveryOption(mode3);
+
+        Assertions.assertEquals(1, catCodeOney);
+        Assertions.assertEquals(2, catCodeOney2);
+        Assertions.assertEquals(2, catCodeOney3);
+    }
+
+    //todo
+    @Test
+    public void testHonorificName() {
+        String mr = "M";
+        String mme = "F";
+        String miss = "Ms";
+        int hCodeOney = getHonorificCode(mr);
+        int hCodeOney2 = getHonorificCode(mme);
+        int hCodeOney3 = getHonorificCode(miss);
+
+        Assertions.assertEquals(1, hCodeOney);
+        Assertions.assertEquals(2, hCodeOney2);
+        Assertions.assertEquals(3, hCodeOney3);
+
+    }
+
 }

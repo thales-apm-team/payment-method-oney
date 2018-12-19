@@ -18,7 +18,7 @@ public class BusinessTransactionDataTest {
                 .build();
         Assertions.assertEquals("24", businessTransactionData.getCode());
         Assertions.assertEquals("type", businessTransactionData.getBusinessTransactionType());
-        Assertions.assertEquals(1, businessTransactionData.getVersion(), 0);
+        Assertions.assertEquals(Integer.valueOf(1), businessTransactionData.getVersion());
     }
 
 

@@ -10,6 +10,7 @@ public class PurchaseMerchantTest {
 
     private PurchaseMerchant purchaseMerchant;
 
+
     @Test
     public void purchaseMerchantOK() {
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
@@ -31,32 +32,27 @@ public class PurchaseMerchantTest {
 
     @Test
     public void withoutExternalRef() {
-
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
             purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                     .withCompanyName("cie")
                     .withMerchantGuid("guid")
                     .withMunicipality("city")
                     .build();
+
         });
         Assertions.assertEquals("PurchaseMerchant must have a externalReference when built", exception.getMessage());
 
-// FIXME : tu ne peux avoir à la fois une exception et l'objet purchaseMerchant ..
-        Assertions.assertNotNull(purchaseMerchant);
-        Assertions.assertNotNull(purchaseMerchant.getExternalReference());
-        Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
     }
 
     @Test
     public void withoutMerchantGuid() {
-
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                    .withCompanyName("cie")
-                    .withExternalReference("ref")
-                    .withMunicipality("city")
-                    .build();
-        });
+                    purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                            .withCompanyName("cie")
+                            .withExternalReference("ref")
+                            .withMunicipality("city")
+                            .build();
+                });
         Assertions.assertEquals("PurchaseMerchant must have a merchantGuid when built", exception.getMessage());
 
     }
@@ -71,6 +67,7 @@ public class PurchaseMerchantTest {
         Assertions.assertNotNull(purchaseMerchant.getExternalReference());
         Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
     }
+
 
 
 }

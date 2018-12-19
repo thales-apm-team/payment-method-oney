@@ -31,4 +31,6 @@ public class PurchaseHistory {
     public String getLastPurchaseDate() {
         return lastPurchaseDate;
     }
+
+    //TODO Builder + mapping dans v2
 }

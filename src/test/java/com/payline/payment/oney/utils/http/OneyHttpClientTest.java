@@ -101,7 +101,7 @@ public class OneyHttpClientTest {
         param.put("reference", "val3");
 
         String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3";
-        String path = testedClient.buildGetOrderPath("somePath/", param);
+        String path = testedClient.buildGetOrderPath("somePath", param);
         Assertions.assertEquals(pathAttempted, path);
     }
 
@@ -114,7 +114,7 @@ public class OneyHttpClientTest {
         param.put("reference", "val3");
 
         String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3/action/confirm";
-        String path = testedClient.buildConfirmOrderPath("somePath/", param);
+        String path = testedClient.buildConfirmOrderPath("somePath", param);
         Assertions.assertEquals(pathAttempted, path);
     }
 

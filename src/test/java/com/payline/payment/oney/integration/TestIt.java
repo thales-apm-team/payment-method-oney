@@ -63,17 +63,18 @@ public class TestIt extends AbstractPaymentIntegration {
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         try {
-//fixme Not working
             // Go to partner's website
             driver.get(partnerUrl);
-//            driver.findElement(By.id("classicPin-addPinField")).sendKeys(Utils.PAYMENT_TOKEN);
 
             String struct = "//*[@id='wt1_wt7_Oney_Theme_wt158_block_wtMainContent_WebPatterns_wtStructure";
             //Id du bouton nouveau client
             driver.findElement(By.xpath(struct + "_block_wtColumn1_wtWithoutAccount_rb2']")).click();
 //            driver.findElement(By.name("wt1_wt7$1105887523")).click();
             //champs date de naissance
+            WebDriverWait wait0 = new WebDriverWait(driver, 30);
+            wait0.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowDay']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowDay']"))).selectByVisibleText("1");
+
             WebDriverWait wait = new WebDriverWait(driver, 30);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']"))).selectByVisibleText("Avr");
@@ -84,8 +85,7 @@ public class TestIt extends AbstractPaymentIntegration {
 
             //nationalite
             WebDriverWait wait4 = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
-
+            wait4.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
             driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn2_wtCustomerData_NacionalityInput']")).sendKeys("Belge");
 
             //birthplace
@@ -113,7 +113,7 @@ public class TestIt extends AbstractPaymentIntegration {
             driver.findElement(By.xpath("//*[@value='Accepter']")).click();
             // Wait for redirection to success or cancel url
             WebDriverWait wait3 = new WebDriverWait(driver, 80);
-//               wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+               wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
 
             //page 2 confirmation de l'otp
             WebDriverWait wait6 = new WebDriverWait(driver, 10);

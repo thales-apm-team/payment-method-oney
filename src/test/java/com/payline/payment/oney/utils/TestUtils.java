@@ -38,7 +38,7 @@ public class TestUtils {
     public HashMap<String, String> extendedData;
     private static final String SOFT_DESCRIPTOR = "softDescriptor";
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
-    private static final String CONFIRM_AMOUNT = "456";
+    public static final String CONFIRM_AMOUNT = "456";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|"+TRANSACTION_ID;
 
@@ -223,6 +223,9 @@ public class TestUtils {
                 .withAmount(new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR")))
                 .withDate(new Date())
                 .withItems(orderItems)
+                .withDeliveryMode("1")
+                .withDeliveryTime("express")
+                .withExpectedDeliveryDate(new Date())
                 .build();
     }
 
@@ -230,7 +233,7 @@ public class TestUtils {
         return Order.OrderItem.OrderItemBuilder.anOrderItem()
                 .withAmount(amount)
                 .withQuantity(4L)
-                .withCategory(Order.OrderItemCategory.THINGS)
+                .withCategory("20001")
                 .withComment("some label")
                 .withBrand("someBrand")
                 .withReference(reference)
@@ -244,13 +247,13 @@ public class TestUtils {
 
 
     public static Buyer.FullName createFullName() {
-        return new Buyer.FullName("Robin", "Hood", Buyer.Civility.MR);
+        return new Buyer.FullName("Robin", "Hood", "Mr");
     }
 
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060607");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "0707070708");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+330625262428");
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070704");
         phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070709");
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0708070709");

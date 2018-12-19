@@ -21,29 +21,27 @@ public class PaymentErrorResponse extends OneyBean {
     }
 
 
-
-    public PaymentErrorResponse(List<OneyError> oneyErrors){
+    public PaymentErrorResponse(List<OneyError> oneyErrors) {
         this.errorList = oneyErrors;
     }
 
-    public static PaymentErrorResponse paymentErrorResponseFromJson(String json){
+    public static PaymentErrorResponse paymentErrorResponseFromJson(String json) {
         //Specifier le type renvoye
-        Type errorListType = new TypeToken<List<OneyError>>() {}.getType();
+        Type errorListType = new TypeToken<List<OneyError>>() {
+        }.getType();
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
         //debug
 
-        //case Oney uses "error_list " key for json error
-        JsonArray errorListWithKey1 = (JsonArray) ((JsonObject)jsonObject.get("Payments_Error_Response")).get("error_list ");
-        //case Oney uses "error_list" key for json error
-        JsonArray errorListWithKey2 = (JsonArray) ((JsonObject)jsonObject.get("Payments_Error_Response")).get("error_list");
+        if (jsonObject.get("Payments_Error_Response") != null){
+            //On essaie de recuperer "error_list " et "error_list" on parse ensuite la cle contenant des valeurs
+            JsonArray errorListWithKey1 = (JsonArray) ((JsonObject) jsonObject.get("Payments_Error_Response")).get("error_list ");
+            JsonArray errorListWithKey2 = (JsonArray) ((JsonObject) jsonObject.get("Payments_Error_Response")).get("error_list");
 
-        //On essaie de recuperer "error_list " et "error_list" on parse ensuite la cle contenant des valeurs
-        return (errorListWithKey1 == null) ? new PaymentErrorResponse(gson.fromJson(errorListWithKey2, errorListType)) :new PaymentErrorResponse (gson.fromJson(errorListWithKey1, errorListType));
-
+            return (errorListWithKey1 != null) ? new PaymentErrorResponse(gson.fromJson(errorListWithKey1, errorListType)) :  new PaymentErrorResponse(gson.fromJson(errorListWithKey2, errorListType));
+        }
+         else return null;
     }
-
-
 
 
 }

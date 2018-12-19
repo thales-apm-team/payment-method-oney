@@ -11,6 +11,8 @@ public class OneyPaymentRequestTest {
 
     private OneyPaymentRequest paymentRequest;
 
+
+
     @Test
     public void buildOneyPaymentRequest() throws InvalidRequestException {
         paymentRequest = OneyPaymentRequest.Builder.aOneyPaymentRequest()

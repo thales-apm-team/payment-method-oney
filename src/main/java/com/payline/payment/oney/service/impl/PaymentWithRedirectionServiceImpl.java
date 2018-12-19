@@ -86,7 +86,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                                 .withPartnerTransactionId(transactionStatusRequest.getTransactionId())
                                 .build();
                     case "FAVORABLE":
-                        //todo
+                        //todo confirmer la demande ? ou pas
                         //renvoyer une paymentResponseSuccess avec donnees ?
                         //confirmer la requete
                         return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()

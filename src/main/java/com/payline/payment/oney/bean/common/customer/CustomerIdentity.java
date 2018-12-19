@@ -12,9 +12,9 @@ public class CustomerIdentity extends OneyBean {
     @SerializedName("individual_taxpayer_code")
     private String taxpayerCode;
     @SerializedName("person_type")
-    private Integer personType; //or enum ?? 1-2
+    private Integer personType;
     @SerializedName("honorific_code")
-    private Integer honorificCode; //or enum ?? 1-2-3
+    private Integer honorificCode;
     @SerializedName("birth_name")
     private String birthName;
     @SerializedName("last_name")
@@ -197,7 +197,7 @@ public class CustomerIdentity extends OneyBean {
         public CustomerIdentity.Builder fromPayline(Buyer buyer) {
             this.taxpayerCode = null;
             //Not used
-//            this.taxpayerCode = buyer.getLegalDocument();
+            this.taxpayerCode = buyer.getLegalDocument();
             this.personType = PluginUtils.getPersonType(buyer.getLegalStatus());
             this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
             this.birthName = buyer.getFullName().getLastName();

@@ -12,22 +12,21 @@ public class OneyAddressTest {
     private OneyAddress oneyAddress;
 
     @Test
-    public void customerAddressOK() {
+    public void customerAddressOK(){
         oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .fromPayline(createDefaultBuyer(), Buyer.AddressType.BILLING)
                 .build();
 
         Assertions.assertNotNull(oneyAddress);
-        Assertions.assertTrue(oneyAddress.getLine1().length() < 39);
-        Assertions.assertTrue(oneyAddress.getLine2() == null || oneyAddress.getLine2().length() < 39);
-        Assertions.assertTrue(oneyAddress.getLine3() == null || oneyAddress.getLine3().length() < 39);
-        Assertions.assertTrue(oneyAddress.getLine4() == null || oneyAddress.getLine4().length() < 39);
-        Assertions.assertTrue(oneyAddress.getLine5() == null || oneyAddress.getLine5().length() < 39);
+        Assertions.assertTrue(oneyAddress.getLine1().length()<39);
+        Assertions.assertTrue(oneyAddress.getLine2() ==null || oneyAddress.getLine2().length()<39);
+        Assertions.assertTrue(oneyAddress.getLine3() ==null || oneyAddress.getLine3().length()<39);
+        Assertions.assertTrue(oneyAddress.getLine4() ==null || oneyAddress.getLine4().length()<39);
+        Assertions.assertTrue(oneyAddress.getLine5() ==null || oneyAddress.getLine5().length()<39);
     }
 
     @Test
-    public void withoutLine1() {
-
+    public void withoutLine1(){
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
             oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                     .withCountryCode("FRA")
@@ -41,55 +40,48 @@ public class OneyAddressTest {
     }
 
     @Test
-    public void withoutPostalCode() {
+    public void withoutPostalCode(){
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .withLine1("12 place de la Comedie")
-                    .withCountryCode("FRA")
-                    .withCountryLabel("France")
-                    .withMunicipality("Mtp")
-                    .build();
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
+                .withLine1("12 place de la Comedie")
+                .withCountryCode("FRA")
+                .withCountryLabel("France")
+                .withMunicipality("Mtp")
+                .build();
         });
         Assertions.assertEquals("OneyAddress must have a postalCode when built", exception.getMessage());
-
-
     }
 
     @Test
-    public void withoutCountryCode() {
+    public void withoutCountryCode(){
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .withLine1("12 place de la Comedie")
-                    .withCountryLabel("France")
-                    .withPostalCode("34000")
-                    .withMunicipality("Mtp")
-                    .build();
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
+                .withLine1("12 place de la Comedie")
+                .withCountryLabel("France")
+                .withPostalCode("34000")
+                .withMunicipality("Mtp")
+                .build();
         });
         Assertions.assertEquals("OneyAddress must have a countryCode when built", exception.getMessage());
-
-
     }
 
     @Test
-    public void withoutMunicipality() {
+    public void withoutMunicipality(){
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .withLine1("12 place de la Comedie")
-                    .withCountryCode("FRA")
-                    .withCountryLabel("France")
-                    .withPostalCode("34000")
-                    .build();
+        oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
+                .withLine1("12 place de la Comedie")
+                .withCountryCode("FRA")
+                .withCountryLabel("France")
+                .withPostalCode("34000")
+                .build();
         });
         Assertions.assertEquals("OneyAddress must have a municipality when built", exception.getMessage());
-
-
     }
-
     @Test
-    public void testToString() {
+    public void testToString(){
 
         oneyAddress = OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")

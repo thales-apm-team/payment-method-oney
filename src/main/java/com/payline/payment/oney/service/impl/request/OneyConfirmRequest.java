@@ -63,15 +63,14 @@ public class OneyConfirmRequest extends OneyRequest {
 
         public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
 
-            String merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
-//            this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
             this.purchaseReference = paymentRequest.getTransactionId();
             this.languageCode = paymentRequest.getLocale().getLanguage();
-            this.merchantRequestId = generateMerchantRequestId(merchantGuid);
+            this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            this.merchantGuid = merchantGuid;
+            this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
                     .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
                     .buildForConfirmRequest();
@@ -79,7 +78,6 @@ public class OneyConfirmRequest extends OneyRequest {
         }
 
         private OneyConfirmRequest.Builder verifyIntegrity() {
-
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a merchantGuid when built");
             }
@@ -94,10 +92,9 @@ public class OneyConfirmRequest extends OneyRequest {
             }
             if (this.paymentData == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a paymentData when built");
+            } else {
+                return this;
             }
-
-            return this;
-
 
         }
 

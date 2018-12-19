@@ -52,6 +52,8 @@ public class PluginUtils {
         return contractParametersCheckRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
     }
 
+// ------------  Methodes de mapping entre Oney et Payline  -----------------------
+
 
     //Mapping methods betwen  Payline and Oney
     public static Integer getPersonType(Buyer.LegalStatus legalStatus) {
@@ -66,16 +68,70 @@ public class PluginUtils {
         return null;
     }
 
-    public static Integer getHonorificCode(Buyer.Civility civility) {
-        switch (civility) {
-            case UNKNOWN:
+    public static Integer getHonorificCode(String civility) {
+
+        //fixme verifier le nom des champs  renvoyés par Payline
+
+        switch (civility.toLowerCase()) {
+            case "unknow":
                 return 0;
-            case MR:
+            case "mr":
+            case "m":
                 return 1;
-            case MRS:
+            case "mrs":
+            case "mme":
+            case "f":
                 return 2;
+            case "mlle":
+            case "ms":
+                return 3;
+            default:
+                return 1;
         }
-        return null;
+    }
+
+    public static int getOneyDeliveryModeCode(String paylineCode) {
+
+        switch (paylineCode) {
+
+
+            // "Collection of the goods in the merchant store":
+            case "1":
+                return 1;
+            // "Collection in a third party point":
+            case "2":
+                return 2;
+           // case "Collection in an airport, train station or travel agency":
+            case "3":
+                return 3;
+         //  case "Carrier (La Poste, Colissimo, UPS, DHL...or any private carrier)":
+            case "4":
+                return 4;
+        //  case "Electronic ticket":
+            case "5":
+                return 5;
+
+            default:
+                return 4;
+
+        }
+    }
+
+    public static int getOneyDeliveryOption(String paylineCode) {
+
+        //fixme definir le nom des champs  renvoyés par Payline
+        switch (paylineCode.toLowerCase()) {
+          //  cas "Express (< 24 hours)":
+            case "express":
+                return 1;
+            case "standard":
+                return 2;
+            case "priority":
+                return 3;
+            default:
+                return 2;
+
+        }
     }
 
     /**
@@ -139,9 +195,11 @@ public class PluginUtils {
         return textTruncated;
 
     }
+// --------------------------- FIN methode de mapping -----------------------
 
     /**
      * Genere un merchant request id qui doit etre unique pour chaque requete
+     *
      * @param merchantId
      * @return
      */

@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.common.Buyer;
 
 public class Recipient extends OneyBean {
@@ -74,8 +75,7 @@ public class Recipient extends OneyBean {
             this.surname=buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getLastName();
             this.firstName =buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getFirstName();
             this.phoneNumber =buyer.getPhoneNumberForType(Buyer.PhoneNumberType.BILLING);
-            //todo mapping honorific code-payline Oney
-//            this.honorificCode =buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility().;
+            this.honorificCode =  PluginUtils.getHonorificCode(buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility());
             return this;
         }
         private Recipient.Builder verifyIntegrity() {

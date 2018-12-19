@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
+import static com.payline.payment.oney.utils.TestUtils.CONFIRM_AMOUNT;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
 public class PaymentDataTest {
@@ -30,7 +31,7 @@ public class PaymentDataTest {
                 .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Assertions.assertEquals(10, paymentdata.getAmount(), 0.001);
+        Assertions.assertEquals( Float.valueOf(CONFIRM_AMOUNT), paymentdata.getAmount(), 0.001);
         Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }
 

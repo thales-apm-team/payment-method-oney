@@ -114,6 +114,11 @@ public class Customer extends OneyBean {
             return this;
         }
 
+        public Customer.Builder withPurchaseHistory(PurchaseHistory pch) {
+            this.purchaseHistory = pch;
+            return this;
+        }
+
         public Customer.Builder withContactDetails(ContactDetails details) {
             this.contactDetails = details;
             return this;

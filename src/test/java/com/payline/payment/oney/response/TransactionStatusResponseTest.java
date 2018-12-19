@@ -21,20 +21,22 @@ public class TransactionStatusResponseTest {
         Assertions.assertEquals("Waiting for customer validation", status1.getStatusPurchase().getStatusLabel());
 
     }
-
     @Test
     public void transactionStatusEncryptedTest() throws DecryptException {
-        StringResponse encryptedResponse = createStringResponse(200, "OK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul41+5xLG5BBT+jV4I19n1BxNgTTBkgClTslC3pM/0UXrEOJt3Nv3LTMrGFG1pzsOP6gxM5c+lw57K0YUbQqoGgI\\u003d\\\"}\",\"code\":200,\"message\":\"OK\"}");
+        StringResponse encryptedResponse = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
 
         //Cas reponse dechiffre
         TransactionStatusResponse status1 = createTransactionStatusResponseFromJson(encryptedResponse.getContent());
-//        Assertions.assertEquals("PENDING", status1.getStatusPurchase().getStatusCode());
-//        Assertions.assertEquals("Waiting for customer validation", status1.getStatusPurchase().getStatusLabel());
-        //reponse vide
-        Assertions.assertNotNull(status1.getStatusPurchase());
+        Assertions.assertEquals("FUNDED", status1.getStatusPurchase().getStatusCode());
+        Assertions.assertEquals("Transaction is completed", status1.getStatusPurchase().getStatusLabel());
+
 
 
     }
+
+
+
+
 
 
 }

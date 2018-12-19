@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.AddressType;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 
 public class Delivery extends OneyBean {
 
@@ -141,13 +141,10 @@ public class Delivery extends OneyBean {
         }
 
         public Delivery.Builder fromPayline(PaymentRequest request) {
-            //note mapping avec Oney non defini + modif  à venir avec la RC4
-            this.deliveryDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//            this.deliveryDate = buyer.getOrder.getDeliveryExpectedDate();
-            this.deliveryModeCode = 1;
-//            this.deliveryModeCode =buyer.getOrder.getDeliveryMode();
-            this.deliveryOption = 1;
-//            this.deliveryOption = buyer.getOrder.getDeliveryTime();
+            this.deliveryDate = (new SimpleDateFormat("yyyy-MM-dd"))
+                     .format(request.getOrder().getExpectedDeliveryDate());
+            this.deliveryModeCode = PluginUtils.getOneyDeliveryModeCode(request.getOrder().getDeliveryMode());
+            this.deliveryOption = PluginUtils.getOneyDeliveryOption(request.getOrder().getDeliveryTime());
             this.addressType = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY).getValue();
             this.recipient = Recipient.Builder.aRecipientBuilder()
                     .fromPayline(request.getBuyer()).build();

@@ -11,6 +11,7 @@ import com.payline.pmapi.bean.paymentform.response.logo.impl.PaymentFormLogoResp
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -50,7 +51,7 @@ public class PaymentFormConfigurationServiceImplTest {
     @Test
     public void testGetPaymentFormLogo() {
         //Mock PaymentFormLogoRequest
-        PaymentFormLogoRequest paymentFormLogoRequest = mock(PaymentFormLogoRequest.class);
+        PaymentFormLogoRequest paymentFormLogoRequest = Mockito.mock(PaymentFormLogoRequest.class);
         when(paymentFormLogoRequest.getLocale()).thenReturn(Locale.FRANCE);
 
         PaymentFormLogoResponse paymentFormLogoResponse = service.getPaymentFormLogo(paymentFormLogoRequest);

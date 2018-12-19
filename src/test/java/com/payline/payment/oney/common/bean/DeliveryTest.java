@@ -38,6 +38,7 @@ public class DeliveryTest {
     public void wrongDate() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("111998-07-12")
                     .withDeliveryModeCode(1)
@@ -47,16 +48,16 @@ public class DeliveryTest {
                             .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
                             .build())
                     .build();
+
         });
         Assertions.assertEquals("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built", exception.getMessage());
-
-
     }
 
     @Test
     public void withoutDeliveryModeCode() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
                     .withDeliveryOption(1)
@@ -65,10 +66,9 @@ public class DeliveryTest {
                             .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
                             .build())
                     .build();
+
         });
         Assertions.assertEquals("Delivery must have a deliveryModeCode when built", exception.getMessage());
-
-
     }
 
     @Test
@@ -83,16 +83,16 @@ public class DeliveryTest {
                             .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
                             .build())
                     .build();
+
         });
         Assertions.assertEquals("Delivery must have a deliveryOption when built", exception.getMessage());
-
-
     }
 
     @Test
     public void withoutAddressType() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
                     .withDeliveryModeCode(1)
@@ -101,10 +101,9 @@ public class DeliveryTest {
                             .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
                             .build())
                     .build();
+
         });
         Assertions.assertEquals("Delivery must have a addressType when built", exception.getMessage());
-
-
     }
 
     @Test
@@ -122,7 +121,6 @@ public class DeliveryTest {
                     .build();
         });
         Assertions.assertEquals("Delivery must have a recipient when built", exception.getMessage());
-
     }
 
     @Test
@@ -135,10 +133,10 @@ public class DeliveryTest {
                     .withDeliveryOption(1)
                     .withAddressType(1)
                     .withRecipient(null)
+
                     .build();
         });
         Assertions.assertEquals("Delivery must have a deliveryAddress when built", exception.getMessage());
-
     }
 
 

@@ -8,6 +8,7 @@ public class LoyaltyInformationTest {
 
     private LoyaltyInformation loyaltyInformation;
 
+
     @Test
     public void loyaltyInformationOK() {
         loyaltyInformation = LoyaltyInformation.Builder.aLoyaltyInformationBuilder()
@@ -17,43 +18,42 @@ public class LoyaltyInformationTest {
                 .withExpirationDate("2018-04-24")
                 .withValue("25")
                 .build();
-        Assertions.assertEquals("1", loyaltyInformation.getLoyaltyId());
-        Assertions.assertEquals("mytype", loyaltyInformation.getType());
-        Assertions.assertEquals("some/url", loyaltyInformation.getLoyaltyFaqUrl());
-        Assertions.assertEquals("2018-04-24", loyaltyInformation.getExpirationDate());
-        Assertions.assertEquals("25", loyaltyInformation.getValue());
+        Assertions.assertEquals("1",loyaltyInformation.getLoyaltyId());
+        Assertions.assertEquals("mytype",loyaltyInformation.getType());
+        Assertions.assertEquals("some/url",loyaltyInformation.getLoyaltyFaqUrl());
+        Assertions.assertEquals("2018-04-24",loyaltyInformation.getExpirationDate());
+        Assertions.assertEquals("25",loyaltyInformation.getValue());
     }
 
     @Test
     public void withoutId() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-            loyaltyInformation = LoyaltyInformation.Builder.aLoyaltyInformationBuilder()
-                    .withType("mytype")
-                    .withLoyatyFaqUrl("some/url")
-                    .withExpirationDate("2018-04-24")
-                    .withValue("25")
-                    .build();
-        });
-        Assertions.assertEquals("LoyaltyInformation must have a loyaltyId when built", exception.getMessage());
 
-    }
+            loyaltyInformation = LoyaltyInformation.Builder.aLoyaltyInformationBuilder()
+                .withType("mytype")
+                .withLoyatyFaqUrl("some/url")
+                .withExpirationDate("2018-04-24")
+                .withValue("25")
+                .build();
+    });
+        Assertions.assertEquals("LoyaltyInformation must have a loyaltyId when built", exception.getMessage());
+}
 
     @Test
     public void wrongDateFormat() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
             loyaltyInformation = LoyaltyInformation.Builder.aLoyaltyInformationBuilder()
-                    .withLoyaltyId("25")
-                    .withExpirationDate("zZ2018-04-24")
-                    .build();
-        });
+                .withLoyaltyId("25")
+                .withExpirationDate("zZ2018-04-24")
+                .build();
+    });
         Assertions.assertEquals("LoyaltyInformation must have a expirationDate in format 'yyyy-MM-dd' when built", exception.getMessage());
-
-    }
+        }
 
     @Test
-    public void testToString() {
+    public void testToString(){
         loyaltyInformation = LoyaltyInformation.Builder.aLoyaltyInformationBuilder()
                 .withLoyaltyId("1")
                 .withType("mytype")
