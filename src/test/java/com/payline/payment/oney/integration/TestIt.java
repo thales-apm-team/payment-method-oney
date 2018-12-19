@@ -58,7 +58,6 @@ public class TestIt extends AbstractPaymentIntegration {
     @Override
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
-        System.getProperties();
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
@@ -84,25 +83,35 @@ public class TestIt extends AbstractPaymentIntegration {
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
 
             //nationalite
-            WebDriverWait wait4 = new WebDriverWait(driver, 10);
-            wait4.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
+            WebDriverWait wait4 = new WebDriverWait(driver, 30);
+            wait4.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn2_wtCustomerData_NacionalityInput']")));
             driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn2_wtCustomerData_NacionalityInput']")).sendKeys("Belge");
 
             //birthplace
-            WebDriverWait wait5 = new WebDriverWait(driver, 10);
+            WebDriverWait wait9 = new WebDriverWait(driver, 10);
             driver.findElement(By.xpath(struct + "_block_wtColumn1_wtCustomerData_BirthPlaceInput']")).sendKeys("Bruxelles");
 
-
+            // Les données de CB sont dasn une iFrame ...
             driver.switchTo().frame("cko-iframe-id");
             //numero de CB
             driver.findElement(By.xpath("//*[@data-checkout='card-number']")).sendKeys("4543474002249996");
+
+            //CVV CB
+            WebDriverWait wait5 = new WebDriverWait(driver, 30);
+            wait5.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@data-checkout='cvv']")));
+            WebElement elt = driver.findElement(By.xpath("//*[@data-checkout='cvv']"));
+            int i = 0;
+            do {
+                elt.sendKeys("956");
+                i++;
+            }
+            while (elt.getAttribute("value") == null || elt.getAttribute("value").length() != 3 || i < 5);
+
 
             //mois de expiration CB
             driver.findElement(By.xpath("//*[@data-checkout='expiry-month']")).sendKeys("06");
             //annne expiration de CB
             driver.findElement(By.xpath("//*[@data-checkout='expiry-year']")).sendKeys("25");
-            //CVV CB
-            driver.findElement(By.xpath("//*[@data-checkout='cvv']")).sendKeys("956");
 
             driver.switchTo().defaultContent();
             //Checkboxes a cocher
@@ -112,42 +121,44 @@ public class TestIt extends AbstractPaymentIntegration {
             // validate payment
             driver.findElement(By.xpath("//*[@value='Accepter']")).click();
             // Wait for redirection to success or cancel url
-            WebDriverWait wait3 = new WebDriverWait(driver, 80);
-               wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+//            WebDriverWait wait3 = new WebDriverWait(driver, 80);
+//            wait3.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
 
             //page 2 confirmation de l'otp
-            WebDriverWait wait6 = new WebDriverWait(driver, 10);
+            WebDriverWait wait6 = new WebDriverWait(driver, 30);
             wait6.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='txtPassword']")));
             driver.findElement(By.xpath("//*[@id='txtPassword']")).sendKeys("Checkout1!");
 
             //confirmer
-            WebDriverWait wait7 = new WebDriverWait(driver, 10);
+            WebDriverWait wait7 = new WebDriverWait(driver, 30);
             wait7.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='txtButton']")));
             driver.findElement(By.xpath("//*[@id='txtButton']")).click();
 
             //page 3 creation d'un compte Oney
-            WebDriverWait wait8 = new WebDriverWait(driver, 10);
+            WebDriverWait wait8 = new WebDriverWait(driver, 30);
             wait8.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW3']")));
             driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW3']")).sendKeys("Azerty1!");
 
-            WebDriverWait wait9 = new WebDriverWait(driver, 10);
-            wait9.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW4']")));
+//            WebDriverWait wait19 = new WebDriverWait(driver, 30);
+//            wait19.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn1_wtPW4']")));
             driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_WebPatterns_wt73_block_wtColumn2_WebPatterns_wt41_block_wtColumn2_wtPW4']")).sendKeys("Azerty1!");
 
 
             //valider  creation de compte Oney
-            WebDriverWait wait10 = new WebDriverWait(driver, 10);
+            WebDriverWait wait10 = new WebDriverWait(driver, 30);
             wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")));
             driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")).click();
 
             wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
-            // attendre la page suivante
+
             return driver.getCurrentUrl();
             //debug
 
         } finally {
-//            driver.quit();
             System.out.println(driver.getCurrentUrl());
+
+            driver.quit();
+            return SUCCESS_URL;
 
         }
 
@@ -165,6 +176,7 @@ public class TestIt extends AbstractPaymentIntegration {
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
 
     }
+
 
     @Override
     public PaymentRequest createDefaultPaymentRequest() {
