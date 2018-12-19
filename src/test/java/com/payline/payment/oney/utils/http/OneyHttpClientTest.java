@@ -135,6 +135,7 @@ public class OneyHttpClientTest {
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
                 .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
                 .withPurchaseReference("CMDE|455454545415451198114")
+                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
                 .build();
 
         Assertions.assertNotNull(request);

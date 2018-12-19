@@ -11,6 +11,7 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
@@ -42,6 +43,8 @@ public class OneyPaymentRequest extends OneyRequest {
     @SerializedName("psp_context")
     private String pspContext;
 
+    //cle de chiffrement
+    private transient String encryptKey;
 
     public String getLanguageCode() {
         return languageCode;
@@ -91,6 +94,10 @@ public class OneyPaymentRequest extends OneyRequest {
         return pspContext;
     }
 
+    public String getEncryptKey() {
+        return encryptKey;
+    }
+
     private OneyPaymentRequest(Builder builder) {
         this.merchantGuid = builder.merchantGuid;
         this.pspGuid = builder.pspGuid;
@@ -106,6 +113,7 @@ public class OneyPaymentRequest extends OneyRequest {
         this.navigationData = builder.navigationData;
         this.merchantContext = builder.merchantContext;
         this.pspContext = builder.pspContext;
+        this.encryptKey = builder.encryptKey;
     }
 
 
@@ -126,6 +134,7 @@ public class OneyPaymentRequest extends OneyRequest {
         private NavigationData navigationData;
         private String merchantContext;
         private String pspContext;
+        private String encryptKey;
 
         private Builder() {
         }
@@ -203,6 +212,11 @@ public class OneyPaymentRequest extends OneyRequest {
             return this;
         }
 
+        public Builder withEncryptKey(String key) {
+            this.encryptKey = key;
+            return this;
+        }
+
         private Builder verifyIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
@@ -221,7 +235,11 @@ public class OneyPaymentRequest extends OneyRequest {
             }
             if (this.paymentData == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a paymentData when built");
-            } else {
+            }
+            if (this.encryptKey == null) {
+                throw new IllegalStateException("OneyPaymentRequest must have a encryptKey when built");
+            }
+            else {
                 return this;
             }
         }
@@ -254,6 +272,8 @@ public class OneyPaymentRequest extends OneyRequest {
                             .fromPayline(paymentRequest)
                             .build())
                     .withMerchantLanguageCode(paymentRequest.getLocale().getLanguage())
+                    .withEncryptKey(paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY)
+)
 //  Optional fields  pas encore mappes
 //                    .withMerchantContext("")
 //                    .withPspContext("")

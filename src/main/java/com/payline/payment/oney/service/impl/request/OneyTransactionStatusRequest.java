@@ -10,6 +10,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
     private String purchaseReference;
     @SerializedName("language_code")
     private String languageCode;
+    private transient  String encryptKey;
 
 
     public String getPurchaseReference() {
@@ -20,12 +21,16 @@ public class OneyTransactionStatusRequest extends OneyRequest {
         return languageCode;
     }
 
+    public String getEncryptKey() {
+        return encryptKey;
+    }
 
     private OneyTransactionStatusRequest(OneyTransactionStatusRequest.Builder builder) {
         this.purchaseReference = builder.purchaseReference;
         this.languageCode = builder.languageCode;
         this.pspGuid = builder.pspGuid;
         this.merchantGuid = builder.merchantGuid;
+        this.encryptKey = builder.encryptKey;
 
 
     }
@@ -35,6 +40,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
         private String languageCode;
         private String merchantGuid;
         private String pspGuid;
+        private String encryptKey;
 
         public static OneyTransactionStatusRequest.Builder aOneyGetStatusRequest() {
             return new OneyTransactionStatusRequest.Builder();
@@ -61,14 +67,19 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             this.pspGuid = pspGuid;
             return this;
         }
-
+        public Builder withEncryptKey(String key) {
+            this.encryptKey = key;
+            return this;
+        }
 
         public OneyTransactionStatusRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
                     .withMerchantGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
                     .withPspGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
-                    .withPurchaseReference(transactionStatusRequest.getTransactionId());
+                    .withPurchaseReference(transactionStatusRequest.getTransactionId())
+                    .withEncryptKey(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.CHIFFREMENT_KEY));
+
 
         }
 
@@ -82,7 +93,10 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             }
             if (this.purchaseReference == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a reference when built");
-            } else {
+            }
+            if (this.encryptKey == null) {
+                throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
+            }else {
                 return this;
             }
 

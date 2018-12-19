@@ -13,6 +13,7 @@ public class OneyTransactionStatusRequestTest {
                 .withMerchantGuid("guid")
                 .withPspGuid("pspG")
                 .withPurchaseReference("maCommande")
+                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
                 .build();
 
         Assertions.assertEquals("FR", request.getLanguageCode());

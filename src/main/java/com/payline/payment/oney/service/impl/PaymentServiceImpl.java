@@ -71,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .build();
             } else {
                 //Response OK on recupere url envoyee par Oney
-                OneySuccessPaymentResponse successResponse = paymentSuccessResponseFromJson(oneyResponse.getContent());
+                OneySuccessPaymentResponse successResponse = paymentSuccessResponseFromJson(oneyResponse.getContent(),oneyRequest.getEncryptKey());
 
                 URL redirectURL = new URL(successResponse.getReturnedUrl());
                 PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder responseRedirectURL = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()

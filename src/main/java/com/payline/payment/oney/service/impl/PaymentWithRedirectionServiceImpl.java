@@ -76,7 +76,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
-                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent());
+                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(),oneyTransactionStatusRequest.getEncryptKey());
                 if(response.getStatusPurchase() != null) {
                     switch (response.getStatusPurchase().getStatusCode()) {
                         //renvoi d'un paymentResponseOnHold
@@ -163,7 +163,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         //Confirmation OK, on traite la reponse
         else {
             //On dechiffre la response
-            TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent());
+            TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(),confirmRequest.getEncryptKey());
             //Si Oney renvoie une message vide, on renvoi un Payment Failure response
             if (responseDecrypted.getStatusPurchase() == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");

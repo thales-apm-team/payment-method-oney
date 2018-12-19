@@ -33,7 +33,7 @@ public class OneyEncryptedRequest extends OneyBean {
     public static OneyEncryptedRequest fromOneyPaymentRequest(OneyPaymentRequest request) throws DecryptException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
 //         encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), ConfigProperties.get(CHIFFREMENT_KEY));
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), CHIFFREMENT_KEY);
+        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
         encryptedRequest.merchantGuid = request.merchantGuid;
 
@@ -43,7 +43,7 @@ public class OneyEncryptedRequest extends OneyBean {
     public static OneyEncryptedRequest fromOneyConfirmRequest(OneyConfirmRequest request) throws DecryptException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
 //         encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), ConfigProperties.get(CHIFFREMENT_KEY));
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), CHIFFREMENT_KEY);
+        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
         encryptedRequest.merchantGuid = request.merchantGuid;
 

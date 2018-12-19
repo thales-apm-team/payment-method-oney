@@ -381,6 +381,7 @@ public class TestUtils {
         partnerConfiguration.put(SECRET_KEY, "Method-body");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         return new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration);

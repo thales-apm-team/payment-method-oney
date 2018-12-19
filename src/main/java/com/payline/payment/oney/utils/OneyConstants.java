@@ -31,7 +31,8 @@ public class OneyConstants {
 
     //Constant specific of this payment method
     public static final String AUTHORIZATION_VALUE = "oney.authorization";
-    public static final String CHIFFREMENT_KEY = "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=";
+//    public static final String CHIFFREMENT_KEY = "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=";
+    public static final String CHIFFREMENT_KEY = "encryptKey";
 //    public static final String CHIFFREMENT_KEY = "merchant.crypto.key";
 
     public static final String X_ONEY_AUTHORIZATION_LABEL = "api.key.label";

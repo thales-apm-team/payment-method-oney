@@ -25,14 +25,14 @@ public class TransactionStatusResponse extends OneyResponse {
     }
 
 
-    public static TransactionStatusResponse createTransactionStatusResponseFromJson(String json) throws DecryptException {
+    public static TransactionStatusResponse createTransactionStatusResponseFromJson(String json,String encryptKey) throws DecryptException {
         Gson parser = new Gson();
 
         TransactionStatusResponse transactionStatusResponse = parser.fromJson(json, TransactionStatusResponse.class);
 
         //Cas reponse est chiffree : on dechiffre la reponse afin de recuperer le statut de la transaction
         if (transactionStatusResponse.getStatusPurchase() == null) {
-            String decryptedMessage = OneyResponse.decryptMessage(transactionStatusResponse.getEncryptedMessage(), CHIFFREMENT_KEY);
+            String decryptedMessage = OneyResponse.decryptMessage(transactionStatusResponse.getEncryptedMessage(), encryptKey);
 
             return parser.fromJson(decryptedMessage, TransactionStatusResponse.class);
 
