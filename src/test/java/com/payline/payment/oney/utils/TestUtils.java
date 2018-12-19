@@ -11,6 +11,7 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import com.payline.pmapi.integration.AbstractPaymentIntegration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +30,7 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 public class TestUtils {
     private static final Logger LOGGER = LogManager.getLogger(TestUtils.class);
 
-    private static final String SUCCESS_URL = "https://succesurl.com/";
+    private static final String SUCCESS_URL = AbstractPaymentIntegration.SUCCESS_URL;
     private static final String CANCEL_URL = "http://localhost/cancelurl.com/";
     private static final String NOTIFICATION_URL = "http://google.com/";
     private static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
@@ -40,7 +41,7 @@ public class TestUtils {
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
     public static final String CONFIRM_AMOUNT = "456";
     private static final String TRANSACTION_ID = "455454545415451198120";
-    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|"+TRANSACTION_ID;
+    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|" + TRANSACTION_ID;
 
 
     /**
@@ -122,7 +123,7 @@ public class TestUtils {
      */
 
     public static PaymentRequest.Builder createCompletePaymentBuilder() {
-        final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
+        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
@@ -147,7 +148,7 @@ public class TestUtils {
 
     //Cree une redirection payment par defaut
     public static RedirectionPaymentRequest createCompleteRedirectionPaymentBuilder() {
-        final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
+        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
@@ -247,13 +248,13 @@ public class TestUtils {
 
 
     public static Buyer.FullName createFullName() {
-        return new Buyer.FullName("Robin", "Hood", "Mr");
+        return new Buyer.FullName("Robin", "Muriel", "Mr");
     }
 
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060607");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+330625262428");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+320625262428");
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070704");
         phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070709");
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0708070709");
@@ -341,10 +342,11 @@ public class TestUtils {
                 .build();
     }
 
-    private static String generateRamdomEmail(){
+    private static String generateRamdomEmail() {
 
-        return "testoney"+ Calendar.getInstance().getTimeInMillis() +"@gmail.com";
+        return "testoney" + Calendar.getInstance().getTimeInMillis() + "@gmail.com";
     }
+
     private static Date getBirthdayDate() {
         try {
             return new SimpleDateFormat("dd/MM/yyyy").parse("04/05/1991");
