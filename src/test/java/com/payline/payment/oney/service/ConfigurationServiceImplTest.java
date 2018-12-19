@@ -4,8 +4,8 @@ import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,40 +25,40 @@ public class ConfigurationServiceImplTest {
 
         List<AbstractParameter> parameters = service.getParameters(Locale.FRANCE);
         //Assert we have 3 parameters
-        Assert.assertNotNull(parameters);
-        Assert.assertEquals(9, parameters.size());
-        Assert.assertEquals(X_ONEY_AUTHORIZATION_KEY, parameters.get(1).getKey());
-        Assert.assertEquals(PSP_GUID_KEY, parameters.get(2).getKey());
-        Assert.assertEquals(MERCHANT_GUID_KEY, parameters.get(0).getKey());
+        Assertions.assertNotNull(parameters);
+        Assertions.assertEquals(9, parameters.size());
+        Assertions.assertEquals(X_ONEY_AUTHORIZATION_KEY, parameters.get(1).getKey());
+        Assertions.assertEquals(PSP_GUID_KEY, parameters.get(2).getKey());
+        Assertions.assertEquals(MERCHANT_GUID_KEY, parameters.get(0).getKey());
 
     }
+
     @Test
-    public void checkOK(){
+    public void checkOK() {
 
-        Map<String,String> accountInfo = new HashMap<>();
-        accountInfo.put(X_ONEY_AUTHORIZATION_KEY,"mykey");
-        accountInfo.put(PSP_GUID_KEY,"psp_id_test");
-        accountInfo.put(MERCHANT_GUID_KEY,"merchant_guid_test");
-
+        Map<String, String> accountInfo = new HashMap<>();
+        accountInfo.put(X_ONEY_AUTHORIZATION_KEY, "mykey");
+        accountInfo.put(PSP_GUID_KEY, "psp_id_test");
+        accountInfo.put(MERCHANT_GUID_KEY, "merchant_guid_test");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
-        .aCheckRequest()
-        .withAccountInfo(accountInfo)
-        .withLocale(Locale.FRANCE)
-        .withContractConfiguration(createContractConfiguration())
-        .withEnvironment(createDefaultEnvironment())
-        .build();
+                .aCheckRequest()
+                .withAccountInfo(accountInfo)
+                .withLocale(Locale.FRANCE)
+                .withContractConfiguration(createContractConfiguration())
+                .withEnvironment(createDefaultEnvironment())
+                .build();
 
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assert.assertEquals(0, errors.size());
+        Assertions.assertEquals(0, errors.size());
 
     }
 
     @Test
-    public void checkKO(){
+    public void checkKO() {
 
-        Map<String,String> accountInfo = new HashMap<>();
+        Map<String, String> accountInfo = new HashMap<>();
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
@@ -68,10 +68,10 @@ public class ConfigurationServiceImplTest {
                 .withEnvironment(createDefaultEnvironment())
                 .build();
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assert.assertEquals(3, errors.size());
-        Assert.assertNotNull(errors.get(X_ONEY_AUTHORIZATION_KEY));
-        Assert.assertNotNull(errors.get(PSP_GUID_KEY));
-        Assert.assertNotNull(errors.get(MERCHANT_GUID_KEY));
+        Assertions.assertEquals(3, errors.size());
+        Assertions.assertNotNull(errors.get(X_ONEY_AUTHORIZATION_KEY));
+        Assertions.assertNotNull(errors.get(PSP_GUID_KEY));
+        Assertions.assertNotNull(errors.get(MERCHANT_GUID_KEY));
     }
 
     @Test
@@ -80,11 +80,11 @@ public class ConfigurationServiceImplTest {
         ReleaseInformation releaseInformation = service.getReleaseInformation();
 
         // then: result is not null
-        Assert.assertNotNull(releaseInformation);
+        Assertions.assertNotNull(releaseInformation);
         // then: assert release version and release date are not null
-        Assert.assertNotNull(releaseInformation.getVersion());
-        Assert.assertFalse(releaseInformation.getVersion().isEmpty());
-        Assert.assertNotNull(releaseInformation.getDate());
+        Assertions.assertNotNull(releaseInformation.getVersion());
+        Assertions.assertFalse(releaseInformation.getVersion().isEmpty());
+        Assertions.assertNotNull(releaseInformation.getDate());
     }
 
     //
@@ -94,8 +94,8 @@ public class ConfigurationServiceImplTest {
         ReleaseInformation releaseInformation = service.getReleaseInformation();
 
         // then: the version has a valid format
-        Assert.assertNotNull(releaseInformation);
-        Assert.assertTrue(releaseInformation.getVersion().matches("^\\d\\.\\d(\\.\\d)?$"));
+        Assertions.assertNotNull(releaseInformation);
+        Assertions.assertTrue(releaseInformation.getVersion().matches("^\\d\\.\\d(\\.\\d)?$"));
     }
 
 }

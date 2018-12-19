@@ -6,9 +6,10 @@ import com.payline.payment.oney.service.impl.request.OneyTransactionStatusReques
 import com.payline.payment.oney.service.impl.response.TransactionStatusResponse;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -21,17 +22,17 @@ import java.util.Map;
 import static com.payline.payment.oney.service.impl.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationServiceTest {
 
 
-
     @Spy
-     OneyHttpClient httpClient;
+    OneyHttpClient httpClient;
 
     @InjectMocks
-     NotificationServiceImpl service;
+    NotificationServiceImpl service;
 
-    @Before
+    @BeforeAll
     public void setup() {
         service = new NotificationServiceImpl();
         MockitoAnnotations.initMocks(this);
@@ -40,12 +41,11 @@ public class NotificationServiceTest {
     @Test
     public void notifyTransactionStatusRequestTest() throws DecryptException, IOException, URISyntaxException {
 
-        StringResponse responseMockedPending = createStringResponse(200,"OK","{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}" );
-        StringResponse responseMockedFavorable = createStringResponse(200,"OK","{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}" );
+        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
+        StringResponse responseMockedFavorable = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
 
         Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.any(Map.class),Mockito.anyBoolean());
-
+                Mockito.any(Map.class), Mockito.anyBoolean());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -59,13 +59,13 @@ public class NotificationServiceTest {
         StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
         TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent());
 
-        Assert.assertNotNull(transactStatus.getCode());
-        Assert.assertEquals("Waiting for customer validation",resp.getStatusPurchase().getStatusLabel());
-        Assert.assertEquals("PENDING",resp.getStatusPurchase().getStatusCode());
+        Assertions.assertNotNull(transactStatus.getCode());
+        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
+        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
 
 //        Cas Favorable
-//        Assert.assertEquals("Oney accepts the payment",resp.getStatusPurchase().getStatusLabel());
-//        Assert.assertEquals("FAVORABLE",resp.getStatusPurchase().getStatusCode());
+//        Assertions.assertEquals("Oney accepts the payment",resp.getStatusPurchase().getStatusLabel());
+//        Assertions.assertEquals("FAVORABLE",resp.getStatusPurchase().getStatusCode());
 
     }
 }

@@ -1,13 +1,13 @@
 package com.payline.payment.oney.request;
 
 import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OneyTransactionStatusRequestTest {
 
     @Test
-    public void testBuildRequest(){
+    public void testBuildRequest() {
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .withLanguageCode("FR")
                 .withMerchantGuid("guid")
@@ -15,8 +15,8 @@ public class OneyTransactionStatusRequestTest {
                 .withPurchaseReference("maCommande")
                 .build();
 
-        Assert.assertEquals("FR",request.getLanguageCode());
-        Assert.assertEquals("guid",request.getMerchantGuid());
-        Assert.assertEquals("maCommande",request.getPurchaseReference());
+        Assertions.assertEquals("FR", request.getLanguageCode());
+        Assertions.assertEquals("guid", request.getMerchantGuid());
+        Assertions.assertEquals("maCommande", request.getPurchaseReference());
     }
 }

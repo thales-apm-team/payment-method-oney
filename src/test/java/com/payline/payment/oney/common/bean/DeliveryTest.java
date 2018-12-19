@@ -3,10 +3,8 @@ package com.payline.payment.oney.common.bean;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.pmapi.bean.common.Buyer;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
@@ -14,8 +12,7 @@ public class DeliveryTest {
 
 
     private Delivery delivery;
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
+
 
     @Test
     public void testDelivery() {
@@ -30,101 +27,118 @@ public class DeliveryTest {
                         .build())
                 .build();
 
-        Assert.assertNotNull(delivery.getAddressType());
-        Assert.assertNotNull(delivery.getDeliveryDate());
-        Assert.assertNotNull(delivery.getDeliveryOption());
-        Assert.assertNotNull(delivery.getDeliveryModeCode());
-        Assert.assertNotNull(delivery.getDeliveryAddress());
+        Assertions.assertNotNull(delivery.getAddressType());
+        Assertions.assertNotNull(delivery.getDeliveryDate());
+        Assertions.assertNotNull(delivery.getDeliveryOption());
+        Assertions.assertNotNull(delivery.getDeliveryModeCode());
+        Assertions.assertNotNull(delivery.getDeliveryAddress());
     }
 
     @Test
     public void wrongDate() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("111998-07-12")
-                .withDeliveryModeCode(1)
-                .withDeliveryOption(1)
-                .withAddressType(1)
-                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
-                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
-                        .build())
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("111998-07-12")
+                    .withDeliveryModeCode(1)
+                    .withDeliveryOption(1)
+                    .withAddressType(1)
+                    .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                            .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                            .build())
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutDeliveryModeCode() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a deliveryModeCode when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("1998-07-12")
-                .withDeliveryOption(1)
-                .withAddressType(1)
-                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
-                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
-                        .build())
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("1998-07-12")
+                    .withDeliveryOption(1)
+                    .withAddressType(1)
+                    .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                            .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                            .build())
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a deliveryModeCode when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutDeliveryOption() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a deliveryOption when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("1998-07-12")
-                .withDeliveryModeCode(1)
-                .withAddressType(1)
-                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
-                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
-                        .build())
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("1998-07-12")
+                    .withDeliveryModeCode(1)
+                    .withAddressType(1)
+                    .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                            .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                            .build())
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a deliveryOption when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutAddressType() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a addressType when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("1998-07-12")
-                .withDeliveryModeCode(1)
-                .withDeliveryOption(1)
-                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
-                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
-                        .build())
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("1998-07-12")
+                    .withDeliveryModeCode(1)
+                    .withDeliveryOption(1)
+                    .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                            .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                            .build())
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a addressType when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutRecipient() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a recipient when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("1998-07-12")
-                .withDeliveryModeCode(1)
-                .withDeliveryOption(1)
-                .withAddressType(5)
-                .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
-                        .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
-                        .build())
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("1998-07-12")
+                    .withDeliveryModeCode(1)
+                    .withDeliveryOption(1)
+                    .withAddressType(5)
+                    .withDeliveryAddress(OneyAddress.Builder.aOneyAddressBuilder()
+                            .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
+                            .build())
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a recipient when built", exception.getMessage());
+
     }
 
     @Test
     public void withoutDeliveryAddress() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Delivery must have a deliveryAddress when built");
-        delivery = Delivery.Builder.aDeliveryBuilder()
-                .withDeliveryDate("1998-07-12")
-                .withDeliveryModeCode(1)
-                .withDeliveryOption(1)
-                .withAddressType(1)
-                .withRecipient(null)
 
-                .build();
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            delivery = Delivery.Builder.aDeliveryBuilder()
+                    .withDeliveryDate("1998-07-12")
+                    .withDeliveryModeCode(1)
+                    .withDeliveryOption(1)
+                    .withAddressType(1)
+                    .withRecipient(null)
+                    .build();
+        });
+        Assertions.assertEquals("Delivery must have a deliveryAddress when built", exception.getMessage());
+
     }
 
 
@@ -139,11 +153,11 @@ public class DeliveryTest {
                         .fromPayline(createDefaultBuyer(), Buyer.AddressType.DELIVERY)
                         .build())
                 .build();
-        Assert.assertTrue(delivery.toString().contains("delivery_date"));
-        Assert.assertTrue(delivery.toString().contains("delivery_mode_code"));
-        Assert.assertTrue(delivery.toString().contains("delivery_option"));
-        Assert.assertTrue(delivery.toString().contains("address_type"));
-        Assert.assertTrue(delivery.toString().contains("delivery_address"));
+        Assertions.assertTrue(delivery.toString().contains("delivery_date"));
+        Assertions.assertTrue(delivery.toString().contains("delivery_mode_code"));
+        Assertions.assertTrue(delivery.toString().contains("delivery_option"));
+        Assertions.assertTrue(delivery.toString().contains("address_type"));
+        Assertions.assertTrue(delivery.toString().contains("delivery_address"));
 
     }
 }

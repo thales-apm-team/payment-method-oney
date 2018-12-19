@@ -2,10 +2,8 @@ package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.pmapi.bean.common.Buyer;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
@@ -13,106 +11,116 @@ public class CustomerIdentityTest {
 
     private CustomerIdentity customerIdentity;
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
-    public void customerIdentityTest(){
-     customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-             .withBirthName("Doe")
-             .withPersonType(2)
-             .withHonorificCode(1)
-             .withFirstName("John")
-             //Optinals
-             .withLastName("LN")
-             .withGivenNames("GN")
-             .withBithDate("1990-12-11")
-             .build();
-     Assert.assertNotNull(customerIdentity);
-    }
-
-
-    @Test
-    public void withoutBirthName(){
-
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerIdentity must have a birthName when built");
-
+    public void customerIdentityTest() {
         customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                .withBirthName("Doe")
                 .withPersonType(2)
                 .withHonorificCode(1)
                 .withFirstName("John")
+                //Optinals
                 .withLastName("LN")
-             .build();
+                .withGivenNames("GN")
+                .withBithDate("1990-12-11")
+                .build();
+        Assertions.assertNotNull(customerIdentity);
     }
+
+
+    @Test
+    public void withoutBirthName() {
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .withLastName("LN")
+                    .build();
+        });
+        Assertions.assertEquals("CustomerIdentity must have a birthName when built", exception.getMessage());
+
+    }
+
     @Test
     public void withoutPersonType() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerIdentity must have a personType when built");
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withHonorificCode(1)
-                .withFirstName("John")
-                .build();
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .build();
+        });
+        Assertions.assertEquals("CustomerIdentity must have a personType when built", exception.getMessage());
+
     }
+
     @Test
     public void withoutHonorificCode() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerIdentity must have a honorificCode when built");
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withFirstName("John")
-                .build();
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withFirstName("John")
+                    .build();
+        });
+        Assertions.assertEquals("CustomerIdentity must have a honorificCode when built", exception.getMessage());
+
     }
+
     @Test
     public void withoutFirstName() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerIdentity must have a firstName when built");
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withHonorificCode(1)
-                .build();
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .build();
+        });
+        Assertions.assertEquals("CustomerIdentity must have a firstName when built", exception.getMessage());
+
     }
 
     @Test
     public void wrongBirthDateFormat() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built");
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withHonorificCode(1)
-                .withFirstName("John")
-                .withBithDate("1990-ZZ12-11")
-                .build();
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .withBithDate("1990-ZZ12-11")
+                    .build();
+        });
+        Assertions.assertEquals("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built", exception.getMessage());
+
     }
 
 
     @Test
-    public void fromPaylineBuyer(){
-        Buyer buyer  =createDefaultBuyer();
+    public void fromPaylineBuyer() {
+        Buyer buyer = createDefaultBuyer();
         customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-               .fromPayline(buyer)
+                .fromPayline(buyer)
                 .build();
-        Assert.assertNotNull(customerIdentity.getFirstName());
-        Assert.assertNotNull(customerIdentity.getBirthDate());
-        Assert.assertNotNull(customerIdentity.getHonorificCode());
-        Assert.assertNotNull(customerIdentity.getPersonType());
+        Assertions.assertNotNull(customerIdentity.getFirstName());
+        Assertions.assertNotNull(customerIdentity.getBirthDate());
+        Assertions.assertNotNull(customerIdentity.getHonorificCode());
+        Assertions.assertNotNull(customerIdentity.getPersonType());
         //Champs pas encore mappés
-        Assert.assertNull(customerIdentity.getGivenNames());
-        Assert.assertNull(customerIdentity.getBirthMunicipalityCode());
-        Assert.assertNull(customerIdentity.getCityzenshipCountryCode());
+        Assertions.assertNull(customerIdentity.getGivenNames());
+        Assertions.assertNull(customerIdentity.getBirthMunicipalityCode());
+        Assertions.assertNull(customerIdentity.getCityzenshipCountryCode());
 
     }
 
     @Test
-    public void testToString(){
+    public void testToString() {
         customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)
@@ -130,18 +138,18 @@ public class CustomerIdentityTest {
                 .withCompanyName("DKA")
                 .build();
 
-        Assert.assertTrue(customerIdentity.toString().contains("individual_taxpayer_code"));
-        Assert.assertTrue(customerIdentity.toString().contains("person_type"));
-        Assert.assertTrue(customerIdentity.toString().contains("honorific_code"));
-        Assert.assertTrue(customerIdentity.toString().contains("birth_name"));
-        Assert.assertTrue(customerIdentity.toString().contains("last_name"));
-        Assert.assertTrue(customerIdentity.toString().contains("first_name"));
-        Assert.assertTrue(customerIdentity.toString().contains("given_names"));
-        Assert.assertTrue(customerIdentity.toString().contains("birth_date"));
-        Assert.assertTrue(customerIdentity.toString().contains("birth_municipality_code"));
-        Assert.assertTrue(customerIdentity.toString().contains("birth_country_code"));
-        Assert.assertTrue(customerIdentity.toString().contains("citizenship_country_code"));
-        Assert.assertTrue(customerIdentity.toString().contains("company_name"));
+        Assertions.assertTrue(customerIdentity.toString().contains("individual_taxpayer_code"));
+        Assertions.assertTrue(customerIdentity.toString().contains("person_type"));
+        Assertions.assertTrue(customerIdentity.toString().contains("honorific_code"));
+        Assertions.assertTrue(customerIdentity.toString().contains("birth_name"));
+        Assertions.assertTrue(customerIdentity.toString().contains("last_name"));
+        Assertions.assertTrue(customerIdentity.toString().contains("first_name"));
+        Assertions.assertTrue(customerIdentity.toString().contains("given_names"));
+        Assertions.assertTrue(customerIdentity.toString().contains("birth_date"));
+        Assertions.assertTrue(customerIdentity.toString().contains("birth_municipality_code"));
+        Assertions.assertTrue(customerIdentity.toString().contains("birth_country_code"));
+        Assertions.assertTrue(customerIdentity.toString().contains("citizenship_country_code"));
+        Assertions.assertTrue(customerIdentity.toString().contains("company_name"));
 
     }
 

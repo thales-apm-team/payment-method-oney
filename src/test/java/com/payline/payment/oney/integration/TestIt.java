@@ -7,7 +7,7 @@ import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.bean.payment.PaymentFormContext;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+
 
 public class TestIt extends AbstractPaymentIntegration {
     private PaymentServiceImpl paymentService = new PaymentServiceImpl();
@@ -57,8 +58,7 @@ public class TestIt extends AbstractPaymentIntegration {
     @Override
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Thales\\Documents\\HME\\moyens de paiement\\chromedriver.exe");
-
+        System.getProperties();
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 

@@ -1,19 +1,14 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.BeanUtils.*;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
 public class PurchaseTest {
     private Purchase purchase;
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void purchase() {
@@ -28,7 +23,7 @@ public class PurchaseTest {
                 .withExternalReferenceType("CMDE")
                 .build();
 
-        Assert.assertNotNull(purchase);
+        Assertions.assertNotNull(purchase);
     }
 
 
@@ -39,106 +34,124 @@ public class PurchaseTest {
                 .build();
 
         //Test to String here
-        Assert.assertTrue(purchase.toString().contains("external_reference"));
-        Assert.assertTrue(purchase.toString().contains("purchase_amount"));
-        Assert.assertTrue(purchase.toString().contains("currency_code"));
-        Assert.assertTrue(purchase.toString().contains("delivery"));
-        Assert.assertTrue(purchase.toString().contains("item_list"));
+        Assertions.assertTrue(purchase.toString().contains("external_reference"));
+        Assertions.assertTrue(purchase.toString().contains("purchase_amount"));
+        Assertions.assertTrue(purchase.toString().contains("currency_code"));
+        Assertions.assertTrue(purchase.toString().contains("delivery"));
+        Assertions.assertTrue(purchase.toString().contains("item_list"));
     }
 
     @Test
     public void withoutListItem() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a listItem when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReference("externalRef")
-                .withNumberOfItems(2)
-                .withExternalReferenceType("CMDE")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withCurrencyCode("EUR")
+                    .withPurchaseAmount(150f)
+                    .withDelivery(createDelivery())
+                    .withExternalReference("externalRef")
+                    .withNumberOfItems(2)
+                    .withExternalReferenceType("CMDE")
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a listItem when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutDelivery() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a delivery when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withExternalReference("externalRef")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .withExternalReferenceType("CMDE")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withCurrencyCode("EUR")
+                    .withPurchaseAmount(150f)
+                    .withExternalReference("externalRef")
+                    .withListItem(createItemList())
+                    .withNumberOfItems(2)
+                    .withExternalReferenceType("CMDE")
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a delivery when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutExternalReferenceType() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a externalReferenceType when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReference("externalRef")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withCurrencyCode("EUR")
+                    .withPurchaseAmount(150f)
+                    .withDelivery(createDelivery())
+                    .withExternalReference("externalRef")
+                    .withListItem(createItemList())
+                    .withNumberOfItems(2)
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a externalReferenceType when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutExternalReference() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a externalReference when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReferenceType("CMDE")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withCurrencyCode("EUR")
+                    .withPurchaseAmount(150f)
+                    .withDelivery(createDelivery())
+                    .withExternalReferenceType("CMDE")
+                    .withListItem(createItemList())
+                    .withNumberOfItems(2)
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a externalReference when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutPuchaseAmount() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a purchaseAmount when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withCurrencyCode("EUR")
-                .withDelivery(createDelivery())
-                .withExternalReference("externalRef")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .withExternalReferenceType("CMDE")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withCurrencyCode("EUR")
+                    .withDelivery(createDelivery())
+                    .withExternalReference("externalRef")
+                    .withListItem(createItemList())
+                    .withNumberOfItems(2)
+                    .withExternalReferenceType("CMDE")
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a purchaseAmount when built", exception.getMessage());
+
 
     }
 
     @Test
     public void withoutCurrencyCode() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("Purchase must have a currencyCode when built");
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReference("externalRef")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .withExternalReferenceType("CMDE")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchase = Purchase.Builder.aPurchaseBuilder()
+                    .withPurchaseMerchant(createPurchaseMerchant())
+                    .withPurchaseAmount(150f)
+                    .withDelivery(createDelivery())
+                    .withExternalReference("externalRef")
+                    .withListItem(createItemList())
+                    .withNumberOfItems(2)
+                    .withExternalReferenceType("CMDE")
+                    .build();
+        });
+        Assertions.assertEquals("Purchase must have a currencyCode when built", exception.getMessage());
+
 
     }
 

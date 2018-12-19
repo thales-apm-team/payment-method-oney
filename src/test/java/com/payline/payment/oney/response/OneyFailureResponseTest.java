@@ -3,8 +3,8 @@ package com.payline.payment.oney.response;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
@@ -23,7 +23,7 @@ public class OneyFailureResponseTest {
 
         OneyFailureResponse failureCause = OneyFailureResponse.fromJson(stringResponse.toString());
         paylineFailureResponse = handleOneyFailureResponse(failureCause);
-        Assert.assertEquals(FailureCause.REFUSED, paylineFailureResponse);
+        Assertions.assertEquals(FailureCause.REFUSED, paylineFailureResponse);
 
     }
 
@@ -33,10 +33,10 @@ public class OneyFailureResponseTest {
 
         OneyFailureResponse failureCause = new OneyFailureResponse(stringResponse.getCode(), stringResponse.getMessage(), stringResponse.getContent(), paymentErrorResponseFromJson(stringResponse.getContent()));
 
-        Assert.assertEquals("400", failureCause.getCode().toString());
-        Assert.assertEquals("Bad request", failureCause.getMessage());
-        Assert.assertNotNull(failureCause.getContent());
-        Assert.assertNotNull(failureCause.getPaymentErrorContent());
+        Assertions.assertEquals("400", failureCause.getCode().toString());
+        Assertions.assertEquals("Bad request", failureCause.getMessage());
+        Assertions.assertNotNull(failureCause.getContent());
+        Assertions.assertNotNull(failureCause.getPaymentErrorContent());
 
     }
 
@@ -50,7 +50,7 @@ public class OneyFailureResponseTest {
         OneyFailureResponse failureCause = new OneyFailureResponse(stringResponse.getCode(), stringResponse.getMessage(), stringResponse.getContent(), paymentErrorResponseFromJson(stringResponse.getContent()));
 
         paylineFailureResponse = handleOneyFailureResponseFromCause(failureCause);
-        Assert.assertEquals(FailureCause.INVALID_FIELD_FORMAT, paylineFailureResponse);
+        Assertions.assertEquals(FailureCause.INVALID_FIELD_FORMAT, paylineFailureResponse);
 
     }
 

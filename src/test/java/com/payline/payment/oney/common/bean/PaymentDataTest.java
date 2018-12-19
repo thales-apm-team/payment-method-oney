@@ -2,10 +2,8 @@ package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
@@ -13,8 +11,6 @@ import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuil
 public class PaymentDataTest {
 
     private PaymentData paymentdata;
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void paymentDataOK() {
@@ -24,8 +20,8 @@ public class PaymentDataTest {
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 
-        Assert.assertEquals(100, paymentdata.getAmount(),0.001);
-        Assert.assertEquals("EUR", paymentdata.getCurrency());
+        Assertions.assertEquals(100, paymentdata.getAmount(), 0.001);
+        Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }
 
     @Test
@@ -34,40 +30,49 @@ public class PaymentDataTest {
                 .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Assert.assertEquals(10, paymentdata.getAmount(),0.001);
-        Assert.assertEquals("EUR", paymentdata.getCurrency());
+        Assertions.assertEquals(10, paymentdata.getAmount(), 0.001);
+        Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }
 
     @Test
     public void paymentDataFailAmount() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("PaymentData must have a amount when built");
-        paymentdata = PaymentData.Builder.aPaymentData()
-                .withCurrency("EUR")
-                .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            paymentdata = PaymentData.Builder.aPaymentData()
+                    .withCurrency("EUR")
+                    .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
+                    .build();
+        });
+        Assertions.assertEquals("PaymentData must have a amount when built", exception.getMessage());
+
 
     }
 
     @Test
     public void paymentDataFailCurrency() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("PaymentData must have a currency when built");
-        paymentdata = PaymentData.Builder.aPaymentData()
-                .withAmount(100)
-                .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            paymentdata = PaymentData.Builder.aPaymentData()
+                    .withAmount(100)
+                    .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
+                    .build();
+        });
+        Assertions.assertEquals("PaymentData must have a currency when built", exception.getMessage());
+
     }
 
 
     @Test
     public void paymentDataFailBusinessTransactionData() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("PaymentData must have a businessTransaction when built");
-        paymentdata = PaymentData.Builder.aPaymentData()
-                .withAmount(100)
-                .withCurrency("EUR")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            paymentdata = PaymentData.Builder.aPaymentData()
+                    .withAmount(100)
+                    .withCurrency("EUR")
+                    .build();
+        });
+        Assertions.assertEquals("PaymentData must have a businessTransaction when built", exception.getMessage());
+
     }
 
     @Test
@@ -77,11 +82,11 @@ public class PaymentDataTest {
                 .withPaymentType(PaymentType.CHECK_CARD.getValue())
                 .withCurrency("EUR")
                 .build();
-        Assert.assertNotNull(paymentdata);
+        Assertions.assertNotNull(paymentdata);
     }
 
     @Test
-    public void toStringTest(){
+    public void toStringTest() {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withCurrency("EUR")
@@ -89,10 +94,10 @@ public class PaymentDataTest {
                 .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
                 .build();
 
-        Assert.assertTrue(paymentdata.toString().contains("payment_amount"));
-        Assert.assertTrue(paymentdata.toString().contains("currency_code"));
-        Assert.assertTrue(paymentdata.toString().contains("payment_type"));
-        Assert.assertTrue(paymentdata.toString().contains("business_transaction"));
+        Assertions.assertTrue(paymentdata.toString().contains("payment_amount"));
+        Assertions.assertTrue(paymentdata.toString().contains("currency_code"));
+        Assertions.assertTrue(paymentdata.toString().contains("payment_type"));
+        Assertions.assertTrue(paymentdata.toString().contains("business_transaction"));
 
 
     }

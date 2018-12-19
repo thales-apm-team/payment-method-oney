@@ -2,7 +2,6 @@ package com.payline.payment.oney.service.impl.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
-import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
@@ -80,6 +79,7 @@ public class OneyConfirmRequest extends OneyRequest {
         }
 
         private OneyConfirmRequest.Builder verifyIntegrity() {
+
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a merchantGuid when built");
             }
@@ -94,9 +94,10 @@ public class OneyConfirmRequest extends OneyRequest {
             }
             if (this.paymentData == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a paymentData when built");
-            } else {
-                return this;
             }
+
+            return this;
+
 
         }
 

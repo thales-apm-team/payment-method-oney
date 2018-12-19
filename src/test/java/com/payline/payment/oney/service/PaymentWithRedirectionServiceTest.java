@@ -10,9 +10,10 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -24,6 +25,7 @@ import java.net.URISyntaxException;
 import static com.payline.payment.oney.utils.TestUtils.createCompleteRedirectionPaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentWithRedirectionServiceTest {
 
     @InjectMocks
@@ -32,7 +34,7 @@ public class PaymentWithRedirectionServiceTest {
     @Spy
     OneyHttpClient httpClient;
 
-    @Before
+    @BeforeAll
     public void setup() {
         service = new PaymentWithRedirectionServiceImpl();
         MockitoAnnotations.initMocks(this);
@@ -52,9 +54,9 @@ public class PaymentWithRedirectionServiceTest {
 
         if (response.getClass() == PaymentResponseSuccess.class) {
             PaymentResponseSuccess success = (PaymentResponseSuccess) response;
-            Assert.assertEquals("200", success.getStatusCode());
-            Assert.assertEquals("Transaction is completed", success.getMessage().getMessage());
-            Assert.assertNotNull(success.getTransactionAdditionalData());
+            Assertions.assertEquals("200", success.getStatusCode());
+            Assertions.assertEquals("Transaction is completed", success.getMessage().getMessage());
+            Assertions.assertNotNull(success.getTransactionAdditionalData());
         }
 
     }
@@ -71,8 +73,8 @@ public class PaymentWithRedirectionServiceTest {
 
         PaymentResponse response = service.validatePayment(paymentRequest, true);
         PaymentResponseFailure fail = (PaymentResponseFailure) response;
-        Assert.assertEquals("400", fail.getErrorCode());
-        Assert.assertEquals(FailureCause.INVALID_DATA, fail.getFailureCause());
+        Assertions.assertEquals("400", fail.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_DATA, fail.getFailureCause());
     }
 
 
@@ -83,12 +85,12 @@ public class PaymentWithRedirectionServiceTest {
                 Mockito.anyString(), Mockito.anyBoolean());
 
         OneyConfirmRequest paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest( createCompleteRedirectionPaymentBuilder())
+                .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
                 .build();
 
         PaymentResponseFailure response = (PaymentResponseFailure) service.validatePayment(paymentRequest, true);
-        Assert.assertEquals("404", response.getErrorCode());
-        Assert.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
+        Assertions.assertEquals("404", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
 
 
     }
@@ -102,13 +104,13 @@ public class PaymentWithRedirectionServiceTest {
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         PaymentResponse response = service.finalizeRedirectionPayment(redirectionPaymentRequest);
 
-        Assert.assertEquals(PaymentResponseSuccess.class, response.getClass());
+        Assertions.assertEquals(PaymentResponseSuccess.class, response.getClass());
         PaymentResponseSuccess success = (PaymentResponseSuccess) response;
-        Assert.assertNotNull(success.getPartnerTransactionId());
-        Assert.assertNotNull(success.getMessage());
-        Assert.assertNotNull(success.getStatusCode());
-        Assert.assertNotNull(success.getTransactionDetails());
-        Assert.assertEquals("Transaction is completed", success.getTransactionDetails());
+        Assertions.assertNotNull(success.getPartnerTransactionId());
+        Assertions.assertNotNull(success.getMessage());
+        Assertions.assertNotNull(success.getStatusCode());
+        Assertions.assertNotNull(success.getTransactionDetails());
+        Assertions.assertEquals("Transaction is completed", success.getTransactionDetails());
 
     }
 
@@ -121,11 +123,11 @@ public class PaymentWithRedirectionServiceTest {
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         PaymentResponse response = service.finalizeRedirectionPayment(redirectionPaymentRequest);
 
-        Assert.assertEquals(PaymentResponseFailure.class, response.getClass());
+        Assertions.assertEquals(PaymentResponseFailure.class, response.getClass());
         PaymentResponseFailure failure = (PaymentResponseFailure) response;
-        Assert.assertNotNull(failure.getPartnerTransactionId());
-        Assert.assertNotNull(failure.getFailureCause());
-        Assert.assertEquals(FailureCause.REFUSED, failure.getFailureCause());
+        Assertions.assertNotNull(failure.getPartnerTransactionId());
+        Assertions.assertNotNull(failure.getFailureCause());
+        Assertions.assertEquals(FailureCause.REFUSED, failure.getFailureCause());
 
 
     }

@@ -30,7 +30,7 @@ public class AdditionalData extends OneyBean {
     }
 
 
-    public class AdditionalDataPurchase {
+    static class AdditionalDataPurchase {
 
         @SerializedName("status_code")
         private String statusCode;

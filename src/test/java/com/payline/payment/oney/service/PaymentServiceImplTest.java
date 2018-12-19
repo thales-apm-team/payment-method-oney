@@ -8,11 +8,10 @@ import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -24,11 +23,9 @@ import java.net.URISyntaxException;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentServiceImplTest {
 
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Spy
     OneyHttpClient httpClient;
@@ -37,7 +34,7 @@ public class PaymentServiceImplTest {
     PaymentServiceImpl service;
 
 
-    @Before
+    @BeforeAll
     public void setup() {
         service = new PaymentServiceImpl();
         MockitoAnnotations.initMocks(this);
@@ -49,11 +46,11 @@ public class PaymentServiceImplTest {
 
         StringResponse responseEncryptedMocked = createStringResponse(200, "", "{\"encrypted_message\": \"FhzjXBU2Ek+/dmCMVB4wWn6ytL2+dh5mIx+gxDtcp4rTSzO/LA1Q72aClEvNoeXVdc3wg8L8PpMvAhRkWkLc1DyuX14icAZP8C7uA5COgRIzklUPJq/d9tiDWXxszS9o4ALbCfpGYqSgUN38fBnJhC9Y7RBqY4eq+H0iTRtvfYSLmKumsYvQFJY/21j+Xou/ZLppruwA6/MNC0nDGXw2o2PJeMGm+e5i4lUlqowvecmZ+GWQM91pOrb95B/pqriDYwZnnRQrewuhAyvIkR8LVQ==\"}");
         Mockito.doReturn(responseEncryptedMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
 
         PaymentResponseRedirect response = (PaymentResponseRedirect) service.paymentRequest(createCompletePaymentBuilder().build());
-        Assert.assertNotNull(response.getRedirectionRequest().getUrl());
-        Assert.assertNotNull(response.getRequestContext().getRequestData().get(OneyConstants.MERCHANT_GUID_KEY));
+        Assertions.assertNotNull(response.getRedirectionRequest().getUrl());
+        Assertions.assertNotNull(response.getRequestContext().getRequestData().get(OneyConstants.MERCHANT_GUID_KEY));
 
     }
 
@@ -62,11 +59,11 @@ public class PaymentServiceImplTest {
         StringResponse responseMocked = createStringResponse(400, "Bad request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"purchase.delivery.delivery_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"customer.customer_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"payment.payment_type\",\"error_code\":\"ERR_03\",\"error_label\":\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
-        Assert.assertNotNull(response);
-        Assert.assertEquals("400", response.getErrorCode());
-        Assert.assertEquals(FailureCause.INVALID_FIELD_FORMAT, response.getFailureCause());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_FIELD_FORMAT, response.getFailureCause());
 
     }
 
@@ -75,11 +72,11 @@ public class PaymentServiceImplTest {
         StringResponse responseMocked = createStringResponse(404, "Bad request", "{Payments_Error_Response:{error_list:[{field:purchase.delivery.delivery_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:customer.customer_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:payment.payment_type,error_code:ERR_03,error_label:\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
-        Assert.assertNotNull(response);
-        Assert.assertEquals("404", response.getErrorCode());
-        Assert.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("404", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
 
     }
 

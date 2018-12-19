@@ -2,8 +2,8 @@ package com.payline.payment.oney.request;
 
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.TestUtils.createCompleteRedirectionPaymentBuilder;
 
@@ -18,11 +18,11 @@ public class OneyConfirmRequestTest {
                 .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
                 .build();
 
-        Assert.assertTrue(paymentRequest.toString().contains("merchant_guid"));
-        Assert.assertTrue(paymentRequest.toString().contains("psp_guid"));
-        Assert.assertTrue(paymentRequest.toString().contains("language_code"));
-        Assert.assertTrue(paymentRequest.toString().contains("merchant_request_id"));
-        Assert.assertTrue(paymentRequest.toString().contains("payment"));
+        Assertions.assertTrue(paymentRequest.toString().contains("merchant_guid"));
+        Assertions.assertTrue(paymentRequest.toString().contains("psp_guid"));
+        Assertions.assertTrue(paymentRequest.toString().contains("language_code"));
+        Assertions.assertTrue(paymentRequest.toString().contains("merchant_request_id"));
+        Assertions.assertTrue(paymentRequest.toString().contains("payment"));
         System.out.println(paymentRequest);
     }
 

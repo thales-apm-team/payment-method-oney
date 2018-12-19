@@ -2,16 +2,11 @@ package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OneyCryptoTest {
 
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
     private OneyCrypto crypto;
 
 
@@ -22,8 +17,8 @@ public class OneyCryptoTest {
         String message = "mon message a chiffrer";
         String messageEncrypted = crypto.encrypt(message);
 
-        Assert.assertNotEquals(message, messageEncrypted);
-        Assert.assertEquals("w7wNbi0SYzTRnHmVN3tUUiSveqAUZVyttsUtRbXw8Mk=", messageEncrypted);
+        Assertions.assertNotEquals(message, messageEncrypted);
+        Assertions.assertEquals("w7wNbi0SYzTRnHmVN3tUUiSveqAUZVyttsUtRbXw8Mk=", messageEncrypted);
     }
 
 
@@ -34,8 +29,8 @@ public class OneyCryptoTest {
         String messageEncrypted = "SE7ZT07NBY+cOL7B3/jLRdfFBH96VX2mMyxioBE7F8o=";
         String message = crypto.decrypt(messageEncrypted);
 
-        Assert.assertNotEquals(message, messageEncrypted);
-        Assert.assertEquals("mon message a dechiffrer", message);
+        Assertions.assertNotEquals(message, messageEncrypted);
+        Assertions.assertEquals("mon message a dechiffrer", message);
     }
 
 
@@ -48,19 +43,22 @@ public class OneyCryptoTest {
         String messageDecrypted = crypto.decrypt(messageEncrypted);
 
 
-        Assert.assertNotEquals(message, messageEncrypted);
-        Assert.assertNotEquals(messageEncrypted, messageDecrypted);
-        Assert.assertEquals(message, messageDecrypted);
+        Assertions.assertNotEquals(message, messageEncrypted);
+        Assertions.assertNotEquals(messageEncrypted, messageDecrypted);
+        Assertions.assertEquals(message, messageDecrypted);
 
     }
 
     @Test
     public void encryptWrongKey() throws DecryptException {
-        expectedEx.expect(DecryptException.class);
-        crypto = new OneyCrypto("maCle");
 
-        String message = "mon message a chiffrer";
-        crypto.encrypt(message);
+        Throwable exception = Assertions.assertThrows(DecryptException.class, () -> {
+            crypto = new OneyCrypto("maCle");
+
+            String message = "mon message a chiffrer";
+            crypto.encrypt(message);
+
+        });
 
     }
 

@@ -1,18 +1,14 @@
 package com.payline.payment.oney.common.bean;
 
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
 public class PurchaseMerchantTest {
 
     private PurchaseMerchant purchaseMerchant;
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void purchaseMerchantOK() {
@@ -23,40 +19,46 @@ public class PurchaseMerchantTest {
                 .withMunicipality("city")
                 .build();
 
-        Assert.assertNotNull(purchaseMerchant);
-        Assert.assertNotNull(purchaseMerchant.getExternalReference());
-        Assert.assertNotNull(purchaseMerchant.getMerchantGuid());
-        Assert.assertTrue(purchaseMerchant.toString().contains("company_name"));
-        Assert.assertTrue(purchaseMerchant.toString().contains("external_reference"));
-        Assert.assertTrue(purchaseMerchant.toString().contains("merchant_guid"));
-        Assert.assertTrue(purchaseMerchant.toString().contains("municipality"));
+        Assertions.assertNotNull(purchaseMerchant);
+        Assertions.assertNotNull(purchaseMerchant.getExternalReference());
+        Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
+        Assertions.assertTrue(purchaseMerchant.toString().contains("company_name"));
+        Assertions.assertTrue(purchaseMerchant.toString().contains("external_reference"));
+        Assertions.assertTrue(purchaseMerchant.toString().contains("merchant_guid"));
+        Assertions.assertTrue(purchaseMerchant.toString().contains("municipality"));
     }
 
 
     @Test
     public void withoutExternalRef() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("PurchaseMerchant must have a externalReference when built");
-        purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                .withCompanyName("cie")
-                .withMerchantGuid("guid")
-                .withMunicipality("city")
-                .build();
 
-        Assert.assertNotNull(purchaseMerchant);
-        Assert.assertNotNull(purchaseMerchant.getExternalReference());
-        Assert.assertNotNull(purchaseMerchant.getMerchantGuid());
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                    .withCompanyName("cie")
+                    .withMerchantGuid("guid")
+                    .withMunicipality("city")
+                    .build();
+        });
+        Assertions.assertEquals("PurchaseMerchant must have a externalReference when built", exception.getMessage());
+
+// FIXME : tu ne peux avoir à la fois une exception et l'objet purchaseMerchant ..
+        Assertions.assertNotNull(purchaseMerchant);
+        Assertions.assertNotNull(purchaseMerchant.getExternalReference());
+        Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
     }
 
     @Test
     public void withoutMerchantGuid() {
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("PurchaseMerchant must have a merchantGuid when built");
-        purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                .withCompanyName("cie")
-                .withExternalReference("ref")
-                .withMunicipality("city")
-                .build();
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                    .withCompanyName("cie")
+                    .withExternalReference("ref")
+                    .withMunicipality("city")
+                    .build();
+        });
+        Assertions.assertEquals("PurchaseMerchant must have a merchantGuid when built", exception.getMessage());
+
     }
 
     @Test
@@ -66,10 +68,9 @@ public class PurchaseMerchantTest {
                 .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Assert.assertNotNull(purchaseMerchant.getExternalReference());
-        Assert.assertNotNull(purchaseMerchant.getMerchantGuid());
+        Assertions.assertNotNull(purchaseMerchant.getExternalReference());
+        Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
     }
-
 
 
 }

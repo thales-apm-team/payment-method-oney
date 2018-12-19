@@ -8,11 +8,9 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
 import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseSpecific;
 import com.payline.pmapi.bean.paymentform.response.logo.PaymentFormLogoResponse;
 import com.payline.pmapi.bean.paymentform.response.logo.impl.PaymentFormLogoResponseFile;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -21,7 +19,7 @@ import static com.payline.payment.oney.utils.TestUtils.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+
 public class PaymentFormConfigurationServiceImplTest {
 
 
@@ -43,10 +41,10 @@ public class PaymentFormConfigurationServiceImplTest {
 
         PaymentFormConfigurationResponseSpecific paymentFormConfigurationResponse = (PaymentFormConfigurationResponseSpecific) service.getPaymentFormConfiguration(paymentFormConfigurationRequest);
 
-        Assert.assertNotNull(paymentFormConfigurationResponse.getPaymentForm());
-        Assert.assertEquals("Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getButtonText());
-        Assert.assertEquals("Payer avec Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getDescription());
-        Assert.assertTrue(paymentFormConfigurationResponse.getPaymentForm().isDisplayButton());
+        Assertions.assertNotNull(paymentFormConfigurationResponse.getPaymentForm());
+        Assertions.assertEquals("Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getButtonText());
+        Assertions.assertEquals("Payer avec Oney 3x 4x", paymentFormConfigurationResponse.getPaymentForm().getDescription());
+        Assertions.assertTrue(paymentFormConfigurationResponse.getPaymentForm().isDisplayButton());
     }
 
     @Test
@@ -57,12 +55,12 @@ public class PaymentFormConfigurationServiceImplTest {
 
         PaymentFormLogoResponse paymentFormLogoResponse = service.getPaymentFormLogo(paymentFormLogoRequest);
 
-        Assert.assertNotNull(paymentFormLogoResponse);
-        Assert.assertTrue(paymentFormLogoResponse instanceof PaymentFormLogoResponseFile);
+        Assertions.assertNotNull(paymentFormLogoResponse);
+        Assertions.assertTrue(paymentFormLogoResponse instanceof PaymentFormLogoResponseFile);
 
         PaymentFormLogoResponseFile casted = (PaymentFormLogoResponseFile) paymentFormLogoResponse;
-        Assert.assertEquals(17, casted.getHeight());
-        Assert.assertEquals(54, casted.getWidth());
+        Assertions.assertEquals(17, casted.getHeight());
+        Assertions.assertEquals(54, casted.getWidth());
     }
 
     @Test
@@ -73,8 +71,8 @@ public class PaymentFormConfigurationServiceImplTest {
 
 
         // then: returned elements are not null
-        Assert.assertNotNull(paymentFormLogo.getFile());
-        Assert.assertNotNull(paymentFormLogo.getContentType());
+        Assertions.assertNotNull(paymentFormLogo.getFile());
+        Assertions.assertNotNull(paymentFormLogo.getContentType());
 
     }
 
