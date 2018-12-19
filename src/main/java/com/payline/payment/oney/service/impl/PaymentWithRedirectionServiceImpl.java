@@ -77,38 +77,44 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent());
-                switch (response.getStatusPurchase().getStatusCode()) {
-                    //renvoi d'un paymentResponseOnHold
-                    case "PENDING":
-                        //renvoi d'une PaymentResponseOnHold ??
-                        return PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
-                                .withPartnerTransactionId(transactionStatusRequest.getTransactionId())
-                                .withOnHoldCause(OnHoldCause.SCORING_ASYNC)
-                                .build();
-                    case "FAVORABLE":
-                        //confirmer la requete
-                        OneyConfirmRequest confirmRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                                .fromTransactionStatusRequest(transactionStatusRequest)
-                                .build();
-                        return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox());
+                if(response.getStatusPurchase() != null) {
+                    switch (response.getStatusPurchase().getStatusCode()) {
+                        //renvoi d'un paymentResponseOnHold
+                        case "PENDING":
+                            //renvoi d'une PaymentResponseOnHold ??
+                            return PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
+                                    .withPartnerTransactionId(transactionStatusRequest.getTransactionId())
+                                    .withOnHoldCause(OnHoldCause.SCORING_ASYNC)
+                                    .build();
+                        case "FAVORABLE":
+                            //confirmer la demande
+                            OneyConfirmRequest confirmRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
+                                    .fromTransactionStatusRequest(transactionStatusRequest)
+                                    .build();
+                            return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox());
 
-                    case "FUNDED":
-                        // demande deja acceptée renvoyer une paymentResponseSuccess avec donnees
-                        return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
-                                .withStatusCode("200")
-                                .withMessage(new Message(Message.MessageType.SUCCESS, "OK"))
-                                .withPartnerTransactionId(oneyTransactionStatusRequest.getPurchaseReference())
-                                .build();
-                    case "REFUSED":
-                        return OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, oneyTransactionStatusRequest.getPurchaseReference());
-                    case "ABORTED":
-                    case "CANCELLED":
-                        //demande rejetee ou annuléee ou
-                        //change value
-                        return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
-                    default:
-                        return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
-
+                        case "FUNDED":
+                            // demande deja acceptée renvoyer une paymentResponseSuccess avec donnees
+                            return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
+                                    .withStatusCode("200")
+                                    .withMessage(new Message(Message.MessageType.SUCCESS, "OK"))
+                                    .withPartnerTransactionId(oneyTransactionStatusRequest.getPurchaseReference())
+                                    .withTransactionDetails(new EmptyTransactionDetails())
+                                    .build();
+                        case "REFUSED":
+                            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, oneyTransactionStatusRequest.getPurchaseReference());
+                        case "ABORTED":
+                        case "CANCELLED":
+                            //demande rejetee ou annuléee ou
+                            //change value
+                            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
+                        default:
+                            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
+                    }
+                }
+                else{
+                    //Pas de statut pour cette demande
+                    return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
                 }
 
             } else {
@@ -165,7 +171,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 return OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, confirmRequest.getPurchaseReference());
             }
 
-            //todo definir les additionals data a renvoyer
+            //definir les additionals data a renvoyer
 //            AdditionalData additionalData = AdditionalData.fromJson(responseDecrypted.toString());
             //Additional data  : ajouter purchaseReference ? amount ? transaction status ??
             String message = (responseDecrypted.getStatusPurchase() == null) ? "" : responseDecrypted.getStatusPurchase().getStatusLabel();

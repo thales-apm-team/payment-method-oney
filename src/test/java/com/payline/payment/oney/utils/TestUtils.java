@@ -9,6 +9,7 @@ import com.payline.pmapi.bean.configuration.request.ContractParametersCheckReque
 import com.payline.pmapi.bean.payment.*;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
+import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +50,7 @@ public class TestUtils {
      * @return paymentRequest created
      */
     public static PaymentRequest createDefaultPaymentRequest() {
-        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
+        final Amount amount = createAmount(CONFIRM_AMOUNT,"EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final Order order = createOrder(TRANSACTION_ID);
@@ -95,7 +96,7 @@ public class TestUtils {
     public static RefundRequest createRefundRequest(String transactionId) {
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
 //       final String transactionID = createTransactionId();
-        final Amount amount = new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
+        final Amount amount = createAmount(CONFIRM_AMOUNT,"EUR");
         final Map<String, String> partnerConfiguration = new HashMap<>();
         final Map<String, String> sensitiveConfig = new HashMap<>();
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
@@ -147,7 +148,7 @@ public class TestUtils {
 
     //Cree une redirection payment par defaut
     public static RedirectionPaymentRequest createCompleteRedirectionPaymentBuilder() {
-        final Amount amount =  new Amount(new BigInteger(CONFIRM_AMOUNT),Currency.getInstance("EUR"));
+        final Amount amount =  createAmount(CONFIRM_AMOUNT,"EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
@@ -212,6 +213,9 @@ public class TestUtils {
     public static Amount createAmount(String currency) {
         return new Amount(BigInteger.TEN, Currency.getInstance(currency));
     }
+    public static Amount createAmount(String amount, String currency) {
+       return new Amount ( new BigInteger(amount), Currency.getInstance(currency));
+    }
 
     public static Order createOrder(String transactionID) {
 
@@ -220,7 +224,7 @@ public class TestUtils {
         orderItems.add(createOrderItem("item2", createAmount("EUR")));
         return Order.OrderBuilder.anOrder()
                 .withReference(transactionID)
-                .withAmount(new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR")))
+                .withAmount(createAmount(CONFIRM_AMOUNT,"EUR"))
                 .withDate(new Date())
                 .withItems(orderItems)
                 .withDeliveryMode("1")
@@ -253,8 +257,8 @@ public class TestUtils {
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "0606060607");
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+330625262428");
-        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "0708070704");
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+332625262428");
+        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+332708070704");
         phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "0708070709");
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "0708070709");
 
@@ -386,7 +390,7 @@ public class TestUtils {
         return PaymentFormConfigurationRequest.PaymentFormConfigurationRequestBuilder.aPaymentFormConfigurationRequest()
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer())
-                .withAmount(new Amount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR")))
+                .withAmount(createAmount(CONFIRM_AMOUNT,"EUR"))
                 .withContractConfiguration(createContractConfiguration())
                 .withOrder(createOrder("007"))
                 .withEnvironment(createDefaultEnvironment())
@@ -404,14 +408,18 @@ public class TestUtils {
     }
 
 
-//    public static NotifyTransactionStatusRequest createTransactionStatusRequest(){
-//        return NotifyTransactionStatusRequest.NotifyTransactionStatusRequestBuilder
-//                .aNotifyTransactionStatusRequest()
-//                .withPartnerTransactionId()
-//                .withAmount()
-//                .withContractConfiguration()
-//                .withEnvironment()
-//                .withPartnerConfiguration()
-//                .build();
-//    }
+    public static TransactionStatusRequest createDefaultTransactionStatusRequest(){
+        return TransactionStatusRequest.TransactionStatusRequestBuilder
+                .aNotificationRequest()
+                .withTransactionId(TRANSACTION_ID)
+                .withAmount(createAmount(CONFIRM_AMOUNT,"EUR"))
+                .withContractConfiguration(createContractConfiguration())
+                .withEnvironment(createDefaultEnvironment())
+                .withOrder(createOrder(TRANSACTION_ID))
+                .withBuyer(createDefaultBuyer())
+                .withPartnerConfiguration(createDefaultPartnerConfiguration())
+                .build();
+    }
+
+
 }
