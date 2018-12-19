@@ -48,6 +48,8 @@ public class TestIt extends AbstractPaymentIntegration {
         Map<String, String> paymentFormParameter = new HashMap<>();
         paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
+        paymentFormParameter.put(CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
+
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
                 .withPaymentFormParameter(paymentFormParameter)
