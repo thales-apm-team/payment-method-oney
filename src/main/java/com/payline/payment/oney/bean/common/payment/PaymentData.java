@@ -106,7 +106,7 @@ public class PaymentData extends OneyBean {
             return PaymentData.Builder.aPaymentData()
                     .withAmount(request.getAmount().getAmountInSmallestUnit().floatValue())
                     .withCurrency(request.getAmount().getCurrency().getCurrencyCode())
-                    //todo mapper payment type (une constante  ou contract config ??)
+                    //v2 mapper payment type (quel champ de la requete)
                     .withPaymentType(PaymentType.IMMEDIATE.getValue())
                     .withBusinessTransactionList(BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                             .fromPayline(request.getContractConfiguration())

@@ -80,7 +80,6 @@ public class PluginUtilsTest {
         Assertions.assertEquals(1, catCodeOney);
         Assertions.assertEquals(5, catCodeOney2);
 
-        System.out.println(PaymentType.CHECK_CARD.getValue());
     }
 
     @Test

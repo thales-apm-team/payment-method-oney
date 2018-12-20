@@ -18,8 +18,6 @@ import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequest
 
 public class OneyPaymentRequest extends OneyRequest {
 
-    //v1 pour le moment
-    private static final Logger LOGGER = LogManager.getLogger(OneyPaymentRequest.class);
 
     @SerializedName("language_code")
     private String languageCode;
@@ -238,8 +236,7 @@ public class OneyPaymentRequest extends OneyRequest {
             }
             if (this.encryptKey == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a encryptKey when built");
-            }
-            else {
+            } else {
                 return this;
             }
         }
@@ -272,11 +269,9 @@ public class OneyPaymentRequest extends OneyRequest {
                             .fromPayline(paymentRequest)
                             .build())
                     .withMerchantLanguageCode(paymentRequest.getLocale().getLanguage())
-                    .withEncryptKey(paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY)
-)
-//  Optional fields  pas encore mappes
-//                    .withMerchantContext("")
-//                    .withPspContext("")
+                    .withEncryptKey(paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY))
+                    .withMerchantContext(paymentRequest.getSoftDescriptor())
+                    .withPspContext(paymentRequest.getTransactionId())
 //                    .withOrigin("WEB")
 //                    .withSkinId(3)
 

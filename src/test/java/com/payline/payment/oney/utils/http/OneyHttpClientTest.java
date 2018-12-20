@@ -84,7 +84,6 @@ public class OneyHttpClientTest {
 
         StringResponse response = client.doPost(scheme, host, path, requestContent, true);
 
-        System.out.println(response);
         //Assert we have a response
         Assertions.assertNotNull(response);
         Assertions.assertEquals(400, response.getCode());

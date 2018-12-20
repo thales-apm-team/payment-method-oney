@@ -138,7 +138,7 @@ public class PaymentWithRedirectionServiceTest {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyMap(), Mockito.anyBoolean());
-        TransactionStatusRequest transactionStatusReq  = createDefaultTransactionStatusRequest();
+        TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertTrue(paymentResponse.getClass().equals(PaymentResponseSuccess.class));
@@ -151,7 +151,7 @@ public class PaymentWithRedirectionServiceTest {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"Zfxsl1nYU+7gI2vAD7S+JSO1EkNNk4gaIQcX++gJrX7NfjZ417t0L7ruzUCqFyxIVQWywc2FqrUK6J4kU5EPh0ksAzV6KmKWDolDoGte7uENMlMzcTriutnu5d/fJEf1\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyMap(), Mockito.anyBoolean());
-        TransactionStatusRequest transactionStatusReq  = createDefaultTransactionStatusRequest();
+        TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertTrue(paymentResponse.getClass().equals(PaymentResponseOnHold.class));
@@ -164,7 +164,7 @@ public class PaymentWithRedirectionServiceTest {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyMap(), Mockito.anyBoolean());
-        TransactionStatusRequest transactionStatusReq  = createDefaultTransactionStatusRequest();
+        TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertTrue(paymentResponse.getClass().equals(PaymentResponseFailure.class));
@@ -182,7 +182,7 @@ public class PaymentWithRedirectionServiceTest {
         Mockito.doReturn(responseMocked2).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
 
-        TransactionStatusRequest transactionStatusReq  = createDefaultTransactionStatusRequest();
+        TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertTrue(paymentResponse.getClass().equals(PaymentResponseSuccess.class));

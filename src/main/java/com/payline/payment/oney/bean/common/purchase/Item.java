@@ -113,13 +113,13 @@ public class Item extends OneyBean {
 
     //Builder
     public static class Builder {
-        private Integer isMainItem; // faire booleen  ??
-        private Integer categoryCode; // faire Oney value - Payline  ??
-        private String label; // faire Oney value - Payline  ??
-        private String itemExternalcode; // faire Oney value - Payline  ??
+        private Integer isMainItem;
+        private Integer categoryCode;
+        private String label;
+        private String itemExternalcode;
         private Integer quantity;
         private Float price;
-        private Integer marketplaceFlag; // faire booleen  ??
+        private Integer marketplaceFlag;
         private String marketplaceName;
         private Travel travel;
 

@@ -94,7 +94,6 @@ public class OneyConfirmRequest extends OneyRequest {
             String merchantGuidValue = transactionStatusRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
             this.purchaseReference = transactionStatusRequest.getTransactionId();
-//            this.languageCode = transactionStatusRequest.getLocale().getLanguage();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);

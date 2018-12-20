@@ -65,8 +65,7 @@ public class ContactDetails extends OneyBean {
                 throw new IllegalStateException("ContactDetails must have a mobilePhoneNumber when built");
             }
 
-//            if (this.emailAdress == null || !(this.emailAdress.matches(" ^(.+)@(.+)$"))) {
-            if (this.emailAdress == null ) {
+            if (this.emailAdress == null) {
                 throw new IllegalStateException("ContactDetails must have a  valid emailAddress when built");
             }
             return this;
