@@ -71,7 +71,9 @@ public class PluginUtils {
     public static Integer getHonorificCode(String civility) {
 
         //fixme verifier le nom des champs  renvoyés par Payline
-
+        if (civility == null) {
+            return null;
+        }
         switch (civility.toLowerCase()) {
             case "unknow":
                 return 0;
@@ -90,10 +92,12 @@ public class PluginUtils {
         }
     }
 
-    public static int getOneyDeliveryModeCode(String paylineCode) {
+    public static Integer getOneyDeliveryModeCode(String paylineCode) {
 
+        if (paylineCode == null) {
+            return null;
+        }
         switch (paylineCode) {
-
 
             // "Collection of the goods in the merchant store":
             case "1":
@@ -101,13 +105,13 @@ public class PluginUtils {
             // "Collection in a third party point":
             case "2":
                 return 2;
-           // case "Collection in an airport, train station or travel agency":
+            // case "Collection in an airport, train station or travel agency":
             case "3":
                 return 3;
-         //  case "Carrier (La Poste, Colissimo, UPS, DHL...or any private carrier)":
+            //  case "Carrier (La Poste, Colissimo, UPS, DHL...or any private carrier)":
             case "4":
                 return 4;
-        //  case "Electronic ticket":
+            //  case "Electronic ticket":
             case "5":
                 return 5;
 
@@ -117,11 +121,14 @@ public class PluginUtils {
         }
     }
 
-    public static int getOneyDeliveryOption(String paylineCode) {
+    public static Integer getOneyDeliveryOption(String paylineCode) {
 
+        if (paylineCode == null) {
+            return null;
+        }
         //fixme definir le nom des champs  renvoyés par Payline
         switch (paylineCode.toLowerCase()) {
-          //  cas "Express (< 24 hours)":
+            //  cas "Express (< 24 hours)":
             case "express":
                 return 1;
             case "standard":
@@ -156,8 +163,11 @@ public class PluginUtils {
         int firstCharPosition = 0;
         int firstCharPosition2 = 0;
 
+        if (longText == null) {
+            textTruncated.put("line1", "");
+        }
         //-------------------- address 1
-        if (longText.length() < size) {
+        else if (longText.length() < size) {
             textTruncated.put("line1", longText);
 
         } else {
@@ -178,7 +188,11 @@ public class PluginUtils {
             textTruncated.put("line3", line3);
         }
         //-------------------- address 2
-        if (longText2.length() < size) {
+        if (longText2 == null) {
+            textTruncated.put("line4", "");
+
+        }
+        else if (longText2.length() < size) {
             textTruncated.put("line4", longText2);
 
         } else {
