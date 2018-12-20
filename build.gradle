@@ -12,8 +12,8 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 
-apply from: "monext.gradle"
-//apply from: "external.gradle"
+//apply from: "monext.gradle"
+apply from: "external.gradle"
 
 description = 'payment-method-oney'
 group = 'com.payline.payment.oney'
@@ -25,8 +25,8 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.0-RC4'
-    paymentMethodIntegrationVersion = "1.0-RC4"
+    paymentMethodApiVersion = '1.0-RC4-SNAPSHOT'
+    paymentMethodIntegrationVersion = "1.0-RC4-SNAPSHOT"
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
 }
