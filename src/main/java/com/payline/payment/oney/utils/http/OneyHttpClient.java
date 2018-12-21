@@ -2,10 +2,7 @@ package com.payline.payment.oney.utils.http;
 
 
 import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
-import com.payline.payment.oney.service.impl.request.OneyEncryptedRequest;
-import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.service.impl.request.*;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.payment.oney.utils.config.ConfigProperties;
@@ -108,6 +105,10 @@ public class OneyHttpClient extends AbstractHttpClient {
         return buildGetOrderPath(path, param) + "/action/confirm";
     }
 
+    public String buildRefundOrderPath(String path, Map<String, String> param) {
+
+        return buildGetOrderPath(path, param) + "/action/cancel";
+    }
     /**
      * Create header for POST/GET methdod
      *
@@ -145,6 +146,20 @@ public class OneyHttpClient extends AbstractHttpClient {
         parameters.put("reference", request.getPurchaseReference());
         String path = buildConfirmOrderPath(CONFIRM_REQUEST_URL, parameters);
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
+        String jsonBody = requestEncrypted.toString();
+        // do the request
+        return doPost(SCHEME, host, path, jsonBody,isSandbox);
+
+    }
+
+    public StringResponse initiateRefundPayment(OneyRefundRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+        String host = getHost(isSandbox);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("psp_guid", request.getPspGuid());
+        parameters.put("merchant_guid", request.getMerchantGuid());
+        parameters.put("reference", request.getPurchaseReference());
+        String path = buildRefundOrderPath(CANCEL_REQUEST_URL, parameters);
+        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyRefundRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
         return doPost(SCHEME, host, path, jsonBody,isSandbox);

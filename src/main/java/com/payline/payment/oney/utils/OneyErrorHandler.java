@@ -3,6 +3,7 @@ package com.payline.payment.oney.utils;
 import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
+import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +23,19 @@ public class OneyErrorHandler {
 
     public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause, String externalReference) {
         return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                .withFailureCause(failureCause)
+                .withPartnerTransactionId(externalReference)
+                .build();
+    }
+
+    public static RefundResponseFailure geRefundResponseFailure(final FailureCause failureCause) {
+        return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+                .withFailureCause(failureCause)
+                .build();
+    }
+
+    public static RefundResponseFailure geRefundResponseFailure(final FailureCause failureCause, String externalReference) {
+        return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                 .withFailureCause(failureCause)
                 .withPartnerTransactionId(externalReference)
                 .build();

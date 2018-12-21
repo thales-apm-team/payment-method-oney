@@ -82,16 +82,14 @@ public class OneyConstants {
 
     public static final String SCHEME = "https";
     public static final String SANDBOX_URL = "oney-staging.azure-api.net";
-    public static final String PRODUCTION_URL = "oney-staging.azure-api.net";
+    public static final String PRODUCTION_URL = "api-staging.oney.io";
 
-    public static final String CONFIRM_SANDBOX_URL = "api-staging.oney.io";
-    public static final String CONFIRM_PRODUCTION_URL = "api-staging.oney.io";
 
 
     //Request URL's
     public static final String PAYMENT_REQUEST_URL = "staging/payments/v1/purchase/facilypay_url";
     public static final String CONFIRM_REQUEST_URL = "staging/payments/v1/purchase";
-    public static final String CANCEL_REQUEST_URL = "";
+    public static final String CANCEL_REQUEST_URL = "staging/payments/v1/purchase";
     public static final String STATUS_REQUEST_URL = "staging/payments/v1/purchase";
 
     //0 immediate, 1 deferred, 2 check card

@@ -1,6 +1,8 @@
 package com.payline.payment.oney.utils.http;
 
+import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.service.impl.request.OneyRefundRequest;
 import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
@@ -17,6 +19,7 @@ import org.powermock.reflect.Whitebox;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,8 +130,6 @@ public class OneyHttpClientTest {
                 Mockito.any(Map.class), Mockito.anyBoolean());
 
 
-//        Mockito.when(client.doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-//                Mockito.any(Map.class), Mockito.anyBoolean())).thenReturn(responseMockedOK);
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .withLanguageCode("FR")
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
@@ -143,4 +144,34 @@ public class OneyHttpClientTest {
     }
 
 
+    @Test
+    public void initiateRefundRequestTest() throws DecryptException, IOException, URISyntaxException {
+
+        StringResponse responseMockedOK = createStringResponse(200, "OK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}\",\"code\":200,\"message\":\"OK\"}");
+        PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doPost"));
+
+        Mockito.doReturn(responseMockedOK).when(testedClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyBoolean());
+
+
+        String  merchantReqId = Calendar.getInstance().getTimeInMillis() + "007";
+        OneyRefundRequest request = OneyRefundRequest.Builder.aOneyRefundRequest()
+                .withLanguageCode("FR")
+                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
+                .withMerchantRequestId(merchantReqId)
+                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
+                .withPurchaseReference("CMDE|455454545415451198119")
+                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
+                .withPurchase(PurchaseCancel.Builder.aPurchaseCancelBuilder()
+                        .withReasonCode(1)
+                        .withRefundFlag(true)
+                        .withAmount(Float.valueOf("250"))
+                        .build())
+                .build();
+
+        Assertions.assertNotNull(request);
+        StringResponse transactStatus = testedClient.initiateRefundPayment(request, true);
+        Assertions.assertNotNull(transactStatus.getCode());
+        Assertions.assertNotNull(transactStatus.getContent());
+    }
 }

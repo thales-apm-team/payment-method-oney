@@ -47,4 +47,13 @@ public class OneyEncryptedRequest extends OneyBean {
 
         return encryptedRequest;
     }
+
+    public static OneyEncryptedRequest fromOneyRefundRequest(OneyRefundRequest request) throws DecryptException {
+        OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
+        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
+        encryptedRequest.pspGuid = request.pspGuid;
+        encryptedRequest.merchantGuid = request.merchantGuid;
+
+        return encryptedRequest;
+    }
 }

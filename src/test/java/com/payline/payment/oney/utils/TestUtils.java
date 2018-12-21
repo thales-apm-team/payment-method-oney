@@ -424,18 +424,24 @@ public class TestUtils {
                 .build();
     }
 
-    public static String RandomSecondName() {
+    public static RefundRequest createDefaultRefundRequest() {
+        final Amount amount = createAmount(CONFIRM_AMOUNT,"EUR");
+        final ContractConfiguration contractConfiguration = createContractConfiguration();
+        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
+        final Order order = createOrder(TRANSACTION_ID);
 
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        return  buffer.toString();
+
+        return RefundRequest.RefundRequestBuilder.aRefundRequest()
+                .withAmount(amount)
+                .withContractConfiguration(contractConfiguration)
+                .withEnvironment(paylineEnvironment)
+                .withOrder(order)
+                .withBuyer(createDefaultBuyer())
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
+                .withEnvironment(createDefaultEnvironment())
+                .withPartnerConfiguration(createDefaultPartnerConfiguration())
+                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withTransactionId(createTransactionId())
+                .build();
     }
 }

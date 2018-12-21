@@ -47,7 +47,6 @@ public class OneyTransactionStatusRequest extends OneyRequest {
         }
 
 
-        //utile ??
         public Builder withPurchaseReference(String purchaseReference) {
             this.purchaseReference = purchaseReference;
             return this;
