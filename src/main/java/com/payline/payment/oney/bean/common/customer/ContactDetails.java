@@ -72,8 +72,9 @@ public class ContactDetails extends OneyBean {
         }
 
         public ContactDetails.Builder fromPayline(Buyer buyer) {
-            this.mobilePhoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR);
-            this.landLineNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.HOME);
+            final String phoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR);
+            this.mobilePhoneNumber = phoneNumber;
+            this.landLineNumber = phoneNumber;
             this.emailAdress = buyer.getEmail();
             return this;
         }
