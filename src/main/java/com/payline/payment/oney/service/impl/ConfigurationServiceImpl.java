@@ -5,6 +5,7 @@ import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.InputParameter;
+import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.NetworkListBoxParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.PasswordParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
@@ -64,33 +65,45 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         // OPC
         final InputParameter opc = new InputParameter();
-        opc.setKey(API_MARKETING_KEY);
-        opc.setLabel(this.i18n.getMessage(API_MARKETING_LABEL, locale));
-        opc.setDescription(this.i18n.getMessage(API_MARKETING_DESCRIPTION, locale));
+        opc.setKey(OPC_KEY);
+        opc.setLabel(this.i18n.getMessage(OPC_LABEL, locale));
+        opc.setDescription(this.i18n.getMessage(OPC_DESCRIPTION, locale));
         opc.setRequired(true);
         parameters.add(opc);
 
         // NB Echeances
-        final NetworkListBoxParameter nbEcheances = new NetworkListBoxParameter();
-        nbEcheances.setKey(NB_ECHEANCES_KEY);
-        nbEcheances.setLabel(this.i18n.getMessage(NB_ECHEANCES_LABEL, locale));
-        nbEcheances.setRequired(true);
-        parameters.add(nbEcheances);
+        final ListBoxParameter nbEcheancesParameter = new ListBoxParameter();
+        nbEcheancesParameter.setKey(NB_ECHEANCES_KEY);
+        nbEcheancesParameter.setLabel(this.i18n.getMessage(NB_ECHEANCES_LABEL, locale));
+        nbEcheancesParameter.setRequired(true);
+        final LinkedHashMap<String, String> nbEcheances = new LinkedHashMap<>();
+        nbEcheances.put("2", "2");
+        nbEcheances.put("3", "3");
+        nbEcheancesParameter.setList(nbEcheances);
+        parameters.add(nbEcheancesParameter);
 
         // X-Oney-Partner-Country-Code
-        final NetworkListBoxParameter codePays = new NetworkListBoxParameter();
+        final ListBoxParameter codePays = new ListBoxParameter();
         codePays.setKey(COUNTRY_CODE_KEY);
         codePays.setLabel(this.i18n.getMessage(COUNTRY_CODE_LABEL, locale));
         codePays.setDescription(COUNTRY_CODE_DESCRIPTION);
         codePays.setRequired(false);
+        final LinkedHashMap<String, String> partnerCountryCodes = new LinkedHashMap<>();
+        partnerCountryCodes.put("fra", "fra");
+        partnerCountryCodes.put("bel", "bel");
+        codePays.setList(partnerCountryCodes);
         parameters.add(codePays);
 
         //merchant_language_code
-        final NetworkListBoxParameter merchantLanguageCode = new NetworkListBoxParameter();
+        final ListBoxParameter merchantLanguageCode = new ListBoxParameter();
         merchantLanguageCode.setKey(LANGUAGE_CODE_KEY);
         merchantLanguageCode.setLabel(this.i18n.getMessage(LANGUAGE_CODE_LABEL, locale));
         merchantLanguageCode.setDescription(this.i18n.getMessage(LANGUAGE_CODE_DESCRIPTION, locale));
         merchantLanguageCode.setRequired(false);
+        final LinkedHashMap<String, String> languageCodes = new LinkedHashMap<>();
+        languageCodes.put("FR", "FR");
+        languageCodes.put("BE", "BE");
+        merchantLanguageCode.setList(languageCodes);
         parameters.add(merchantLanguageCode);
 
         //X-Oney-International-Partner-ID
