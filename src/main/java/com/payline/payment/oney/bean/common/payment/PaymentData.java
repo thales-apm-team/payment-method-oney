@@ -1,5 +1,6 @@
 package com.payline.payment.oney.bean.common.payment;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.PaymentType;
@@ -8,6 +9,7 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public class PaymentData extends OneyBean {
 
+    @Expose
     @SerializedName("payment_amount")
     private Float amount;
     @SerializedName("currency_code")

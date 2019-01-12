@@ -33,14 +33,15 @@ public class PaymentErrorResponse extends OneyBean {
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
         //debug
 
-        if (jsonObject.get("Payments_Error_Response") != null){
+        if (jsonObject.get("Payments_Error_Response") != null) {
             //On essaie de recuperer "error_list " et "error_list" on parse ensuite la cle contenant des valeurs
             JsonArray errorListWithKey1 = (JsonArray) ((JsonObject) jsonObject.get("Payments_Error_Response")).get("error_list ");
             JsonArray errorListWithKey2 = (JsonArray) ((JsonObject) jsonObject.get("Payments_Error_Response")).get("error_list");
 
-            return (errorListWithKey1 != null) ? new PaymentErrorResponse(gson.fromJson(errorListWithKey1, errorListType)) :  new PaymentErrorResponse(gson.fromJson(errorListWithKey2, errorListType));
+            return (errorListWithKey1 != null) ? new PaymentErrorResponse(gson.fromJson(errorListWithKey1, errorListType)) : new PaymentErrorResponse(gson.fromJson(errorListWithKey2, errorListType));
         }
-         else return null;
+
+        return null;
     }
 
 

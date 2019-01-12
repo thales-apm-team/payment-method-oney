@@ -2,18 +2,18 @@ package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.i18n.I18nService;
+import com.payline.payment.oney.utils.properties.constants.ConfigurationConstants;
+import com.payline.payment.oney.utils.properties.service.ReleasePropertiesEnum;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.InputParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
-import com.payline.pmapi.bean.configuration.parameter.impl.NetworkListBoxParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.PasswordParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.service.ConfigurationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -148,25 +148,18 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ReleaseInformation getReleaseInformation() {
-        Properties props = new Properties();
-        try {
-            props.load(ConfigurationServiceImpl.class.getClassLoader().getResourceAsStream("release.properties"));
-        } catch (IOException e) {
-            final String message = "An error occurred reading the file: release.properties";
-            LOGGER.error(message);
-            throw new RuntimeException(message, e);
-        }
 
-        LocalDate date = LocalDate.parse(props.getProperty("release.date"), DateTimeFormatter.ofPattern(RELEASE_DATE_FORMAT));
+        LocalDate date = LocalDate.parse(ReleasePropertiesEnum.INSTANCE.get(ConfigurationConstants.RELEASE_DATE),
+                DateTimeFormatter.ofPattern(ConfigurationConstants.RELEASE_DATE_FORMAT));
         return ReleaseInformation.ReleaseBuilder.aRelease()
                 .withDate(date)
-                .withVersion(props.getProperty(RELEASE_VERSION))
+                .withVersion(ReleasePropertiesEnum.INSTANCE.get(ConfigurationConstants.RELEASE_VERSION))
                 .build();
     }
 
     @Override
     public String getName(Locale locale) {
 
-        return this.i18n.getMessage(PAYMENT_METHOD_NAME, locale);
+        return this.i18n.getMessage(ConfigurationConstants.PAYMENT_METHOD_NAME, locale);
     }
 }

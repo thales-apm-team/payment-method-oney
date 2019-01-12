@@ -158,7 +158,7 @@ public class TestIt extends AbstractPaymentIntegration {
 
         } finally {
 
-            driver.quit();
+//            driver.quit();
 
         }
 

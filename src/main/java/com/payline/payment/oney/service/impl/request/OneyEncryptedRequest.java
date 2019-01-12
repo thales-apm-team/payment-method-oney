@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.DecryptException;
 
-import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
-
 public class OneyEncryptedRequest extends OneyBean {
     @SerializedName("merchant_guid")
     protected String merchantGuid;
@@ -56,4 +54,6 @@ public class OneyEncryptedRequest extends OneyBean {
 
         return encryptedRequest;
     }
+
+
 }

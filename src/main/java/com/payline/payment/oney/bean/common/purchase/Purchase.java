@@ -21,7 +21,7 @@ public class Purchase extends OneyBean {
     @SerializedName("currency_code")
     private String currencyCode; //ISO 4217
     @SerializedName("purchase_merchant")
-    private PurchaseMerchant purchaseMerchant; //CMDE
+    private PurchaseMerchant purchaseMerchant;
     @SerializedName("delivery")
     private Delivery delivery;
     @SerializedName("item_list")
@@ -87,7 +87,7 @@ public class Purchase extends OneyBean {
         private Float purchaseAmount;
         private String currencyCode; //ISO 4217
         private PurchaseMerchant purchaseMerchant;
-        private Delivery delivery; //CMDE
+        private Delivery delivery;
         private List<Item> listItem;
         private Integer numberOfItems;
 

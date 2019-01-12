@@ -4,9 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
-import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
+import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 /**
@@ -31,6 +29,7 @@ public class OneyRefundRequest extends OneyRequest {
     public PurchaseCancel getPurchase() {
         return purchase;
     }
+
     public String getPurchaseReference() {
         return purchaseReference;
     }
@@ -89,20 +88,23 @@ public class OneyRefundRequest extends OneyRequest {
             this.merchantGuid = merchantGuid;
             return this;
         }
+
         public Builder withMerchantRequestId(String merchantGuid) {
             this.merchantRequestId = merchantGuid;
             return this;
         }
+
         public Builder withPspGuid(String pspGuid) {
             this.pspGuid = pspGuid;
             return this;
         }
+
         public Builder withEncryptKey(String key) {
             this.encryptKey = key;
             return this;
         }
 
-        public  OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest) {
+        public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest) {
 
             String merchantGuidValue = refundRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
@@ -142,11 +144,12 @@ public class OneyRefundRequest extends OneyRequest {
             }
             if (this.encryptKey == null) {
                 throw new IllegalStateException("OneyRefundRequest must have a encryptKey when built");
-            }else {
+            } else {
                 return this;
             }
 
         }
+
         public OneyRefundRequest build() {
             return new OneyRefundRequest(this.verifyIntegrity());
         }

@@ -1,13 +1,14 @@
 package com.payline.payment.oney.service.impl.request;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
-import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
+import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 public class OneyConfirmRequest extends OneyRequest {
@@ -15,10 +16,13 @@ public class OneyConfirmRequest extends OneyRequest {
     @SerializedName("reference")
     private String purchaseReference;
     //RequestBody
+    @Expose
     @SerializedName("language_code")
     private String languageCode;
+    @Expose
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
+    @Expose
     @SerializedName("payment")
     private PaymentData paymentData;
 
@@ -74,8 +78,8 @@ public class OneyConfirmRequest extends OneyRequest {
         public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
 
             String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
-
-            this.purchaseReference = paymentRequest.getTransactionId();
+//fixme
+            this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
@@ -125,7 +129,7 @@ public class OneyConfirmRequest extends OneyRequest {
             }
             if (this.encryptKey == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
-            }else {
+            } else {
                 return this;
             }
 
@@ -137,5 +141,10 @@ public class OneyConfirmRequest extends OneyRequest {
 
     }
 
+
+    public String toJsonLight() {
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        return gson.toJson(this);
+    }
 
 }

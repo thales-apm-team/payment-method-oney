@@ -5,13 +5,6 @@ public class OneyConstants {
     private OneyConstants() {
     }
 
-    //Message common with all payment method
-    public static final String PAYMENT_METHOD_NAME = "paymentMethod.name";
-
-    public static final String RELEASE_DATE_FORMAT = "dd/MM/yyyy";
-    public static final String RELEASE_DATE = "release.date";
-    public static final String RELEASE_VERSION = "release.version";
-    public static final String RELEASE_PROPERTIES = "release.properties";
 
     public static final String I18N_SERVICE_DEFAULT_LOCALE = "en";
     public static final String RESOURCE_BUNDLE_BASE_NAME = "messages";
@@ -85,7 +78,6 @@ public class OneyConstants {
     public static final String PRODUCTION_URL = "api-staging.oney.io";
 
 
-
     //Request URL's
     public static final String PAYMENT_REQUEST_URL = "staging/payments/v1/purchase/facilypay_url";
     public static final String CONFIRM_REQUEST_URL = "staging/payments/v1/purchase";
@@ -105,7 +97,7 @@ public class OneyConstants {
     public static final String EXTERNAL_REFERENCE_KEY = "externalReference";
     public static final String PAYMENT_AMOUNT_KEY = "paymentAmount";
 
-//
+    //
     //Code HTTP
     public static final int HTTP_OK = 200;
 

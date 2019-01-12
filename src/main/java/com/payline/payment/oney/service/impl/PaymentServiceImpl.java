@@ -61,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
             //Cas ou une erreur est renvoyée au moment du paiement
             if (oneyResponse.getCode() != HTTP_OK) {
-                OneyFailureResponse failureResponse = new OneyFailureResponse (oneyResponse.getCode(),oneyResponse.getMessage(),oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
+                OneyFailureResponse failureResponse = new OneyFailureResponse(oneyResponse.getCode(), oneyResponse.getMessage(), oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
 
                 LOGGER.error("Payment failed {} ", failureResponse.getContent());
 
@@ -71,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .build();
             } else {
                 //Response OK on recupere url envoyee par Oney
-                OneySuccessPaymentResponse successResponse = paymentSuccessResponseFromJson(oneyResponse.getContent(),oneyRequest.getEncryptKey());
+                OneySuccessPaymentResponse successResponse = paymentSuccessResponseFromJson(oneyResponse.getContent(), oneyRequest.getEncryptKey());
 
                 URL redirectURL = new URL(successResponse.getReturnedUrl());
                 PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder responseRedirectURL = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
@@ -100,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
         } catch (IOException | URISyntaxException | InvalidRequestException | DecryptException e) {
-            LOGGER.error("unable init the payment: {}", e.getMessage(), e);
+            LOGGER.error("unable init the payment", e);
             return getPaymentResponseFailure(FailureCause.INTERNAL_ERROR);
         }
 

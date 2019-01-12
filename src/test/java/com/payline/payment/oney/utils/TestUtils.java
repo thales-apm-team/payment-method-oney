@@ -37,14 +37,22 @@ public class TestUtils {
     private static final String NOTIFICATION_URL = "http://google.com/";
     private static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
 
-    private static final String PHONE_NUMBER_TEST = "06060606";
     public HashMap<String, String> extendedData;
     private static final String SOFT_DESCRIPTOR = "softDescriptor";
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
-    public static final String CONFIRM_AMOUNT = "458";
+    public static final String CONFIRM_AMOUNT = "408";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|" + TRANSACTION_ID;
 
+
+    private static String testPhonenumber = null;
+
+    private static String getTestphoneNumber() {
+        if (testPhonenumber == null) {
+            testPhonenumber = "+32" + RandomStringUtils.random(10, false, true);
+        }
+        return testPhonenumber;
+    }
 
     /**
      * Create a paymentRequest with default parameters.
@@ -142,7 +150,7 @@ public class TestUtils {
                 .withLocale(locale)
                 .withTransactionId(transactionID)
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
-                .withPaymentFormContext(createDefaultPaymentFormContext(PHONE_NUMBER_TEST))
+                .withPaymentFormContext(createDefaultPaymentFormContext(getTestphoneNumber()))
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer());
@@ -177,7 +185,7 @@ public class TestUtils {
                 .withLocale(locale)
                 .withTransactionId(transactionID)
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
-                .withPaymentFormContext(createDefaultPaymentFormContext(PHONE_NUMBER_TEST))
+                .withPaymentFormContext(createDefaultPaymentFormContext(getTestphoneNumber()))
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withLocale(Locale.FRANCE)
                 .withBuyer(createDefaultBuyer())
@@ -260,7 +268,7 @@ public class TestUtils {
     public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
         phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "+32" + RandomStringUtils.random(10, false, true));
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, "+32" + RandomStringUtils.random(10, false, true));
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, getTestphoneNumber());
         phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+32" + RandomStringUtils.random(10, false, true));
         phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "+32" + RandomStringUtils.random(10, false, true));
         phoneNumbers.put(Buyer.PhoneNumberType.WORK, "+32" + RandomStringUtils.random(10, false, true));
@@ -350,12 +358,12 @@ public class TestUtils {
 
     private static String generateRamdomEmail() {
 
-        return "testoney" + Calendar.getInstance().getTimeInMillis() + "@gmail.com";
+        return "testoney." + RandomStringUtils.random(5, true, false) + "@gmail.com";
     }
 
     private static Date getBirthdayDate() {
         try {
-            return new SimpleDateFormat("dd/MM/yyyy").parse("04/05/1991");
+            return new SimpleDateFormat("dd/MM/yyyy").parse("04/05/1981");
         } catch (ParseException e) {
             LOGGER.error("parsing de la date de naissance impossible", e);
             return null;

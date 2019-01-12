@@ -1,17 +1,14 @@
-//package com.payline.payment.oney.utils.config;
+//package com.payline.payment.oney.utils.properties.service;
 //
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+//import com.payline.payment.oney.utils.config.ConfigEnvironment;
 //
-//import java.io.InputStream;
+//import java.util.Locale;
 //import java.util.Properties;
 //
 ///**
 // * Utility class which reads and provides config properties.
 // */
-//public class ConfigProperties {
-//
-//    private static final Logger LOGGER = LogManager.getLogger(ConfigProperties.class);
+//public class ConfigProperties implements PropertiesService {
 //
 //    private static final String FILENAME = "config.properties";
 //
@@ -19,6 +16,26 @@
 //
 //    /* This class has only static methods: no need to instantiate it */
 //    private ConfigProperties() {
+//        properties = new Properties();
+//        // init of the Properties
+//        readProperties(properties);
+//    }
+//
+//    /**
+//     * Holder
+//     */
+//    private static class SingletonHolder {
+//        /**
+//         * Unique instance, not preinitializes
+//         */
+//        private static final ConfigProperties instance = new ConfigProperties();
+//    }
+//
+//    /**
+//     * Unique access point for the singleton instance
+//     */
+//    public static ConfigProperties getInstance() {
+//        return ConfigProperties.SingletonHolder.instance;
 //    }
 //
 //    /**
@@ -29,10 +46,7 @@
 //     * @return The property value. Can be null if the property has not been found.
 //     */
 //    public static String get(String key) {
-//        if (properties == null) {
-//            readProperties();
 //
-//        }
 //        return properties.getProperty(key);
 //    }
 //
@@ -51,22 +65,14 @@
 //        return get(prefix + key);
 //    }
 //
-//    /**
-//     * Reads the properties file and stores the result.
-//     */
-//    private static void readProperties() {
 //
-//        properties = new Properties();
-//
-//        try {
-//
-//            InputStream inputStream = ConfigProperties.class.getClassLoader().getResourceAsStream(FILENAME);
-//            properties.load(inputStream);
-//
-//        } catch (Exception e) {
-//            LOGGER.error("An error occurred reading the configuration properties file", e);
-//        }
-//
+//    @Override
+//    public String getMessage(String key, Locale locale) {
+//        return null;
 //    }
 //
+//    @Override
+//    public String getFilename() {
+//        return FILENAME;
+//    }
 //}

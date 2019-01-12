@@ -29,7 +29,7 @@ public class RefundServiceImpl implements RefundService {
     private OneyHttpClient httpClient;
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
 
-    public RefundServiceImpl()  {
+    public RefundServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
     }
 
@@ -79,7 +79,7 @@ public class RefundServiceImpl implements RefundService {
 
 
         } catch (IOException | URISyntaxException | DecryptException e) {
-            LOGGER.error("unable init the payment: {}", e.getMessage(), e);
+            LOGGER.error("unable init the payment", e);
             return OneyErrorHandler.geRefundResponseFailure(FailureCause.INTERNAL_ERROR, oneyRefundRequest.getPurchaseReference());
 
         }

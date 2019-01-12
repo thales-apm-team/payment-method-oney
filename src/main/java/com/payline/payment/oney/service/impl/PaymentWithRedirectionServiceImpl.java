@@ -8,7 +8,6 @@ import com.payline.payment.oney.service.impl.response.TransactionStatusResponse;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
-import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.Message;
 import com.payline.pmapi.bean.common.OnHoldCause;
@@ -36,7 +35,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
     private static final Logger LOGGER = LogManager.getLogger(PaymentWithRedirectionServiceImpl.class);
     private OneyHttpClient httpClient;
-    private I18nService i18n = I18nService.getInstance();
 
     public PaymentWithRedirectionServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
@@ -53,7 +51,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             return validatePayment(confirmRequest, isSandbox);
 
         } catch (IOException | URISyntaxException | DecryptException e) {
-            LOGGER.error("unable to confirm the payment: {}", e.getMessage(), e);
+            LOGGER.error("unable to confirm the payment", e);
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(FailureCause.COMMUNICATION_ERROR)
                     .withErrorCode("503")
@@ -76,8 +74,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
-                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(),oneyTransactionStatusRequest.getEncryptKey());
-                if(response.getStatusPurchase() != null) {
+                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+                if (response.getStatusPurchase() != null) {
                     switch (response.getStatusPurchase().getStatusCode()) {
                         //renvoi d'un paymentResponseOnHold
                         case "PENDING":
@@ -111,8 +109,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                         default:
                             return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
                     }
-                }
-                else{
+                } else {
                     //Pas de statut pour cette demande
                     return OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, oneyTransactionStatusRequest.getPurchaseReference());
                 }
@@ -123,8 +120,9 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
 
         } catch (IOException | DecryptException | URISyntaxException e) {
-            LOGGER.error("unable to handle the session expiration: {}", e.getMessage(), e);
+            LOGGER.error("unable to handle the session expiration", e);
             //Renvoyer une erreur
+            // FIXME BJU : .withErrorCode(e.getMessage()) ?!?
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .withErrorCode(e.getMessage())
@@ -163,7 +161,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         //Confirmation OK, on traite la reponse
         else {
             //On dechiffre la response
-            TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(),confirmRequest.getEncryptKey());
+            TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), confirmRequest.getEncryptKey());
             //Si Oney renvoie une message vide, on renvoi un Payment Failure response
             if (responseDecrypted.getStatusPurchase() == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
