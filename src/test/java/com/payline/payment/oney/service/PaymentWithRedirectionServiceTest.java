@@ -47,8 +47,7 @@ public class PaymentWithRedirectionServiceTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
 
-        OneyConfirmRequest paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
+        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();
 
         PaymentResponse response = service.validatePayment(paymentRequest, true);
@@ -68,8 +67,7 @@ public class PaymentWithRedirectionServiceTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
 
-        OneyConfirmRequest paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
+        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();
 
         PaymentResponse response = service.validatePayment(paymentRequest, true);
@@ -85,8 +83,7 @@ public class PaymentWithRedirectionServiceTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
 
-        OneyConfirmRequest paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
+        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();
 
         PaymentResponseFailure response = (PaymentResponseFailure) service.validatePayment(paymentRequest, true);

@@ -49,7 +49,7 @@ public class OneyConfirmRequest extends OneyRequest {
         return encryptKey;
     }
 
-    private OneyConfirmRequest(OneyConfirmRequest.Builder builder) {
+    private OneyConfirmRequest(Builder builder) {
         this.purchaseReference = builder.purchaseReference;
         this.languageCode = builder.languageCode;
         this.merchantRequestId = builder.merchantRequestId;
@@ -70,13 +70,7 @@ public class OneyConfirmRequest extends OneyRequest {
         private String pspGuid;
         private String encryptKey;
 
-        public static OneyConfirmRequest.Builder aOneyConfirmRequest() {
-            return new OneyConfirmRequest.Builder();
-        }
-
-
-        public OneyConfirmRequest.Builder fromPaylineRedirectionPaymentRequest(RedirectionPaymentRequest paymentRequest) {
-
+        public Builder(RedirectionPaymentRequest paymentRequest) {
             String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 //fixme
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
@@ -89,12 +83,10 @@ public class OneyConfirmRequest extends OneyRequest {
                     .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
                     .buildForConfirmRequest();
             this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
-            return this;
         }
 
 
-        public OneyConfirmRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) {
-
+        public Builder(TransactionStatusRequest transactionStatusRequest) {
             String merchantGuidValue = transactionStatusRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
             this.purchaseReference = transactionStatusRequest.getTransactionId();
@@ -106,12 +98,15 @@ public class OneyConfirmRequest extends OneyRequest {
                     .withAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit().floatValue())
                     .buildForConfirmRequest();
             this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
+        }
 
-            return this;
+        public OneyConfirmRequest build() {
+            this.verifyIntegrity();
+            return new OneyConfirmRequest(this);
         }
 
 
-        private OneyConfirmRequest.Builder verifyIntegrity() {
+        private void verifyIntegrity() {
             if (this.merchantGuid == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a merchantGuid when built");
             }
@@ -129,15 +124,10 @@ public class OneyConfirmRequest extends OneyRequest {
             }
             if (this.encryptKey == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
-            } else {
-                return this;
             }
 
         }
 
-        public OneyConfirmRequest build() {
-            return new OneyConfirmRequest(this.verifyIntegrity());
-        }
 
     }
 

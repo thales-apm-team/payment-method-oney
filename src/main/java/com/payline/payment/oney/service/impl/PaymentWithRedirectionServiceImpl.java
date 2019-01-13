@@ -43,8 +43,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     @Override
     public PaymentResponse finalizeRedirectionPayment(RedirectionPaymentRequest redirectionPaymentRequest) {
 
-        OneyConfirmRequest confirmRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest(redirectionPaymentRequest)
+        OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest)
                 .build();
         boolean isSandbox = redirectionPaymentRequest.getEnvironment().isSandbox();
         try {
@@ -86,8 +85,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                                     .build();
                         case "FAVORABLE":
                             //confirmer la demande
-                            OneyConfirmRequest confirmRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                                    .fromTransactionStatusRequest(transactionStatusRequest)
+                            OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(transactionStatusRequest)
                                     .build();
                             return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox());
 

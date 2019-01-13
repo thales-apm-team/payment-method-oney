@@ -14,8 +14,7 @@ public class OneyConfirmRequestTest {
     @Test
     public void buildOneyConfirmRequest() throws InvalidRequestException {
 
-        paymentRequest = OneyConfirmRequest.Builder.aOneyConfirmRequest()
-                .fromPaylineRedirectionPaymentRequest(createCompleteRedirectionPaymentBuilder())
+        paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();
 
         Assertions.assertTrue(paymentRequest.toString().contains("merchant_guid"));
