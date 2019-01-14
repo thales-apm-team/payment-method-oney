@@ -62,7 +62,7 @@ public class OneyHttpClientTest {
         Mockito.when(httpResponse.getEntity()).thenReturn(entity);
         Mockito.doReturn(httpResponse).when(closableClient).execute(Mockito.any());
 
-        StringResponse response = client.doGet("https", "oney-staging.azure-api.net", "/staging/payments/v1/purchase/", param, true);
+        StringResponse response = client.doGet("https", "oney-staging.azure-api.net", "/staging/payments/v1/purchase/", param, true,"BE");
 
         //Assert we have a response
         Assertions.assertNotNull(response);
@@ -85,7 +85,7 @@ public class OneyHttpClientTest {
         Mockito.when(httpResponse.getEntity()).thenReturn(entity);
         Mockito.doReturn(httpResponse).when(closableClient).execute(Mockito.any());
 
-        StringResponse response = client.doPost(scheme, host, path, requestContent, true);
+        StringResponse response = client.doPost(scheme, host, path, requestContent, true,"BE");
 
         //Assert we have a response
         Assertions.assertNotNull(response);
@@ -127,7 +127,7 @@ public class OneyHttpClientTest {
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doGet"));
 
         Mockito.doReturn(responseMockedOK).when(testedClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.any(Map.class), Mockito.anyBoolean());
+                Mockito.any(Map.class), Mockito.anyBoolean(),Mockito.anyString());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -151,7 +151,7 @@ public class OneyHttpClientTest {
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doPost"));
 
         Mockito.doReturn(responseMockedOK).when(testedClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean(),Mockito.anyString());
 
 
         String  merchantReqId = Calendar.getInstance().getTimeInMillis() + "007";

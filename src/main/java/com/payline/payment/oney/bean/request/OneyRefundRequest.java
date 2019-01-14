@@ -111,7 +111,7 @@ public class OneyRefundRequest extends OneyRequest {
 
             this.purchaseReference = refundRequest.getTransactionId();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
-//            this.languageCode = refundRequest.getLocale() ;
+            this.languageCode = refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue() ;
 
             this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;

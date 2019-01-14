@@ -45,7 +45,7 @@ public class NotificationServiceTest {
         StringResponse responseMockedFavorable = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
 
         Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.any(Map.class), Mockito.anyBoolean());
+                Mockito.any(Map.class), Mockito.anyBoolean(),Mockito.anyString());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()

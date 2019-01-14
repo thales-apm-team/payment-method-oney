@@ -56,12 +56,12 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doPost(String scheme, String host, String path, String requestContent, boolean isSandbox) throws IOException, URISyntaxException {
+    public StringResponse doPost(String scheme, String host, String path, String requestContent, boolean isSandbox, String languageCode) throws IOException, URISyntaxException {
 
         StringEntity entity = new StringEntity(requestContent);
         ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
 
-        Header[] headers = createHeaders(env);
+        Header[] headers = createHeaders(env,languageCode);
 
 
         return super.doPost(scheme, host, path, headers, entity);
@@ -78,7 +78,7 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doGet(String scheme, String host, String path, Map<String, String> param, boolean isSandbox) throws IOException, URISyntaxException {
+    public StringResponse doGet(String scheme, String host, String path, Map<String, String> param, boolean isSandbox,String languageCode) throws IOException, URISyntaxException {
 
 
         //build Request
@@ -86,7 +86,7 @@ public class OneyHttpClient extends AbstractHttpClient {
 
         ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
 
-        Header[] headers = createHeaders(env);
+        Header[] headers = createHeaders(env,languageCode);
 
 
         return super.doGet(scheme, host, finalPath, headers);
@@ -115,11 +115,12 @@ public class OneyHttpClient extends AbstractHttpClient {
      *
      * @return Header[]  header data
      */
-    private Header[] createHeaders(ConfigEnvironment env) {
+    private Header[] createHeaders(ConfigEnvironment env,String countryCode) {
         Header[] headers = new Header[4];
         headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(AUTHORIZATION, ConfigPropertiesEnum.INSTANCE.get(AUTHORIZATION_VALUE, env));
-        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, ConfigPropertiesEnum.INSTANCE.get(COUNTRY_CODE_VALUE, env));
+//        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, ConfigPropertiesEnum.INSTANCE.get(COUNTRY_CODE_VALUE, env));
+        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, countryCode.toUpperCase());
         headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
 
         return headers;
@@ -135,7 +136,8 @@ public class OneyHttpClient extends AbstractHttpClient {
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody, isSandbox);
+//        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody, isSandbox);
+        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody, isSandbox,request.getLanguageCode());
 
     }
 
@@ -149,7 +151,8 @@ public class OneyHttpClient extends AbstractHttpClient {
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+//        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+        return doPost(SCHEME, host, path, jsonBody, isSandbox, request.getLanguageCode());
 
     }
 
@@ -163,7 +166,8 @@ public class OneyHttpClient extends AbstractHttpClient {
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyRefundRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+//        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+        return doPost(SCHEME, host, path, jsonBody, isSandbox, request.getLanguageCode());
 
     }
 
@@ -174,7 +178,8 @@ public class OneyHttpClient extends AbstractHttpClient {
         parameters.put("merchant_guid", request.getMerchantGuid());
         parameters.put("reference", request.getPurchaseReference());
         // do the request
-        return doGet(SCHEME, host, STATUS_REQUEST_URL, parameters, isSandbox);
+//        return doGet(SCHEME, host, STATUS_REQUEST_URL, parameters, isSandbox);
+        return doGet(SCHEME, host, STATUS_REQUEST_URL, parameters, isSandbox,request.getLanguageCode());
 
     }
 }
