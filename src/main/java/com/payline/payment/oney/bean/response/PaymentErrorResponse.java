@@ -1,4 +1,4 @@
-package com.payline.payment.oney.service.impl.response;
+package com.payline.payment.oney.bean.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

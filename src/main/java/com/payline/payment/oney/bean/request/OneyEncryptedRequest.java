@@ -1,4 +1,4 @@
-package com.payline.payment.oney.service.impl.request;
+package com.payline.payment.oney.bean.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
@@ -54,6 +54,4 @@ public class OneyEncryptedRequest extends OneyBean {
 
         return encryptedRequest;
     }
-
-
 }

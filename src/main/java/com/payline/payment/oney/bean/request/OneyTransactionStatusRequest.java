@@ -1,4 +1,4 @@
-package com.payline.payment.oney.service.impl.request;
+package com.payline.payment.oney.bean.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.utils.OneyConstants;
@@ -10,7 +10,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
     private String purchaseReference;
     @SerializedName("language_code")
     private String languageCode;
-    private transient  String encryptKey;
+    private transient String encryptKey;
 
 
     public String getPurchaseReference() {
@@ -66,6 +66,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             this.pspGuid = pspGuid;
             return this;
         }
+
         public Builder withEncryptKey(String key) {
             this.encryptKey = key;
             return this;
@@ -95,7 +96,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             }
             if (this.encryptKey == null) {
                 throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
-            }else {
+            } else {
                 return this;
             }
 

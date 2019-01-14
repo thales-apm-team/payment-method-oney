@@ -2,8 +2,8 @@ package com.payline.payment.oney.utils.http;
 
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.service.impl.request.OneyRefundRequest;
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.bean.request.OneyRefundRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;

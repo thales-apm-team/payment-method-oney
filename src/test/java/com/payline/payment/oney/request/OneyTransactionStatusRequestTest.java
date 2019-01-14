@@ -1,6 +1,6 @@
 package com.payline.payment.oney.request;
 
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

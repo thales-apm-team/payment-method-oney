@@ -1,9 +1,9 @@
 package com.payline.payment.oney.service;
 
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.NotificationServiceImpl;
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.service.impl.response.TransactionStatusResponse;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import org.junit.jupiter.api.Assertions;
@@ -19,19 +19,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import static com.payline.payment.oney.service.impl.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
+import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationServiceTest {
 
 
-
     @Spy
-     OneyHttpClient httpClient;
+    OneyHttpClient httpClient;
 
     @InjectMocks
-     NotificationServiceImpl service;
+    NotificationServiceImpl service;
 
     @BeforeAll
     public void setup() {
@@ -42,12 +41,11 @@ public class NotificationServiceTest {
     @Test
     public void notifyTransactionStatusRequestTest() throws DecryptException, IOException, URISyntaxException {
 
-        StringResponse responseMockedPending = createStringResponse(200,"OK","{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}" );
-        StringResponse responseMockedFavorable = createStringResponse(200,"OK","{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}" );
+        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
+        StringResponse responseMockedFavorable = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
 
         Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.any(Map.class),Mockito.anyBoolean());
-
+                Mockito.any(Map.class), Mockito.anyBoolean());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -59,11 +57,11 @@ public class NotificationServiceTest {
                 .build();
 
         StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
-        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(),request.getEncryptKey());
+        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
 
         Assertions.assertNotNull(transactStatus.getCode());
-        Assertions.assertEquals("Waiting for customer validation",resp.getStatusPurchase().getStatusLabel());
-        Assertions.assertEquals("PENDING",resp.getStatusPurchase().getStatusCode());
+        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
+        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
 
 //        Cas Favorable
 //        Assert.assertEquals("Oney accepts the payment",resp.getStatusPurchase().getStatusLabel());

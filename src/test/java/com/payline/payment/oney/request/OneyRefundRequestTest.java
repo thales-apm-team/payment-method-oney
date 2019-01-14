@@ -1,6 +1,6 @@
 package com.payline.payment.oney.request;
 
-import com.payline.payment.oney.service.impl.request.OneyRefundRequest;
+import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundReques
 public class OneyRefundRequestTest {
 
     @Test
-    public void createRefundRequestOK(){
+    public void createRefundRequestOK() {
         OneyRefundRequest request = OneyRefundRequest.Builder.aOneyRefundRequest()
                 .fromRefundRequest(createDefaultRefundRequest())
                 .build();
@@ -22,8 +22,9 @@ public class OneyRefundRequestTest {
 
 
     }
+
     @Test
-    public void createRefundRequestKO(){
+    public void createRefundRequestKO() {
         //todo
 
     }

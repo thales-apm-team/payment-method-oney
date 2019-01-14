@@ -1,4 +1,4 @@
-package com.payline.payment.oney.service.impl.request;
+package com.payline.payment.oney.bean.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.LoyaltyInformation;
@@ -6,15 +6,6 @@ import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
-import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.pmapi.bean.payment.request.PaymentRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
-import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
-import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 public class OneyPaymentRequest extends OneyRequest {
 
@@ -244,41 +235,6 @@ public class OneyPaymentRequest extends OneyRequest {
         public OneyPaymentRequest build() {
             return new OneyPaymentRequest(this.verifyIntegrity());
         }
-
-        public Builder fromPaylineRequest(PaymentRequest paymentRequest) throws InvalidRequestException {
-
-            String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
-
-            return OneyPaymentRequest.Builder.aOneyPaymentRequest()
-                    .withLanguageCode(paymentRequest.getLocale().getLanguage())
-                    .withMerchantRequestId(generateMerchantRequestId(merchGuid))
-                    .withPspGuid(paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY))
-                    .withMerchantGuid(merchGuid)
-                    .withNavigation(NavigationData.Builder
-                            .aNavigationDataBuilder()
-                            .fromEnvironment(paymentRequest.getEnvironment())
-                            .build())
-                    .withPaymentdata(PaymentData.Builder
-                            .aPaymentData()
-                            .fromPayline(paymentRequest)
-                            .build())
-                    .withCustomer(Customer.Builder.aCustomBuilder()
-                            .fromPaylineRequest(paymentRequest)
-                            .build())
-                    .withPurchase(Purchase.Builder.aPurchaseBuilder()
-                            .fromPayline(paymentRequest)
-                            .build())
-                    .withMerchantLanguageCode(paymentRequest.getLocale().getLanguage())
-                    .withEncryptKey(paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY))
-                    .withMerchantContext(paymentRequest.getSoftDescriptor())
-                    .withPspContext(paymentRequest.getTransactionId())
-//                    .withOrigin("WEB")
-//                    .withSkinId(3)
-
-                    ;
-
-        }
-
 
     }
 

@@ -1,12 +1,12 @@
 package com.payline.payment.oney.response;
 
-import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
+import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
+import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponseFromCause;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;

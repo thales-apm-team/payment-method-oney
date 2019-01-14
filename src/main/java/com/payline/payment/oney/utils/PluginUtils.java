@@ -1,8 +1,8 @@
 package com.payline.payment.oney.utils;
 
 
+import com.payline.payment.oney.bean.request.OneyPaymentRequest;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
 import com.payline.pmapi.bean.Request;
@@ -138,7 +138,7 @@ public class PluginUtils {
             //standard
             case "2":
                 return 2;
-                //non gere par Payline a ce jour
+            //non gere par Payline a ce jour
 //            case "priority":
 //                return 3;
             default:

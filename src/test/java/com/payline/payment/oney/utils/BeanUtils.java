@@ -8,8 +8,8 @@ import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.payment.oney.bean.common.purchase.Item;
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
-import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.bean.request.OneyConfirmRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.ArrayList;

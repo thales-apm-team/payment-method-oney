@@ -1,7 +1,7 @@
 package com.payline.payment.oney.request;
 
+import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

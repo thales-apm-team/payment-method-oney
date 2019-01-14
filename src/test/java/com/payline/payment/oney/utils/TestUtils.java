@@ -62,7 +62,6 @@ public class TestUtils {
     public static PaymentRequest createDefaultPaymentRequest() {
         final Amount amount = createAmount(CONFIRM_AMOUNT, "EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
-        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final Order order = createOrder(TRANSACTION_ID);
 
 
@@ -71,7 +70,6 @@ public class TestUtils {
                 .withBrowser(new Browser("", Locale.FRANCE))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
-                .withEnvironment(paylineEnvironment)
                 .withOrder(order)
                 .withBuyer(createDefaultBuyer())
                 .withTransactionId(TRANSACTION_ID)
@@ -278,7 +276,6 @@ public class TestUtils {
 
     public static ContractConfiguration createContractConfiguration() {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
-        contractConfiguration.getContractProperties().put(BUSINESS_TRANSACTION_CODE, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
         contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty(GUID_KEY));
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));

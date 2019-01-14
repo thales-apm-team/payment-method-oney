@@ -1,10 +1,10 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.request.OneyConfirmRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.bean.response.OneyFailureResponse;
+import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
-import com.payline.payment.oney.service.impl.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
-import com.payline.payment.oney.service.impl.response.TransactionStatusResponse;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -25,8 +25,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
-import static com.payline.payment.oney.service.impl.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
+import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
+import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.pmapi.bean.common.Message.MessageType.SUCCESS;

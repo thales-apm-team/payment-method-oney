@@ -1,6 +1,6 @@
 package com.payline.payment.oney.utils;
 
-import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
+import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
@@ -82,7 +82,7 @@ public class OneyErrorHandler {
         String failureCause = "";
 
         //Si le tableau contient plusieurs erreurs on récupère la première. toutes les autres seront loggués
-        if (failureResponse.getPaymentErrorContent() !=null && failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
+        if (failureResponse.getPaymentErrorContent() != null && failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
             failureCause = failureResponse.getPaymentErrorContent().getErrorList().get(0).getErrorCode();
             LOGGER.warn(failureCause);
         }

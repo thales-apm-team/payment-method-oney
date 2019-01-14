@@ -1,12 +1,19 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.common.NavigationData;
+import com.payline.payment.oney.bean.common.customer.Customer;
+import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
+import com.payline.payment.oney.bean.common.payment.PaymentData;
+import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.bean.request.OneyPaymentRequest;
+import com.payline.payment.oney.bean.response.OneyFailureResponse;
+import com.payline.payment.oney.bean.response.OneySuccessPaymentResponse;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.service.impl.request.OneyPaymentRequest;
-import com.payline.payment.oney.service.impl.response.OneyFailureResponse;
-import com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse;
+import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.OneyErrorHandler;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -25,9 +32,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.payline.payment.oney.service.impl.response.OneySuccessPaymentResponse.paymentSuccessResponseFromJson;
-import static com.payline.payment.oney.service.impl.response.PaymentErrorResponse.paymentErrorResponseFromJson;
-import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
+import static com.payline.payment.oney.bean.response.OneySuccessPaymentResponse.paymentSuccessResponseFromJson;
+import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
+import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.OneyErrorHandler.getPaymentResponseFailure;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.PluginUtils.generateReference;
@@ -35,6 +42,7 @@ import static com.payline.payment.oney.utils.PluginUtils.generateReference;
 public class PaymentServiceImpl implements PaymentService {
 
     private OneyHttpClient httpClient;
+    private BeanAssembleService beanAssembleService = BeanAssemblerServiceImpl.getInstance();
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
 
 
@@ -45,13 +53,35 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
         try {
-            OneyPaymentRequest oneyRequest = OneyPaymentRequest.Builder.aOneyPaymentRequest()
-                    .fromPaylineRequest(paymentRequest)
+            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String language = paymentRequest.getLocale().getLanguage();
+            final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
+            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
+            final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
+            final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
+            final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
+            final Customer customer = beanAssembleService.assembleCustomer(paymentRequest);
+            final Purchase purchase = beanAssembleService.assemblePurchase(paymentRequest);
+
+            final OneyPaymentRequest oneyRequest = OneyPaymentRequest.Builder.aOneyPaymentRequest()
+                    .withLanguageCode(language)
+                    .withMerchantRequestId(merchantRequestId)
+                    .withPspGuid(pspGuid)
+                    .withMerchantGuid(merchGuid)
+                    .withNavigation(navigationData)
+                    .withPaymentdata(paymentData)
+                    .withCustomer(customer)
+                    .withPurchase(purchase)
+                    .withMerchantLanguageCode(language)
+                    .withEncryptKey(chiffrementKey)
+                    .withMerchantContext(paymentRequest.getSoftDescriptor())
+                    .withPspContext(paymentRequest.getTransactionId())
                     .build();
-            Boolean isSandbox = paymentRequest.getEnvironment().isSandbox();
 
+            final boolean isSandbox = paymentRequest.getEnvironment().isSandbox();
 
-            StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, isSandbox);
+            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, isSandbox);
 
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");

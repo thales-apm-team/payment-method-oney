@@ -41,6 +41,7 @@ public class Recipient extends OneyBean {
         this.phoneNumber = builder.phoneNumber;
     }
 
+    // FIXME builder
     public static class Builder {
         private Integer honorificCode;
         private String surname;

@@ -87,7 +87,6 @@ public class OneyConstants {
     //0 immediate, 1 deferred, 2 check card
     public static final int PAYMENT_TYPE = 0;
 
-    public static final String BUSINESS_TRANSACTION_CODE = "opc";
     //fixme changer de localisation? config.properties ?
     public static final int BUSINESS_TRANSACTION_VERSION = 1;
     //PNFCB / AFFECTE / NONAMORTISSABLE

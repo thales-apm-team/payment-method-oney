@@ -2,7 +2,7 @@ package com.payline.payment.oney.service;
 
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
-import com.payline.payment.oney.service.impl.request.OneyConfirmRequest;
+import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
