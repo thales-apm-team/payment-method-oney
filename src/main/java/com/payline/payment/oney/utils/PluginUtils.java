@@ -9,6 +9,7 @@ import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -255,5 +256,31 @@ public class PluginUtils {
     public static String generateReference(OneyPaymentRequest request) {
 
         return request.getPurchase().getExternalReferenceType() + "|" + request.getPurchase().getExternalReference();
+    }
+
+    /**
+     * Return a string which was converted from cents to euro
+     * @param amount
+     * @return
+     */
+    public static String createStringAmount(BigInteger amount){
+        StringBuilder sb = new StringBuilder();
+        sb.append(amount);
+
+        for (int i = sb.length(); i < 3; i++) {
+            sb.insert(0, "0");
+        }
+
+        sb.insert(sb.length() -2, ".");
+        return sb.toString();
+    }
+
+    /**
+     * Return a Float which was converted from cents to euro
+     * @param amount
+     * @return
+     */
+    public static Float createFloatAmount(BigInteger amount){
+        return Float.parseFloat(createStringAmount(amount));
     }
 }

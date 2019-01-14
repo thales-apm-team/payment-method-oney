@@ -1,9 +1,13 @@
 package com.payline.payment.oney.request;
 
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
+import com.payline.payment.oney.utils.PluginUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
+import static com.payline.payment.oney.utils.TestUtils.CONFIRM_AMOUNT;
 import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundRequest;
 
 public class OneyRefundRequestTest {
@@ -20,7 +24,8 @@ public class OneyRefundRequestTest {
         Assertions.assertTrue(request.toString().contains("merchant_request_id"));
         Assertions.assertTrue(request.toString().contains("purchase"));
 
-
+        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT));
+        Assertions.assertEquals(paymentAmountConverted, request.getPurchase().getAmount(),0.01);
     }
 
     @Test

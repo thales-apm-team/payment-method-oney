@@ -40,7 +40,8 @@ public class TestUtils {
     public HashMap<String, String> extendedData;
     private static final String SOFT_DESCRIPTOR = "softDescriptor";
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
-    public static final String CONFIRM_AMOUNT = "408";
+    //!! Amount en centimes
+    public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|" + TRANSACTION_ID;
 
