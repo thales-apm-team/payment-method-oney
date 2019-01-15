@@ -5,6 +5,7 @@ import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 /**
@@ -115,7 +116,7 @@ public class OneyRefundRequest extends OneyRequest {
             this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
-                    .withAmount(refundRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit()))
                     // todo Mapper avec quoi ??
                     .withReasonCode(0)
                     // todo Mapper avec quoi ??

@@ -9,10 +9,8 @@ import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class PluginUtils {
@@ -263,5 +261,51 @@ public class PluginUtils {
             throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
         }
         return reference.split("\\|")[1];
+    }
+
+    /**
+     * check if a String respect ISO-3166 rules
+     *
+     * @param countryCode the code to compare
+     * @return true if countryCode is in ISO-3166 list, else return false
+     */
+    public static boolean isISO3166(String countryCode) {
+        return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
+    }
+
+    /**
+     * check if a String respect ISO-3166 rules
+     *
+     * @param languageCode the code to compare
+     * @return true if languageCode is in ISO-3166 list, else return false
+     */
+    public static boolean isISO639(String languageCode) {
+        return Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
+    }
+
+    /**
+     * Return a string which was converted from cents to euro
+     * @param amount
+     * @return
+     */
+    public static String createStringAmount(BigInteger amount){
+        StringBuilder sb = new StringBuilder();
+        sb.append(amount);
+
+        for (int i = sb.length(); i < 3; i++) {
+            sb.insert(0, "0");
+        }
+
+        sb.insert(sb.length() -2, ".");
+        return sb.toString();
+    }
+
+    /**
+     * Return a Float which was converted from cents to euro
+     * @param amount
+     * @return
+     */
+    public static Float createFloatAmount(BigInteger amount){
+        return Float.parseFloat(createStringAmount(amount));
     }
 }

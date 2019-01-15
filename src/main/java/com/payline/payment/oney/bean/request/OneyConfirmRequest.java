@@ -9,6 +9,7 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 public class OneyConfirmRequest extends OneyRequest {
@@ -80,7 +81,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit()))
                     .buildForConfirmRequest();
             this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
         }
@@ -95,7 +96,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit()))
                     .buildForConfirmRequest();
             this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
         }

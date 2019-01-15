@@ -11,6 +11,8 @@ import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.pmapi.bean.payment.Environment;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
+
 public class BeanAssemblerServiceImpl implements BeanAssembleService {
 
     /**
@@ -36,7 +38,7 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
 
     @Override
     public PaymentData assemblePaymentData(final PaymentRequest paymentRequest, final BusinessTransactionData businessTransaction) {
-        final float amount = paymentRequest.getAmount().getAmountInSmallestUnit().floatValue();
+        final float amount = createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit());
         final String currencyCode = paymentRequest.getAmount().getCurrency().getCurrencyCode();
 
         return PaymentData.Builder.aPaymentData()

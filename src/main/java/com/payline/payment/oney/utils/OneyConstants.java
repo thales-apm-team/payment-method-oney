@@ -100,4 +100,8 @@ public class OneyConstants {
     //Code HTTP
     public static final int HTTP_OK = 200;
 
+
+    public static final String COUNTRY_NOT_ISO = "contract.errors.countryNotISO";
+    public static final String LANGUAGE_NOT_ISO = "contract.errors.languageNotISO";
+
 }

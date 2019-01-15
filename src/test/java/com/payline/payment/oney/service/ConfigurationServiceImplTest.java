@@ -40,6 +40,8 @@ public class ConfigurationServiceImplTest {
         accountInfo.put(X_ONEY_AUTHORIZATION_KEY, "mykey");
         accountInfo.put(PSP_GUID_KEY, "psp_id_test");
         accountInfo.put(MERCHANT_GUID_KEY, "merchant_guid_test");
+        accountInfo.put(COUNTRY_CODE_KEY, "FR");
+        accountInfo.put(LANGUAGE_CODE_KEY, "FR");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
@@ -68,7 +70,7 @@ public class ConfigurationServiceImplTest {
                 .withEnvironment(createDefaultEnvironment())
                 .build();
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assertions.assertEquals(3, errors.size());
+        Assertions.assertEquals(5, errors.size());
         Assertions.assertNotNull(errors.get(X_ONEY_AUTHORIZATION_KEY));
         Assertions.assertNotNull(errors.get(PSP_GUID_KEY));
         Assertions.assertNotNull(errors.get(MERCHANT_GUID_KEY));

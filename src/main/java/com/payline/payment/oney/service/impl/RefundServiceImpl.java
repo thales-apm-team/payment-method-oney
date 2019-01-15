@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
+import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_DESCRIPTION;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 
@@ -42,7 +43,9 @@ public class RefundServiceImpl implements RefundService {
         boolean isSandbox = refundRequest.getEnvironment().isSandbox();
 
         try {
-            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, isSandbox);
+            String codePays = refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
+
+            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, isSandbox,codePays);
             //handle Response
             if (oneyResponse == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
