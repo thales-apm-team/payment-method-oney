@@ -41,7 +41,6 @@ public class NavigationData extends OneyBean {
     private NavigationData() {
     }
 
-    //FIXME ; builder à valider
     public static class Builder {
         private String notificationUrl;
         private String successUrl;

@@ -41,7 +41,6 @@ public class Recipient extends OneyBean {
         this.phoneNumber = builder.phoneNumber;
     }
 
-    // FIXME builder
     public static class Builder {
         private Integer honorificCode;
         private String surname;
@@ -72,13 +71,14 @@ public class Recipient extends OneyBean {
             return this;
         }
 
-        public Recipient.Builder fromPayline(Buyer buyer){
-            this.surname=buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getLastName();
-            this.firstName =buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getFirstName();
-            this.phoneNumber =buyer.getPhoneNumberForType(Buyer.PhoneNumberType.BILLING);
-            this.honorificCode =  PluginUtils.getHonorificCode(buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility());
+        public Recipient.Builder fromPayline(Buyer buyer) {
+            this.surname = buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getLastName();
+            this.firstName = buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getFirstName();
+            this.phoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.BILLING);
+            this.honorificCode = PluginUtils.getHonorificCode(buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility());
             return this;
         }
+
         private Recipient.Builder verifyIntegrity() {
             if (this.surname == null) {
                 throw new IllegalStateException("Recipient must have a surname when built");

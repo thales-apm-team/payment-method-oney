@@ -5,7 +5,9 @@ import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.utils.OneyErrorHandler;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -49,7 +51,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         try {
             return validatePayment(confirmRequest, isSandbox);
 
-        } catch (IOException | URISyntaxException | DecryptException e) {
+        } catch (IOException | URISyntaxException | DecryptException | InvalidRequestException e) {
             LOGGER.error("unable to confirm the payment", e);
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(FailureCause.COMMUNICATION_ERROR)
@@ -117,7 +119,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             }
 
 
-        } catch (IOException | DecryptException | URISyntaxException e) {
+        } catch (IOException | DecryptException | URISyntaxException | InvalidRequestException e) {
             LOGGER.error("unable to handle the session expiration", e);
             //Renvoyer une erreur
             // FIXME BJU : .withErrorCode(e.getMessage()) ?!?
@@ -136,7 +138,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
      * @return
      */
     public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws
-            IOException, URISyntaxException, DecryptException {
+            IOException, URISyntaxException, DecryptException, InvalidRequestException {
 
         StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox);
         // si erreur lors de l'envoi de la requete http
@@ -175,7 +177,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
                     .withTransactionAdditionalData(responseDecrypted.toString())
-                    .withPartnerTransactionId(confirmRequest.getPurchaseReference())
+                    .withPartnerTransactionId(PluginUtils.parseReference(confirmRequest.getPurchaseReference()))
                     .withStatusCode(String.valueOf(oneyResponse.getCode()))
                     .withMessage(new Message(SUCCESS, message))
                     .withTransactionDetails(new EmptyTransactionDetails())

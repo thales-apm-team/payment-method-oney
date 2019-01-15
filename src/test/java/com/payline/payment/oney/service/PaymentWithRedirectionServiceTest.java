@@ -1,8 +1,7 @@
 package com.payline.payment.oney.service;
 
-import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
+import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -42,7 +41,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void confirmPaymentTest() throws IOException, URISyntaxException, DecryptException {
+    public void confirmPaymentTest() throws Exception {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
@@ -62,7 +61,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void confirmPaymentTestInvalidData() throws IOException, URISyntaxException, DecryptException {
+    public void confirmPaymentTestInvalidData() throws Exception {
         StringResponse responseMocked = createStringResponse(400, "Bad Request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"Merchant_request_id\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{String}]\"}]}}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
@@ -78,7 +77,7 @@ public class PaymentWithRedirectionServiceTest {
 
 
     @Test
-    public void confirmPaymentTestNotFound() throws IOException, URISyntaxException, DecryptException {
+    public void confirmPaymentTestNotFound() throws Exception {
         StringResponse responseMocked = createStringResponse(404, "Not Found", "{\"statusCode\": 404, \"message\": \"Resource not found\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyBoolean());
@@ -170,7 +169,7 @@ public class PaymentWithRedirectionServiceTest {
 
     @Test
     public void handleSessionExpiredTestFavorable() throws IOException, URISyntaxException {
-
+//FIXME Houssni ; recrée un message chiffré pour avois une référence CMDE|xxxx
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyMap(), Mockito.anyBoolean());
