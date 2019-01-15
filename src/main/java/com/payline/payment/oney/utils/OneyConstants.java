@@ -96,7 +96,6 @@ public class OneyConstants {
     public static final String EXTERNAL_REFERENCE_KEY = "externalReference";
     public static final String PAYMENT_AMOUNT_KEY = "paymentAmount";
 
-    //
     //Code HTTP
     public static final int HTTP_OK = 200;
 

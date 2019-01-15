@@ -77,7 +77,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         nbEcheancesParameter.setLabel(this.i18n.getMessage(NB_ECHEANCES_LABEL, locale));
         nbEcheancesParameter.setRequired(true);
         final LinkedHashMap<String, String> nbEcheances = new LinkedHashMap<>();
-        //TODO Houssni : vérifier les valeurs
         nbEcheances.put("3", "3");
         nbEcheances.put("4", "4");
         nbEcheancesParameter.setList(nbEcheances);
