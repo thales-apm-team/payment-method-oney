@@ -421,7 +421,7 @@ public class TestUtils {
     public static TransactionStatusRequest createDefaultTransactionStatusRequest() {
         return TransactionStatusRequest.TransactionStatusRequestBuilder
                 .aNotificationRequest()
-                .withTransactionId(TRANSACTION_ID)
+                .withTransactionId(CONFIRM_EXTERNAL_REFERENCE)
                 .withAmount(createAmount(CONFIRM_AMOUNT, "EUR"))
                 .withContractConfiguration(createContractConfiguration())
                 .withEnvironment(createDefaultEnvironment())
