@@ -46,7 +46,7 @@ public class PaymentServiceImplTest {
 
         StringResponse responseEncryptedMocked = createStringResponse(200, "", "{\"encrypted_message\": \"FhzjXBU2Ek+/dmCMVB4wWn6ytL2+dh5mIx+gxDtcp4rTSzO/LA1Q72aClEvNoeXVdc3wg8L8PpMvAhRkWkLc1DyuX14icAZP8C7uA5COgRIzklUPJq/d9tiDWXxszS9o4ALbCfpGYqSgUN38fBnJhC9Y7RBqY4eq+H0iTRtvfYSLmKumsYvQFJY/21j+Xou/ZLppruwA6/MNC0nDGXw2o2PJeMGm+e5i4lUlqowvecmZ+GWQM91pOrb95B/pqriDYwZnnRQrewuhAyvIkR8LVQ==\"}");
         Mockito.doReturn(responseEncryptedMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
 
         PaymentResponseRedirect response = (PaymentResponseRedirect) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response.getRedirectionRequest().getUrl());
@@ -59,7 +59,7 @@ public class PaymentServiceImplTest {
         StringResponse responseMocked = createStringResponse(400, "Bad request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"purchase.delivery.delivery_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"customer.customer_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"payment.payment_type\",\"error_code\":\"ERR_03\",\"error_label\":\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
         Assertions.assertEquals("400", response.getErrorCode());
@@ -68,11 +68,57 @@ public class PaymentServiceImplTest {
     }
 
     @Test
+    public void paymentRequestKO_PAYLAPMEXT_42() throws Exception {
+
+        StringResponse responseMocked = createStringResponse(400, "Bad request", "{\n" +
+                "  \"Payments_Error_Response\": {\n" +
+                "    \"error_list\": [\n" +
+                "      {\n" +
+                "        \"error\": {\n" +
+                "          \"field\": \"customer.identity.person_type\",\n" +
+                "          \"error_code\": \"ERR_04\",\n" +
+                "          \"error_label\": \"Value of the field is invalid [{Integer}]\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}");
+
+        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyBoolean());
+        PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_DATA, response.getFailureCause());
+
+        // test du format décrit sous confluence (sans objet 'error'
+        StringResponse responseMocked2 = createStringResponse(400, "Bad request", "{\n" +
+                "  \"Payments_Error_Response\": {\n" +
+                "    \"error_list\": [\n" +
+                "      {\n" +
+                "          \"field\": \"customer.identity.person_type\",\n" +
+                "          \"error_code\": \"ERR_04\",\n" +
+                "          \"error_label\": \"Value of the field is invalid [{Integer}]\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}");
+
+        Mockito.doReturn(responseMocked2).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyBoolean());
+        response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_DATA, response.getFailureCause());
+
+    }
+
+    @Test
     public void paymentRequestKO404() throws InvalidRequestException, IOException, URISyntaxException {
         StringResponse responseMocked = createStringResponse(404, "Bad request", "{Payments_Error_Response:{error_list:[{field:purchase.delivery.delivery_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:customer.customer_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:payment.payment_type,error_code:ERR_03,error_label:\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(),Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
         Assertions.assertEquals("404", response.getErrorCode());

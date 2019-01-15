@@ -1,5 +1,6 @@
 package com.payline.payment.oney.utils;
 
+import com.payline.payment.oney.bean.common.OneyError;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
@@ -79,12 +80,26 @@ public class OneyErrorHandler {
 
 
     public static FailureCause handleOneyFailureResponseFromCause(OneyFailureResponse failureResponse) {
-        String failureCause = "";
+        String failureCause = null;
 
         //Si le tableau contient plusieurs erreurs on récupère la première. toutes les autres seront loggués
         if (failureResponse.getPaymentErrorContent() != null && failureResponse.getPaymentErrorContent().getErrorList().get(0) != null) {
-            failureCause = failureResponse.getPaymentErrorContent().getErrorList().get(0).getErrorCode();
+            OneyError oneyError = failureResponse.getPaymentErrorContent().getErrorList().get(0);
+            if (oneyError != null) {
+                if (oneyError.getError() == null) {
+                    failureCause = oneyError.getErrorCode();
+                } else {
+                    failureCause = oneyError.getError().getErrorCode();
+                }
+            }
+
             LOGGER.warn(failureCause);
+        }
+
+        if (failureCause == null || failureCause.isEmpty()) {
+
+            LOGGER.warn("Oney error not parsable");
+            return FailureCause.PARTNER_UNKNOWN_ERROR;
         }
 
         //contiendra le error_code de la 1ere erreur

@@ -112,7 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
                 //RequestData
                 oneyContext.put(OneyConstants.PSP_GUID_KEY, oneyRequest.getPspGuid());
                 oneyContext.put(OneyConstants.MERCHANT_GUID_KEY, oneyRequest.getMerchantGuid());
-                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, generateReference(oneyRequest));
+                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, generateReference(oneyRequest.getPurchase()));
                 oneyContext.put(OneyConstants.PAYMENT_AMOUNT_KEY, oneyRequest.getPaymentData().getAmount().toString());
                 //Ajout language code ??
                 oneyContext.put(OneyConstants.LANGUAGE_CODE_KEY, paymentRequest.getLocale().getLanguage());
@@ -123,7 +123,7 @@ public class PaymentServiceImpl implements PaymentService {
 
                 return PaymentResponseRedirect.PaymentResponseRedirectBuilder.aPaymentResponseRedirect()
                         .withRedirectionRequest(redirectionRequest)
-                        .withPartnerTransactionId(oneyRequest.getMerchantRequestId())
+                        .withPartnerTransactionId(oneyRequest.getPurchase().getExternalReference())
                         .withStatusCode(String.valueOf(oneyResponse.getCode()))
                         .withRequestContext(requestContext)
                         .build();

@@ -18,7 +18,7 @@ public class ConfigPropertiesEnumTest {
 
     @Test
     public void getFromKeyOK() {
-        key = ConfigPropertiesEnum.INSTANCE.get("paymentMethod.name");
+        key = ConfigPropertiesEnum.INSTANCE.get("http.connectTimeout");
         Assertions.assertNotNull(key);
     }
 

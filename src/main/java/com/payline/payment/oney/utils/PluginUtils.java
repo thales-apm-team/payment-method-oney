@@ -1,7 +1,7 @@
 package com.payline.payment.oney.utils;
 
 
-import com.payline.payment.oney.bean.request.OneyPaymentRequest;
+import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
@@ -252,8 +252,16 @@ public class PluginUtils {
         return locale.getDisplayCountry();
     }
 
-    public static String generateReference(OneyPaymentRequest request) {
+    public static String generateReference(Purchase purchase) {
 
-        return request.getPurchase().getExternalReferenceType() + "|" + request.getPurchase().getExternalReference();
+        return purchase.getExternalReferenceType() + "|" + purchase.getExternalReference();
+    }
+
+    public static String parseReference(String reference) throws InvalidRequestException {
+
+        if (reference == null || reference.isEmpty() || !reference.contains("|")) {
+            throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
+        }
+        return reference.split("\\|")[1];
     }
 }
