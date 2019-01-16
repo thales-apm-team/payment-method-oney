@@ -105,7 +105,7 @@ public class OneyRefundRequest extends OneyRequest {
             return this;
         }
 
-        public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest) {
+        public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest,boolean refundFlag) {
 
             String merchantGuidValue = refundRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
@@ -117,12 +117,8 @@ public class OneyRefundRequest extends OneyRequest {
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit()))
-                    // todo confirmer toujours 0 ?? cancel
                     .withReasonCode(0)
-                    // todo obtenir statut de la transaction avant de definir le refundFlag recuperer  avant de créer la refundRequest
-                    //cancel (statut !=  funded) : false , refund (statut funded): true
-
-                    .withRefundFlag(true)
+                    .withRefundFlag(refundFlag)
                     .build();
             this.encryptKey = refundRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
 

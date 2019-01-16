@@ -153,4 +153,45 @@ public class PluginUtilsTest {
         Assertions.assertEquals(new Float("10.00"), PluginUtils.createFloatAmount(int5));
     }
 
+    @Test
+    public void getRefundFlagTrue(){
+        String status ="FUNDED";
+        boolean flag =getRefundFlag(status);
+        Assertions.assertEquals(true,flag);
+
+    }
+
+    @Test
+    public void getRefundFlagFalse(){
+        String status ="FAVORABLE";
+        String status2 ="PENDING";
+        boolean flag =getRefundFlag(status);
+        boolean flag2 =getRefundFlag(status);
+
+        Assertions.assertEquals(false,flag);
+        Assertions.assertEquals(false,flag2);
+
+    }
+    @Test
+    public void getRefundFlagInvalid(){
+
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            String status ="XOXO";
+            boolean flag =getRefundFlag(status);
+        });
+        Assertions.assertEquals("XOXO is not a valid status for refund or cancel", exception.getMessage());
+    }
+    @Test
+    public void getRefundFlagNotRefundable(){
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            String status ="REFUSED";
+            boolean flag =getRefundFlag(status);
+
+        });
+
+        Assertions.assertEquals("a REFUSED transactionStatusRequest can't be cancelled", exception.getMessage());
+
+    }
 }

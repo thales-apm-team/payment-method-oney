@@ -15,7 +15,7 @@ public class OneyRefundRequestTest {
     @Test
     public void createRefundRequestOK() {
         OneyRefundRequest request = OneyRefundRequest.Builder.aOneyRefundRequest()
-                .fromRefundRequest(createDefaultRefundRequest())
+                .fromRefundRequest(createDefaultRefundRequest(),true)
                 .build();
 
         Assertions.assertNotNull(request);

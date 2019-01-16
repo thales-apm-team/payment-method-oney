@@ -308,4 +308,26 @@ public class PluginUtils {
     public static Float createFloatAmount(BigInteger amount){
         return Float.parseFloat(createStringAmount(amount));
     }
+
+
+    public static boolean getRefundFlag(String transactionStatusRequest){
+        switch (transactionStatusRequest){
+            case"FUNDED" :
+                return true;
+
+            case"PENDING" :
+            case"FAVORABLE" :
+                return false;
+
+            case"REFUSED" :
+            case"ABORTED" :
+            case"CANCELLED" :
+                throw new IllegalStateException("a "+transactionStatusRequest+" transactionStatusRequest can't be cancelled");
+
+            default:
+                throw new IllegalStateException(transactionStatusRequest+" is not a valid status for refund or cancel");
+
+        }
+
+    }
 }
