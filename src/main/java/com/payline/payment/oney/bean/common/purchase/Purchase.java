@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.payline.payment.oney.utils.OneyConstants.EXTERNAL_REFERENCE_TYPE;
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 
 public class Purchase extends OneyBean {
 
@@ -140,7 +141,7 @@ public class Purchase extends OneyBean {
         public Purchase.Builder fromPayline(PaymentRequest request) {
             this.externalReferenceType = EXTERNAL_REFERENCE_TYPE;
             this.externalReference = request.getOrder().getReference();
-            this.purchaseAmount = request.getOrder().getAmount().getAmountInSmallestUnit().floatValue();
+            this.purchaseAmount = createFloatAmount(request.getOrder().getAmount().getAmountInSmallestUnit());
             this.currencyCode = request.getOrder().getAmount().getCurrency().getCurrencyCode();
             this.purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                     .fromPayline(request)

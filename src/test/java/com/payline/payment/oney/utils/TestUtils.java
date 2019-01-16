@@ -40,7 +40,7 @@ public class TestUtils {
     public HashMap<String, String> extendedData;
     private static final String SOFT_DESCRIPTOR = "softDescriptor";
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
-    public static final String CONFIRM_AMOUNT = "408";
+    public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|" + TRANSACTION_ID;
 
@@ -281,8 +281,8 @@ public class TestUtils {
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BEL")); // ouy 3 caractères
-        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
         contractConfiguration.getContractProperties().put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
 //used for Confirm
 
@@ -421,7 +421,7 @@ public class TestUtils {
     public static TransactionStatusRequest createDefaultTransactionStatusRequest() {
         return TransactionStatusRequest.TransactionStatusRequestBuilder
                 .aNotificationRequest()
-                .withTransactionId(TRANSACTION_ID)
+                .withTransactionId(CONFIRM_EXTERNAL_REFERENCE)
                 .withAmount(createAmount(CONFIRM_AMOUNT, "EUR"))
                 .withContractConfiguration(createContractConfiguration())
                 .withEnvironment(createDefaultEnvironment())

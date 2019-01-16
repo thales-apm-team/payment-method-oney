@@ -5,12 +5,15 @@ import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.service.impl.BeanAssemblerServiceImpl;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.TestUtils;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import java.math.BigInteger;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
 import static com.payline.payment.oney.utils.TestUtils.CONFIRM_AMOUNT;
@@ -51,7 +54,9 @@ public class PaymentDataTest {
 //                .fromPayline(createCompletePaymentBuilder().build())
 //                .build();
 
-        Assertions.assertEquals(Float.valueOf(CONFIRM_AMOUNT), paymentdata.getAmount(), 0.001);
+//conversion de l'amount de centimes d'euros  à euros
+        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT));
+        Assertions.assertEquals(paymentAmountConverted, paymentdata.getAmount(), 0.01);
         Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }
 

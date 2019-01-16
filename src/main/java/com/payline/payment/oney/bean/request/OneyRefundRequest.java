@@ -5,6 +5,7 @@ import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 /**
@@ -115,10 +116,12 @@ public class OneyRefundRequest extends OneyRequest {
             this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
-                    .withAmount(refundRequest.getAmount().getAmountInSmallestUnit().floatValue())
-                    // todo Mapper avec quoi ??
+                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit()))
+                    // todo confirmer toujours 0 ?? cancel
                     .withReasonCode(0)
-                    // todo Mapper avec quoi ??
+                    // todo obtenir statut de la transaction avant de definir le refundFlag recuperer  avant de créer la refundRequest
+                    //cancel (statut !=  funded) : false , refund (statut funded): true
+
                     .withRefundFlag(true)
                     .build();
             this.encryptKey = refundRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);

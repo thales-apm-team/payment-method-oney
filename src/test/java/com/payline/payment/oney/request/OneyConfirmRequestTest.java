@@ -17,8 +17,8 @@ public class OneyConfirmRequestTest {
         paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();
 
-        Assertions.assertTrue(paymentRequest.toString().contains("merchant_guid"));
-        Assertions.assertTrue(paymentRequest.toString().contains("psp_guid"));
+        Assertions.assertFalse(paymentRequest.toString().contains("merchant_guid"));
+        Assertions.assertFalse(paymentRequest.toString().contains("psp_guid"));
         Assertions.assertTrue(paymentRequest.toString().contains("language_code"));
         Assertions.assertTrue(paymentRequest.toString().contains("merchant_request_id"));
         Assertions.assertTrue(paymentRequest.toString().contains("payment"));

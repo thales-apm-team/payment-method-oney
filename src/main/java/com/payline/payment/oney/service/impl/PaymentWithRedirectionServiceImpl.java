@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
+import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_DESCRIPTION;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.pmapi.bean.common.Message.MessageType.SUCCESS;
@@ -47,9 +48,11 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest)
                 .build();
+        String codePays = redirectionPaymentRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
+
         boolean isSandbox = redirectionPaymentRequest.getEnvironment().isSandbox();
         try {
-            return validatePayment(confirmRequest, isSandbox);
+            return validatePayment(confirmRequest, isSandbox, codePays);
 
         } catch (IOException | URISyntaxException | DecryptException | InvalidRequestException e) {
             LOGGER.error("unable to confirm the payment", e);
@@ -71,7 +74,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         try {
             //retrouver les donnees de paiement
             boolean isSandbox = transactionStatusRequest.getEnvironment().isSandbox();
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox);
+            String countryCode = transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox, countryCode);
 
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
@@ -89,7 +93,9 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                             //confirmer la demande
                             OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(transactionStatusRequest)
                                     .build();
-                            return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox());
+                            String codePays = transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
+
+                            return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox(), codePays);
 
                         case "FUNDED":
                             // demande deja acceptée renvoyer une paymentResponseSuccess avec donnees
@@ -122,10 +128,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         } catch (IOException | DecryptException | URISyntaxException | InvalidRequestException e) {
             LOGGER.error("unable to handle the session expiration", e);
             //Renvoyer une erreur
-            // FIXME BJU : .withErrorCode(e.getMessage()) ?!?
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
-                    .withErrorCode(e.getMessage())
                     .build();
         }
 
@@ -137,10 +141,10 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
      *
      * @return
      */
-    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws
+    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox, String codePays) throws
             IOException, URISyntaxException, DecryptException, InvalidRequestException {
 
-        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox);
+        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox, codePays);
         // si erreur lors de l'envoi de la requete http
         if (oneyResponse == null) {
             LOGGER.debug("oneyResponse StringResponse is null !");

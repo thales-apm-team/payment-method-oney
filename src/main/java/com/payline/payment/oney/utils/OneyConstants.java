@@ -16,7 +16,6 @@ public class OneyConstants {
     public static final String SECRET_KEY = "X-Oney-Secret";
     public static final String SECRET_VALUE = "Method-body";
 
-
     public static final String CONFIG_HTTP_CONNECT_TIMEOUT = "http.connectTimeout";
     public static final String CONFIG_HTTP_WRITE_TIMEOUT = "http.writeTimeout";
     public static final String CONFIG_HTTP_READ_TIMEOUT = "http.readTimeout";
@@ -96,7 +95,6 @@ public class OneyConstants {
     public static final String EXTERNAL_REFERENCE_KEY = "externalReference";
     public static final String PAYMENT_AMOUNT_KEY = "paymentAmount";
 
-    //
     //Code HTTP
     public static final int HTTP_OK = 200;
 

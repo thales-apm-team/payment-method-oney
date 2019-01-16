@@ -80,8 +80,9 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
             final boolean isSandbox = paymentRequest.getEnvironment().isSandbox();
+            final String codePays = paymentRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
 
-            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, isSandbox);
+            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, isSandbox,codePays);
 
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");

@@ -42,7 +42,7 @@ public class RefundServiceImplTest {
     public void refundRequestTestOK() throws IOException, URISyntaxException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean(),Mockito.anyString());
 
         RefundResponse response = service.refundRequest(createDefaultRefundRequest());
 
@@ -59,7 +59,7 @@ public class RefundServiceImplTest {
     public void refundRequestTestKO() throws IOException, URISyntaxException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyBoolean());
+                Mockito.anyString(), Mockito.anyBoolean(),Mockito.anyString());
 
         RefundRequest refundReq = createDefaultRefundRequest();
         RefundResponse response = service.refundRequest(refundReq);

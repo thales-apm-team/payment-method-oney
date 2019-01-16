@@ -36,7 +36,7 @@ public class TestIt extends AbstractPaymentIntegration {
         contractConfiguration.put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
         contractConfiguration.put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
-        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BEL")); //3 caractères
+        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères
         contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("BE"));
         return contractConfiguration;
@@ -156,11 +156,8 @@ public class TestIt extends AbstractPaymentIntegration {
             //debug
 
         } finally {
-
-//            driver.quit();
-
+            driver.quit();
         }
-
 
     }
 

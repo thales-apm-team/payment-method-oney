@@ -35,10 +35,10 @@ public class TransactionStatusResponse extends OneyResponse {
             return parser.fromJson(decryptedMessage, TransactionStatusResponse.class);
 
         }
+
         //Sinon on renvoie la reponse parsee
-        else {
-            return transactionStatusResponse;
-        }
+        return transactionStatusResponse;
+
     }
 
 

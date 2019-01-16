@@ -9,10 +9,11 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
 public class OneyConfirmRequest extends OneyRequest {
-
+    // fixme
     @SerializedName("reference")
     private String purchaseReference;
     //RequestBody
@@ -72,7 +73,6 @@ public class OneyConfirmRequest extends OneyRequest {
 
         public Builder(RedirectionPaymentRequest paymentRequest) {
             String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
-//fixme
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
@@ -80,7 +80,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(paymentRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit()))
                     .buildForConfirmRequest();
             this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
         }
@@ -95,7 +95,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit().floatValue())
+                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit()))
                     .buildForConfirmRequest();
             this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
         }
@@ -131,8 +131,7 @@ public class OneyConfirmRequest extends OneyRequest {
 
     }
 
-
-    public String toJsonLight() {
+    public String toString() {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         return gson.toJson(this);
     }

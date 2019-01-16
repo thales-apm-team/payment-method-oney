@@ -22,6 +22,12 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
  */
 public class OneyHttpClient extends AbstractHttpClient {
 
+    public static final String PSP_GUID = "psp_guid";
+    public static final String MERCHANT_GUID = "merchant_guid";
+    public static final String REFERENCE = "reference";
+    public static final String PSP_GUID_TAG = "/psp_guid/";
+    public static final String MERCHANT_GUID_TAG = "/merchant_guid/";
+    public static final String REFERENCE_TAG = "/reference/";
 
     /**
      * Instantiate a HTTP client with default values.
@@ -48,7 +54,6 @@ public class OneyHttpClient extends AbstractHttpClient {
     /**
      * Send a POST request, with a XML content type.
      *
-     * @param scheme         URL scheme
      * @param host           URL host
      * @param path           URL path
      * @param requestContent The JSON content, as a string
@@ -56,29 +61,28 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doPost(String scheme, String host, String path, String requestContent, boolean isSandbox) throws IOException, URISyntaxException {
+    public StringResponse doPost(String host, String path, String requestContent, boolean isSandbox, String countryCode) throws IOException, URISyntaxException {
 
         StringEntity entity = new StringEntity(requestContent);
         ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
 
-        Header[] headers = createHeaders(env);
+        Header[] headers = createHeaders(env, countryCode);
 
 
-        return super.doPost(scheme, host, path, headers, entity);
+        return super.doPost(SCHEME, host, path, headers, entity);
 
     }
 
     /**
      * Send a GET request, with a XML content type.
      *
-     * @param scheme URL scheme
-     * @param host   URL host
-     * @param path   URL path
+     * @param host URL host
+     * @param path URL path
      * @return The response returned from the HTTP call
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    public StringResponse doGet(String scheme, String host, String path, Map<String, String> param, boolean isSandbox) throws IOException, URISyntaxException {
+    public StringResponse doGet(String host, String path, Map<String, String> param, boolean isSandbox, String countryCode) throws IOException, URISyntaxException {
 
 
         //build Request
@@ -86,17 +90,17 @@ public class OneyHttpClient extends AbstractHttpClient {
 
         ConfigEnvironment env = (isSandbox) ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
 
-        Header[] headers = createHeaders(env);
+        Header[] headers = createHeaders(env, countryCode);
 
 
-        return super.doGet(scheme, host, finalPath, headers);
+        return super.doGet(SCHEME, host, finalPath, headers);
     }
 
     public String buildGetOrderPath(String path, Map<String, String> param) {
 
-        return path + "/psp_guid/" + param.get("psp_guid")
-                + "/merchant_guid/" + param.get("merchant_guid")
-                + "/reference/" + param.get("reference");
+        return path + PSP_GUID_TAG + param.get(PSP_GUID)
+                + MERCHANT_GUID_TAG + param.get(MERCHANT_GUID)
+                + REFERENCE_TAG + param.get(REFERENCE);
 
     }
 
@@ -115,11 +119,11 @@ public class OneyHttpClient extends AbstractHttpClient {
      *
      * @return Header[]  header data
      */
-    private Header[] createHeaders(ConfigEnvironment env) {
+    private Header[] createHeaders(ConfigEnvironment env, String countryCode) {
         Header[] headers = new Header[4];
         headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(AUTHORIZATION, ConfigPropertiesEnum.INSTANCE.get(AUTHORIZATION_VALUE, env));
-        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, ConfigPropertiesEnum.INSTANCE.get(COUNTRY_CODE_VALUE, env));
+        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, countryCode.toUpperCase());
         headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
 
         return headers;
@@ -130,51 +134,51 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
 
-    public StringResponse initiatePayment(OneyPaymentRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+    public StringResponse initiatePayment(OneyPaymentRequest request, boolean isSandbox, String countryCode) throws IOException, URISyntaxException, DecryptException {
         String host = getHost(isSandbox);
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, PAYMENT_REQUEST_URL, jsonBody, isSandbox);
+        return doPost(host, PAYMENT_REQUEST_URL, jsonBody, isSandbox, countryCode);
 
     }
 
-    public StringResponse initiateConfirmationPayment(OneyConfirmRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+    public StringResponse initiateConfirmationPayment(OneyConfirmRequest request, boolean isSandbox, String countryCode) throws IOException, URISyntaxException, DecryptException {
         String host = getHost(isSandbox);
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("psp_guid", request.getPspGuid());
-        parameters.put("merchant_guid", request.getMerchantGuid());
-        parameters.put("reference", request.getPurchaseReference());
+        parameters.put(PSP_GUID, request.getPspGuid());
+        parameters.put(MERCHANT_GUID, request.getMerchantGuid());
+        parameters.put(REFERENCE, request.getPurchaseReference());
         String path = buildConfirmOrderPath(CONFIRM_REQUEST_URL, parameters);
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+        return doPost(host, path, jsonBody, isSandbox, countryCode);
 
     }
 
-    public StringResponse initiateRefundPayment(OneyRefundRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+    public StringResponse initiateRefundPayment(OneyRefundRequest request, boolean isSandbox, String countryCode) throws IOException, URISyntaxException, DecryptException {
         String host = getHost(isSandbox);
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("psp_guid", request.getPspGuid());
-        parameters.put("merchant_guid", request.getMerchantGuid());
-        parameters.put("reference", request.getPurchaseReference());
+        parameters.put(PSP_GUID, request.getPspGuid());
+        parameters.put(MERCHANT_GUID, request.getMerchantGuid());
+        parameters.put(REFERENCE, request.getPurchaseReference());
         String path = buildRefundOrderPath(CANCEL_REQUEST_URL, parameters);
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyRefundRequest(request);
         String jsonBody = requestEncrypted.toString();
         // do the request
-        return doPost(SCHEME, host, path, jsonBody, isSandbox);
+        return doPost(host, path, jsonBody, isSandbox, countryCode);
 
     }
 
-    public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request, boolean isSandbox) throws IOException, URISyntaxException, DecryptException {
+    public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request, boolean isSandbox, String countryCode) throws IOException, URISyntaxException, DecryptException {
         String host = getHost(isSandbox);
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("psp_guid", request.getPspGuid());
-        parameters.put("merchant_guid", request.getMerchantGuid());
-        parameters.put("reference", request.getPurchaseReference());
+        parameters.put(PSP_GUID, request.getPspGuid());
+        parameters.put(MERCHANT_GUID, request.getMerchantGuid());
+        parameters.put(REFERENCE, request.getPurchaseReference());
         // do the request
-        return doGet(SCHEME, host, STATUS_REQUEST_URL, parameters, isSandbox);
+        return doGet(host, STATUS_REQUEST_URL, parameters, isSandbox, countryCode);
 
     }
 }

@@ -11,10 +11,13 @@ public abstract class OneyRequest extends OneyBean {
     //Construit une requête Oney
 
     private static final Logger LOGGER = LogManager.getLogger(OneyRequest.class);
+
     @SerializedName("merchant_guid")
     protected String merchantGuid;
+
     @SerializedName("psp_guid")
     protected String pspGuid;
+
     @SerializedName("encrypted_message")
     protected String encryptedMessage;
 

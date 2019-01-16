@@ -77,7 +77,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         nbEcheancesParameter.setLabel(this.i18n.getMessage(NB_ECHEANCES_LABEL, locale));
         nbEcheancesParameter.setRequired(true);
         final LinkedHashMap<String, String> nbEcheances = new LinkedHashMap<>();
-        //TODO Houssni : vérifier les valeurs
         nbEcheances.put("3", "3");
         nbEcheances.put("4", "4");
         nbEcheancesParameter.setList(nbEcheances);
@@ -143,9 +142,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         String codePays = contractParametersCheckRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
-        if (!PluginUtils.isISO639(codePays)) {
+        if (!PluginUtils.isISO3166(codePays)) {
             errors.put(COUNTRY_CODE_DESCRIPTION, this.i18n.getMessage(COUNTRY_NOT_ISO, locale));
         }
+
+        // TODO check OPC_KEY : payment 0 EUR fail si errorCode = 500 + "error_label":"Business Transaction  ..."
         return errors;
     }
 
