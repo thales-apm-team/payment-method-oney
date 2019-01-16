@@ -66,9 +66,13 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
     public PaymentFormLogo getLogo(String var1, Locale locale) {
 
         String fileName = LogoPropertiesEnum.INSTANCE.get(LOGO_FILE_NAME);
+        InputStream input = PaymentFormConfigurationServiceImpl.class.getClassLoader().getResourceAsStream(fileName);
+        if (input == null) {
+            LOGGER.error("Unable to load the logo {}", LOGO_FILE_NAME);
+            throw new RuntimeException("Unable to load the logo " + LOGO_FILE_NAME);
+        }
         try {
             // Read logo file
-            InputStream input = PaymentFormConfigurationServiceImpl.class.getClassLoader().getResourceAsStream(fileName);
             BufferedImage logo = ImageIO.read(input);
 
             // Recover byte array from image

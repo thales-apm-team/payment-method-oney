@@ -7,6 +7,8 @@ import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Map;
+
 public abstract class OneyRequest extends OneyBean {
     //Construit une requête Oney
 
@@ -21,6 +23,10 @@ public abstract class OneyRequest extends OneyBean {
     @SerializedName("encrypted_message")
     protected String encryptedMessage;
 
+    protected transient Map<String, String> callParameters;
+
+    //cle de chiffrement
+    protected transient String encryptKey;
 
     public String getMerchantGuid() {
         return merchantGuid;
@@ -36,6 +42,14 @@ public abstract class OneyRequest extends OneyBean {
 
     public void setEncryptedMessage(String encryptedMessage) {
         this.encryptedMessage = encryptedMessage;
+    }
+
+    public String getEncryptKey() {
+        return encryptKey;
+    }
+
+    public Map<String, String> getCallParameters() {
+        return callParameters;
     }
 
     /**

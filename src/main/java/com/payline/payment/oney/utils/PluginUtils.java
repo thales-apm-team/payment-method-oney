@@ -7,16 +7,21 @@ import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.bean.ActionRequest;
 import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
+import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static com.payline.payment.oney.utils.OneyConstants.*;
+
 public class PluginUtils {
 
 
     public static final String URL_DELIMITER = "/";
+    public static final String LINE_1 = "line1";
+    public static final String LINE_4 = "line4";
 
     private PluginUtils() {
         // ras.
@@ -168,18 +173,18 @@ public class PluginUtils {
         int firstCharPosition2 = 0;
 
         if (longText == null) {
-            textTruncated.put("line1", "");
+            textTruncated.put(LINE_1, "");
         }
         //-------------------- address 1
         else if (longText.length() < size) {
-            textTruncated.put("line1", longText);
+            textTruncated.put(LINE_1, longText);
 
         } else {
             int end1 = longText.lastIndexOf(' ', fromIndex);
             line1 = longText.substring(firstCharPosition, end1);
             fromIndex += line1.length();
             firstCharPosition += line1.length();
-            textTruncated.put("line1", line1);
+            textTruncated.put(LINE_1, line1);
 
             int end2 = longText.lastIndexOf(' ', fromIndex);
             line2 = longText.substring(firstCharPosition, end2);
@@ -193,17 +198,17 @@ public class PluginUtils {
         }
         //-------------------- address 2
         if (longText2 == null) {
-            textTruncated.put("line4", "");
+            textTruncated.put(LINE_4, "");
 
         } else if (longText2.length() < size) {
-            textTruncated.put("line4", longText2);
+            textTruncated.put(LINE_4, longText2);
 
         } else {
             int end4 = longText2.lastIndexOf(' ', fromIndex2);
             line4 = longText2.substring(firstCharPosition2, end4);
             fromIndex2 += line4.length();
             firstCharPosition2 += line4.length();
-            textTruncated.put("line4", line4);
+            textTruncated.put(LINE_4, line4);
 
             int end5 = longText2.lastIndexOf(' ', fromIndex2);
             line5 = longText2.substring(firstCharPosition2, end5);
@@ -252,15 +257,15 @@ public class PluginUtils {
 
     public static String generateReference(Purchase purchase) {
 
-        return purchase.getExternalReferenceType() + "|" + purchase.getExternalReference();
+        return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
     }
 
     public static String parseReference(String reference) throws InvalidRequestException {
 
-        if (reference == null || reference.isEmpty() || !reference.contains("|")) {
+        if (reference == null || reference.isEmpty() || !reference.contains(OneyConstants.PIPE)) {
             throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
         }
-        return reference.split("\\|")[1];
+        return reference.split(OneyConstants.PIPE)[1];
     }
 
     /**
@@ -312,24 +317,56 @@ public class PluginUtils {
     }
 
 
-    public static boolean getRefundFlag(String transactionStatusRequest){
-        switch (transactionStatusRequest){
-            case"FUNDED" :
+    public static boolean getRefundFlag(String transactionStatusRequest) {
+        switch (transactionStatusRequest) {
+            case "FUNDED":
                 return true;
 
-            case"PENDING" :
-            case"FAVORABLE" :
+            case "PENDING":
+            case "FAVORABLE":
                 return false;
 
-            case"REFUSED" :
-            case"ABORTED" :
-            case"CANCELLED" :
-                throw new IllegalStateException("a "+transactionStatusRequest+" transactionStatusRequest can't be cancelled");
+            case "REFUSED":
+            case "ABORTED":
+            case "CANCELLED":
+                throw new IllegalStateException("a " + transactionStatusRequest + " transactionStatusRequest can't be cancelled");
 
             default:
-                throw new IllegalStateException(transactionStatusRequest+" is not a valid status for refund or cancel");
+                throw new IllegalStateException(transactionStatusRequest + " is not a valid status for refund or cancel");
 
         }
 
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param partnerConfiguration Payline PartnerConfiguration
+     * @param coutryCode           coutryCode from ContractParameters
+     * @return
+     */
+    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) {
+
+        if (coutryCode == null || coutryCode.isEmpty()) {
+            throw new IllegalStateException("coutryCode is mandatory");
+        }
+
+        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHRIZATION_KEY);
+        if (authorization == null) {
+            throw new IllegalStateException(PARTNER_AUTHRIZATION_KEY + " is mandatory");
+        }
+
+        String url = partnerConfiguration.getProperty(PARTNER_API_URL);
+        if (url == null) {
+            throw new IllegalStateException(PARTNER_API_URL + " is mandatory");
+        }
+
+
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put(PARTNER_AUTHRIZATION_KEY, authorization);
+        parametersMap.put(PARTNER_API_URL, url);
+        parametersMap.put(HEADER_COUNTRY_CODE, coutryCode.toUpperCase());
+
+        return parametersMap;
     }
 }

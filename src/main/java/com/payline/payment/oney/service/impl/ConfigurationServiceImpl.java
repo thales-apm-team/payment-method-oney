@@ -11,8 +11,6 @@ import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.PasswordParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.service.ConfigurationService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,8 +20,6 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
 
-
-    private static final Logger LOGGER = LogManager.getLogger(ConfigurationServiceImpl.class);
 
     private I18nService i18n = I18nService.getInstance();
 

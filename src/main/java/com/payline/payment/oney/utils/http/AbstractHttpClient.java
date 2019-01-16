@@ -7,7 +7,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -61,21 +60,16 @@ public abstract class AbstractHttpClient {
     /**
      * Send a POST request.
      *
-     * @param scheme URL scheme
-     * @param host   URL host
-     * @param path   URL path
-     * @param body   Request body
+     * @param url  URL scheme + host
+     * @param path URL path
+     * @param body Request body
      * @return The response returned from the HTTP call
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
-    protected StringResponse doPost(String scheme, String host, String path, Header[] headers, HttpEntity body) throws IOException, URISyntaxException {
+    protected StringResponse doPost(String url, String path, Header[] headers, HttpEntity body) throws IOException, URISyntaxException {
 
-        final URI uri = new URIBuilder()
-                .setScheme(scheme)
-                .setHost(host)
-                .setPath(path)
-                .build();
+        URI uri = new URI(url + path);
 
 
         final HttpPost httpPostRequest = new HttpPost(uri);
@@ -88,7 +82,7 @@ public abstract class AbstractHttpClient {
         while (count < 3 && strResponse == null) {
             try (CloseableHttpResponse httpResponse = this.client.execute(httpPostRequest)) {
 
-                LOGGER.info("Start partner call... [HOST: {}]", host);
+                LOGGER.info("Start partner call... [URL: {}]", url);
 
                 strResponse = new StringResponse();
                 strResponse.setCode(httpResponse.getStatusLine().getStatusCode());
@@ -117,24 +111,20 @@ public abstract class AbstractHttpClient {
 
     }
 
+
     /**
      * Send a GET request
      *
-     * @param scheme URL scheme
-     * @param host   URL host
-     * @param path   URL path
+     * @param url  URL RL scheme + host
+     * @param path URL path
      * @return The response returned from the HTTP call
      * @throws IOException        I/O error
      * @throws URISyntaxException URI Syntax Exception
      */
 
-    protected StringResponse doGet(String scheme, String host, String path, Header[] headers) throws IOException, URISyntaxException {
+    protected StringResponse doGet(String url, String path, Header[] headers) throws IOException, URISyntaxException {
 
-        final URI uri = new URIBuilder()
-                .setScheme(scheme)
-                .setHost(host)
-                .setPath(path)
-                .build();
+        URI uri = new URI(url + path);
 
         final HttpGet httpGetRequest = new HttpGet(uri);
         httpGetRequest.setHeaders(headers);
@@ -144,7 +134,7 @@ public abstract class AbstractHttpClient {
         while (count < 3 && strResponse == null) {
             try (CloseableHttpResponse httpResponse = this.client.execute(httpGetRequest)) {
 
-                LOGGER.info("Start partner call... [HOST: {}]", host);
+                LOGGER.info("Start partner call... [URL: {}]", url);
 
                 strResponse = new StringResponse();
                 strResponse.setCode(httpResponse.getStatusLine().getStatusCode());

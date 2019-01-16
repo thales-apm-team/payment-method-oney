@@ -42,7 +42,7 @@ public class TestUtils {
     private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
     public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
-    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMD|" + TRANSACTION_ID;
+    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMDE" + PIPE + TRANSACTION_ID;
 
 
     private static String testPhonenumber = null;
@@ -174,7 +174,7 @@ public class TestUtils {
                 .aRequestContext()
                 .withRequestData(requestData)
                 .build();
-        return (RedirectionPaymentRequest) RedirectionPaymentRequest.builder()
+        return RedirectionPaymentRequest.builder()
                 .withAmount(amount)
                 .withBrowser(new Browser("", Locale.FRANCE))
                 .withContractConfiguration(contractConfiguration)
@@ -388,9 +388,11 @@ public class TestUtils {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, GUID_KEY);
         partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         return new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration);

@@ -129,7 +129,7 @@ public class BeanUtils {
                 .withLanguageCode("FR")
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
                 .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference("CMDE|455454545415451198114")
+                .withPurchaseReference("CMDE" + OneyConstants.PIPE + "455454545415451198114")
                 .build();
     }
 }

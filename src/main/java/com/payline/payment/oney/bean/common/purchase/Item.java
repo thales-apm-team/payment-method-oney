@@ -207,10 +207,9 @@ public class Item extends OneyBean {
             if (this.price == null) {
                 throw new IllegalStateException("Item must have a price when built");
             }
-            if (this.marketplaceFlag != null) {
-                if (this.marketplaceFlag == 1 && this.marketplaceName == null) {
-                    throw new IllegalStateException("Item must have a marketplaceName when built");
-                }
+            if (this.marketplaceFlag != null && this.marketplaceFlag == 1 && this.marketplaceName == null) {
+                throw new IllegalStateException("Item must have a marketplaceName when built");
+
             }
             return this;
         }

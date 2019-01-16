@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
-import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_DESCRIPTION;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.pmapi.bean.common.Message.MessageType.SUCCESS;
@@ -48,11 +47,9 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest)
                 .build();
-        String codePays = redirectionPaymentRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
 
-        boolean isSandbox = redirectionPaymentRequest.getEnvironment().isSandbox();
         try {
-            return validatePayment(confirmRequest, isSandbox, codePays);
+            return validatePayment(confirmRequest);
 
         } catch (IOException | URISyntaxException | DecryptException | InvalidRequestException e) {
             LOGGER.error("unable to confirm the payment", e);
@@ -72,10 +69,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 .fromTransactionStatusRequest(transactionStatusRequest)
                 .build();
         try {
-            //retrouver les donnees de paiement
-            boolean isSandbox = transactionStatusRequest.getEnvironment().isSandbox();
-            String countryCode = transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox, countryCode);
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest);
 
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
@@ -93,9 +87,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                             //confirmer la demande
                             OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(transactionStatusRequest)
                                     .build();
-                            String codePays = transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
 
-                            return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox(), codePays);
+                            return this.validatePayment(confirmRequest);
 
                         case "FUNDED":
                             // demande deja acceptée renvoyer une paymentResponseSuccess avec donnees
@@ -141,10 +134,10 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
      *
      * @return
      */
-    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox, String codePays) throws
+    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest) throws
             IOException, URISyntaxException, DecryptException, InvalidRequestException {
 
-        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox, codePays);
+        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest);
         // si erreur lors de l'envoi de la requete http
         if (oneyResponse == null) {
             LOGGER.debug("oneyResponse StringResponse is null !");
@@ -174,7 +167,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             }
 
             //definir les additionals data a renvoyer
-//            AdditionalData additionalData = AdditionalData.fromJson(responseDecrypted.toString());
             //Additional data  : ajouter purchaseReference ? amount ? transaction status ??
             String message = (responseDecrypted.getStatusPurchase() == null) ? "" : responseDecrypted.getStatusPurchase().getStatusLabel();
 

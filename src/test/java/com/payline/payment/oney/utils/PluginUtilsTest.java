@@ -1,6 +1,5 @@
 package com.payline.payment.oney.utils;
 
-import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.payment.oney.bean.common.purchase.Item;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -108,7 +107,6 @@ public class PluginUtilsTest {
         Assertions.assertEquals(2, catCodeOney3);
     }
 
-    //todo
     @Test
     public void testHonorificName() {
         String mr = "4";
@@ -123,6 +121,7 @@ public class PluginUtilsTest {
         Assertions.assertEquals(3, hCodeOney3);
 
     }
+
     @Test
     public void createStringAmount() {
         BigInteger int1 = BigInteger.ZERO;
@@ -154,40 +153,42 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void getRefundFlagTrue(){
-        String status ="FUNDED";
-        boolean flag =getRefundFlag(status);
-        Assertions.assertEquals(true,flag);
+    public void getRefundFlagTrue() {
+        String status = "FUNDED";
+        boolean flag = getRefundFlag(status);
+        Assertions.assertTrue(flag);
 
     }
 
     @Test
-    public void getRefundFlagFalse(){
-        String status ="FAVORABLE";
-        String status2 ="PENDING";
-        boolean flag =getRefundFlag(status);
-        boolean flag2 =getRefundFlag(status);
+    public void getRefundFlagFalse() {
+        String status = "FAVORABLE";
+        String status2 = "PENDING";
+        boolean flag = getRefundFlag(status);
+        boolean flag2 = getRefundFlag(status);
 
-        Assertions.assertEquals(false,flag);
-        Assertions.assertEquals(false,flag2);
+        Assertions.assertFalse(flag);
+        Assertions.assertFalse(flag2);
 
     }
+
     @Test
-    public void getRefundFlagInvalid(){
+    public void getRefundFlagInvalid() {
 
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
 
-            String status ="XOXO";
-            boolean flag =getRefundFlag(status);
+            String status = "XOXO";
+            boolean flag = getRefundFlag(status);
         });
         Assertions.assertEquals("XOXO is not a valid status for refund or cancel", exception.getMessage());
     }
+
     @Test
-    public void getRefundFlagNotRefundable(){
+    public void getRefundFlagNotRefundable() {
         Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
 
-            String status ="REFUSED";
-            boolean flag =getRefundFlag(status);
+            String status = "REFUSED";
+            boolean flag = getRefundFlag(status);
 
         });
 

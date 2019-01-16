@@ -31,7 +31,7 @@ public class PaymentErrorResponse extends OneyBean {
     }
 
     public static PaymentErrorResponse paymentErrorResponseFromJson(String json) {
-        // fixme
+
         //Specifier le type renvoye
         Type errorListType = new TypeToken<ArrayList<OneyError>>() {
         }.getType();

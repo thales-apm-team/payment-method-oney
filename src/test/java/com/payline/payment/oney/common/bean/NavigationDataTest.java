@@ -5,7 +5,6 @@ import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.service.impl.BeanAssemblerServiceImpl;
 import com.payline.payment.oney.utils.TestUtils;
-import com.payline.pmapi.bean.payment.Environment;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,8 +59,6 @@ public class NavigationDataTest {
 
     @Test
     public void buildNavigationDataFromPayline() throws InvalidRequestException {
-
-        Environment environment = new Environment("notif", "successOrPending", "fail", true);
 
         navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
 

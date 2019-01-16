@@ -178,8 +178,6 @@ public class OneyAddress extends OneyBean {
             this.postalCode = buyer.getAddressForType(addressType).getZipCode();
             this.countryLabel = getCountryNameCodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
             this.countryCode = getIsoAlpha3CodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
-//            this.arrondissementCode = buyer.getAddressForType(Buyer.AddressType.BILLING);
-
 
             return this;
         }

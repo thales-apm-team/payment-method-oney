@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
             final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(CHIFFREMENT_KEY);
+            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -77,12 +77,10 @@ public class PaymentServiceImpl implements PaymentService {
                     .withEncryptKey(chiffrementKey)
                     .withMerchantContext(paymentRequest.getSoftDescriptor())
                     .withPspContext(paymentRequest.getTransactionId())
+                    .withCallParameters(PluginUtils.getParametersMap(paymentRequest.getPartnerConfiguration(), "BE"))
                     .build();
 
-            final boolean isSandbox = paymentRequest.getEnvironment().isSandbox();
-            final String codePays = paymentRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
-
-            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, isSandbox,codePays);
+            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest);
 
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");

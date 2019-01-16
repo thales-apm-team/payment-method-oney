@@ -11,7 +11,7 @@ import java.util.Properties;
 public interface PropertiesService {
 
 
-    static final Logger LOGGER = LogManager.getLogger(PropertiesService.class);
+    Logger LOGGER = LogManager.getLogger(PropertiesService.class);
 
     /**
      * Get a config property by its name.
@@ -47,11 +47,11 @@ public interface PropertiesService {
      *
      * @return the properties file's name
      */
-    public String getFilename();
+    String getFilename();
 
-    public String get(final String key);
+    String get(final String key);
 
-    public String get(final String key, final ConfigEnvironment environment);
+    String get(final String key, final ConfigEnvironment environment);
 
     /**
      * Reads the properties file and stores the result.

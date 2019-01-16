@@ -22,7 +22,6 @@ import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
-import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_DESCRIPTION;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.PluginUtils.getRefundFlag;
@@ -45,14 +44,12 @@ public class RefundServiceImpl implements RefundService {
 
         //creation d'une OneyRefundRequest
         OneyRefundRequest oneyRefundRequest = OneyRefundRequest.Builder.aOneyRefundRequest()
-                .fromRefundRequest(refundRequest,refundFlag)
+                .fromRefundRequest(refundRequest, refundFlag)
                 .build();
-        boolean isSandbox = refundRequest.getEnvironment().isSandbox();
 
         try {
-            String codePays = refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
 
-            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, isSandbox,codePays);
+            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest);
             //handle Response
             if (oneyResponse == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
@@ -108,19 +105,17 @@ public class RefundServiceImpl implements RefundService {
 
     /**
      * Obteniir le statut d'une transaction en cours
+     *
      * @param refundRequest
      * @return
      */
-    public String handleStatusRequest(RefundRequest refundRequest){
+    public String handleStatusRequest(RefundRequest refundRequest) {
         OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .fromRefundRequest(refundRequest)
                 .build();
-        String transactionStatusCode ="";
-        try{
-            //retrouver les donnees de paiement
-            boolean isSandbox = refundRequest.getEnvironment().isSandbox();
-            String countryCode = refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox,countryCode);
+        String transactionStatusCode = "";
+        try {
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest);
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
