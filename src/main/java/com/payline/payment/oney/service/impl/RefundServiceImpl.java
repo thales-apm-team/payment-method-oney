@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.DecryptException;
@@ -24,6 +25,7 @@ import static com.payline.payment.oney.bean.response.TransactionStatusResponse.c
 import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_DESCRIPTION;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
+import static com.payline.payment.oney.utils.PluginUtils.getRefundFlag;
 
 public class RefundServiceImpl implements RefundService {
 
@@ -36,9 +38,14 @@ public class RefundServiceImpl implements RefundService {
 
     @Override
     public RefundResponse refundRequest(RefundRequest refundRequest) {
+        //obtenir statut de la requete
+        String statusRequest = handleStatusRequest(refundRequest);
+        //faire une  transactionStatusRequest
+        boolean refundFlag = getRefundFlag(statusRequest);
+
         //creation d'une OneyRefundRequest
         OneyRefundRequest oneyRefundRequest = OneyRefundRequest.Builder.aOneyRefundRequest()
-                .fromRefundRequest(refundRequest)
+                .fromRefundRequest(refundRequest,refundFlag)
                 .build();
         boolean isSandbox = refundRequest.getEnvironment().isSandbox();
 
@@ -97,5 +104,35 @@ public class RefundServiceImpl implements RefundService {
     @Override
     public boolean canPartial() {
         return true;
+    }
+
+    /**
+     * Obteniir le statut d'une transaction en cours
+     * @param refundRequest
+     * @return
+     */
+    public String handleStatusRequest(RefundRequest refundRequest){
+        OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                .fromRefundRequest(refundRequest)
+                .build();
+        String transactionStatusCode ="";
+        try{
+            //retrouver les donnees de paiement
+            boolean isSandbox = refundRequest.getEnvironment().isSandbox();
+            String countryCode = refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_DESCRIPTION).getValue();
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox,countryCode);
+            //l'appel est OK on gere selon la response
+            if (status.getCode() == HTTP_OK) {
+                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+                transactionStatusCode = response.getStatusPurchase().getStatusCode();
+            }
+
+        } catch (IOException | DecryptException | URISyntaxException e) {
+            LOGGER.error("unable to get transaction status", e);
+            throw new IllegalStateException("unable to get transaction status");
+
+        }
+        return transactionStatusCode;
+
     }
 }

@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 public class OneyTransactionStatusRequest extends OneyRequest {
 
@@ -79,6 +80,17 @@ public class OneyTransactionStatusRequest extends OneyRequest {
                     .withPspGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
                     .withPurchaseReference(transactionStatusRequest.getTransactionId())
                     .withEncryptKey(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.CHIFFREMENT_KEY));
+
+
+        }
+        //Creer une transactionStatusRequest depuis une refund Request
+        public OneyTransactionStatusRequest.Builder fromRefundRequest(RefundRequest refundRequest) {
+            return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                    .withLanguageCode(refundRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
+                    .withMerchantGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
+                    .withPspGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
+                    .withPurchaseReference(refundRequest.getTransactionId())
+                    .withEncryptKey(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.CHIFFREMENT_KEY));
 
 
         }
