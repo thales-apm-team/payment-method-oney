@@ -141,7 +141,7 @@ public class Purchase extends OneyBean {
         public Purchase.Builder fromPayline(PaymentRequest request) {
             this.externalReferenceType = EXTERNAL_REFERENCE_TYPE;
             this.externalReference = request.getOrder().getReference();
-            this.purchaseAmount = createFloatAmount(request.getOrder().getAmount().getAmountInSmallestUnit());
+            this.purchaseAmount = createFloatAmount(request.getOrder().getAmount().getAmountInSmallestUnit(),request.getOrder().getAmount().getCurrency());
             this.currencyCode = request.getOrder().getAmount().getCurrency().getCurrencyCode();
             this.purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                     .fromPayline(request)

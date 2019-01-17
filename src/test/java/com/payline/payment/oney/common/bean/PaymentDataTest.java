@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.math.BigInteger;
+import java.util.Currency;
 
 import static com.payline.payment.oney.utils.BeanUtils.createDefaultBusinessTransactionData;
 import static com.payline.payment.oney.utils.TestUtils.CONFIRM_AMOUNT;
@@ -55,7 +56,7 @@ public class PaymentDataTest {
 //                .build();
 
 //conversion de l'amount de centimes d'euros  à euros
-        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT));
+        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         Assertions.assertEquals(paymentAmountConverted, paymentdata.getAmount(), 0.01);
         Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }

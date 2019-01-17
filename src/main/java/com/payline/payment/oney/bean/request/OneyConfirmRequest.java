@@ -79,7 +79,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit()))
+                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(),paymentRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
             this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(
@@ -97,7 +97,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit()))
+                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit(),transactionStatusRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
             this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(

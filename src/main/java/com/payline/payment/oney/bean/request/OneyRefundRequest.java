@@ -121,7 +121,7 @@ public class OneyRefundRequest extends OneyRequest {
             this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
-                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit()))
+                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(),refundRequest.getAmount().getCurrency()))
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();

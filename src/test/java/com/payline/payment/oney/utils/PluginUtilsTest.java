@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.util.Currency;
 import java.util.Map;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
@@ -130,11 +131,11 @@ public class PluginUtilsTest {
         BigInteger int4 = BigInteger.valueOf(100);
         BigInteger int5 = BigInteger.valueOf(1000);
 
-        Assertions.assertEquals("0.00", PluginUtils.createStringAmount(int1));
-        Assertions.assertEquals("0.01", PluginUtils.createStringAmount(int2));
-        Assertions.assertEquals("0.10", PluginUtils.createStringAmount(int3));
-        Assertions.assertEquals("1.00", PluginUtils.createStringAmount(int4));
-        Assertions.assertEquals("10.00", PluginUtils.createStringAmount(int5));
+        Assertions.assertEquals("0.00", PluginUtils.createStringAmount(int1,Currency.getInstance("EUR")));
+        Assertions.assertEquals("0.01", PluginUtils.createStringAmount(int2,Currency.getInstance("EUR")));
+        Assertions.assertEquals("0.10", PluginUtils.createStringAmount(int3,Currency.getInstance("EUR")));
+        Assertions.assertEquals("1.00", PluginUtils.createStringAmount(int4,Currency.getInstance("EUR")));
+        Assertions.assertEquals("10.00", PluginUtils.createStringAmount(int5,Currency.getInstance("EUR")));
     }
 
     @Test
@@ -145,11 +146,11 @@ public class PluginUtilsTest {
         BigInteger int4 = BigInteger.valueOf(100);
         BigInteger int5 = BigInteger.valueOf(1000);
 
-        Assertions.assertEquals(new Float("00.00"), PluginUtils.createFloatAmount(int1));
-        Assertions.assertEquals(new Float("00.01"), PluginUtils.createFloatAmount(int2));
-        Assertions.assertEquals(new Float("00.10"), PluginUtils.createFloatAmount(int3));
-        Assertions.assertEquals(new Float("1.00"), PluginUtils.createFloatAmount(int4));
-        Assertions.assertEquals(new Float("10.00"), PluginUtils.createFloatAmount(int5));
+        Assertions.assertEquals(new Float("00.00"), PluginUtils.createFloatAmount(int1, Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("00.01"), PluginUtils.createFloatAmount(int2,Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("00.10"), PluginUtils.createFloatAmount(int3,Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("1.00"), PluginUtils.createFloatAmount(int4,Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("10.00"), PluginUtils.createFloatAmount(int5,Currency.getInstance("EUR")));
     }
 
     @Test

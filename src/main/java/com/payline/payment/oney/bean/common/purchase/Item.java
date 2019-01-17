@@ -179,7 +179,7 @@ public class Item extends OneyBean {
             this.label = item.getComment(); //or get Brand +" "+ get comment ?
             this.itemExternalcode = item.getReference();
             this.quantity = item.getQuantity().intValue();
-            this.price = createFloatAmount(item.getAmount().getAmountInSmallestUnit());
+            this.price = createFloatAmount(item.getAmount().getAmountInSmallestUnit(),item.getAmount().getCurrency());
             //note HME  mapper selon marketplace lot 2
 //            this.marketplaceFlag = 0;
 //            this.marketplaceName = null;

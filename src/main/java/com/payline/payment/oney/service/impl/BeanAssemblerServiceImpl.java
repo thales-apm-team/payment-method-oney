@@ -38,7 +38,7 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
 
     @Override
     public PaymentData assemblePaymentData(final PaymentRequest paymentRequest, final BusinessTransactionData businessTransaction) {
-        final float amount = createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit());
+        final float amount = createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(),paymentRequest.getAmount().getCurrency());
         final String currencyCode = paymentRequest.getAmount().getCurrency().getCurrencyCode();
 
         return PaymentData.Builder.aPaymentData()

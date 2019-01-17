@@ -294,7 +294,10 @@ public class PluginUtils {
      * @param amount
      * @return
      */
-    public static String createStringAmount(BigInteger amount) {
+    public static String createStringAmount(BigInteger amount,Currency currency) {
+        //récupérer le nombre de digits dans currency
+        int nbDigits = currency.getDefaultFractionDigits();
+
         StringBuilder sb = new StringBuilder();
         sb.append(amount);
 
@@ -302,7 +305,7 @@ public class PluginUtils {
             sb.insert(0, "0");
         }
 
-        sb.insert(sb.length() - 2, ".");
+        sb.insert(sb.length() - nbDigits, ".");
         return sb.toString();
     }
 
@@ -312,8 +315,8 @@ public class PluginUtils {
      * @param amount
      * @return
      */
-    public static Float createFloatAmount(BigInteger amount) {
-        return Float.parseFloat(createStringAmount(amount));
+    public static Float createFloatAmount(BigInteger amount, Currency currency) {
+        return Float.parseFloat(createStringAmount(amount,currency));
     }
 
 
