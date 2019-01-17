@@ -48,23 +48,13 @@ public class OneyErrorHandler {
         FailureCause paylineCause;
         switch (failureCode) {
             case 401:
-                paylineCause = FailureCause.REFUSED;
-                break;
             case 403:
-                paylineCause = FailureCause.REFUSED;
-                break;
-            case 404:
-                paylineCause = FailureCause.COMMUNICATION_ERROR;
-                break;
-            case 408:
-                paylineCause = FailureCause.COMMUNICATION_ERROR;
-                break;
-            case 429:
-                paylineCause = FailureCause.COMMUNICATION_ERROR;
-                break;
             case 500:
                 paylineCause = FailureCause.REFUSED;
                 break;
+            case 404:
+            case 408:
+            case 429:
             case 503:
                 paylineCause = FailureCause.COMMUNICATION_ERROR;
                 break;
@@ -106,19 +96,15 @@ public class OneyErrorHandler {
         FailureCause paylineCause;
         switch (failureCause) {
             case "ERR_01":
+            case "ERR_05":
                 paylineCause = FailureCause.REFUSED;
                 break;
             case "ERR_02":
-                paylineCause = FailureCause.INVALID_FIELD_FORMAT;
-                break;
             case "ERR_03":
                 paylineCause = FailureCause.INVALID_FIELD_FORMAT;
                 break;
             case "ERR_04":
                 paylineCause = FailureCause.INVALID_DATA;
-                break;
-            case "ERR_05":
-                paylineCause = FailureCause.REFUSED;
                 break;
 
             default:
