@@ -5,24 +5,37 @@ import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.AddressType;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
+import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import java.text.SimpleDateFormat;
 
 public class Delivery extends OneyBean {
 
+    @Required
     @SerializedName("delivery_date")
     private String deliveryDate;
+
+    @Required
     @SerializedName("delivery_mode_code")
     private Integer deliveryModeCode; //creer enum ?
+
+    @Required
     @SerializedName("delivery_option")
     private Integer deliveryOption;
+
     @SerializedName("priority_delivery_code")
     private Integer priorityDeliveryCode;
+
+    @Required
     @SerializedName("address_type")
     private Integer addressType; //Creer ENUM ??
+
     private Recipient recipient;
+
+    @Required
     @SerializedName("delivery_address")
     private OneyAddress deliveryAddress;
 
@@ -134,6 +147,7 @@ public class Delivery extends OneyBean {
             if (this.deliveryAddress == null) {
                 throw new IllegalStateException("Delivery must have a deliveryAddress when built");
             }
+
             if (this.addressType == 5 && this.recipient == null) {
                 throw new IllegalStateException("Delivery must have a recipient when built");
             }
@@ -141,16 +155,27 @@ public class Delivery extends OneyBean {
         }
 
         public Delivery.Builder fromPayline(PaymentRequest request) {
-            this.deliveryDate = (new SimpleDateFormat("yyyy-MM-dd"))
-                     .format(request.getOrder().getExpectedDeliveryDate());
-            this.deliveryModeCode = PluginUtils.getOneyDeliveryModeCode(request.getOrder().getDeliveryMode());
-            this.deliveryOption = PluginUtils.getOneyDeliveryOption(request.getOrder().getDeliveryTime());
-            this.addressType = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY).getValue();
-            this.recipient = Recipient.Builder.aRecipientBuilder()
-                    .fromPayline(request.getBuyer()).build();
-            this.deliveryAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .fromPayline(request.getBuyer(), Buyer.AddressType.DELIVERY)
-                    .build();
+
+            Order order = request.getOrder();
+            if (order != null) {
+                this.deliveryDate = (new SimpleDateFormat("yyyy-MM-dd")).format(order.getExpectedDeliveryDate());
+                if (request.getOrder() != null) {
+                    this.deliveryModeCode = PluginUtils.getOneyDeliveryModeCode(order.getDeliveryMode());
+                    this.deliveryOption = PluginUtils.getOneyDeliveryOption(order.getDeliveryTime());
+                }
+            }
+
+            AddressType addressType = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY);
+            if (addressType != null) {
+                this.addressType = addressType.getValue();
+            }
+
+            Buyer buyer = request.getBuyer();
+            if (buyer != null) {
+                this.recipient = Recipient.Builder.aRecipientBuilder().fromPayline(buyer).build();
+                this.deliveryAddress = OneyAddress.Builder.aOneyAddressBuilder().fromPayline(buyer, Buyer.AddressType.DELIVERY)
+                        .build();
+            }
             return this;
         }
 

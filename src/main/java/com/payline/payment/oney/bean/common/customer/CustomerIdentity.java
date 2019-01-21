@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.common.customer;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.text.SimpleDateFormat;
@@ -11,28 +12,44 @@ public class CustomerIdentity extends OneyBean {
 
     @SerializedName("individual_taxpayer_code")
     private String taxpayerCode;
+
+    @Required
     @SerializedName("person_type")
     private Integer personType;
+
+    @Required
     @SerializedName("honorific_code")
     private Integer honorificCode;
+
+    @Required
     @SerializedName("birth_name")
     private String birthName;
+
     @SerializedName("last_name")
     private String lastName;
+
+    @Required
     @SerializedName("first_name")
     private String firstName;
+
     @SerializedName("given_names")
     private String givenNames;
+
     @SerializedName("birth_date")
     private String birthDate;
+
     @SerializedName("birth_municipality_code")
     private String birthMunicipalityCode; // INSEE code
+
     @SerializedName("birth_arrondissement_code")
     private Integer birthArrondissementCode;
+
     @SerializedName("birth_country_code")
     private String birthCountryCode;
+
     @SerializedName("citizenship_country_code")
     private String cityzenshipCountryCode; // INSEE code
+
     @SerializedName("company_name")
     private String companyName; // INSEE code //Mandatory if person type  = 1
 
@@ -195,16 +212,24 @@ public class CustomerIdentity extends OneyBean {
         }
 
         public CustomerIdentity.Builder fromPayline(Buyer buyer) {
+            if (buyer == null) {
+                return null;
+            }
             this.taxpayerCode = null;
             this.taxpayerCode = buyer.getLegalDocument();
             this.personType = PluginUtils.getPersonType(buyer.getLegalStatus());
-            this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
-            this.birthName = buyer.getFullName().getLastName();
-
-            if (this.honorificCode == 2 || this.honorificCode == 3) {
-                this.lastName = buyer.getFullName().getLastName();
+            if (buyer.getFullName() != null) {
+                if (buyer.getFullName().getCivility() != null) {
+                    this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
+                }
+                this.birthName = buyer.getFullName().getLastName();
+                if (this.honorificCode != null || this.honorificCode == 2 || this.honorificCode == 3) {
+                    this.lastName = buyer.getFullName().getLastName();
+                }
+                this.firstName = buyer.getFullName().getFirstName();
             }
-            this.firstName = buyer.getFullName().getFirstName();
+
+
             if (buyer.getBirthday() != null) {
                 this.birthDate = new SimpleDateFormat("yyyy-MM-dd").format(buyer.getBirthday());
             }
@@ -220,21 +245,27 @@ public class CustomerIdentity extends OneyBean {
         }
 
         private CustomerIdentity.Builder verifyIntegrity() {
+
             if (this.personType == null) {
                 throw new IllegalStateException("CustomerIdentity must have a personType when built");
             }
-            if (this.honorificCode == null) {
-                throw new IllegalStateException("CustomerIdentity must have a honorificCode when built");
-            }
-            if (this.birthName == null) {
-                throw new IllegalStateException("CustomerIdentity must have a birthName when built");
-            }
-            if (this.firstName == null) {
-                throw new IllegalStateException("CustomerIdentity must have a firstName when built");
-            }
+
             if (this.personType == 1 && this.companyName == null) {
                 throw new IllegalStateException("CustomerIdentity must have a companyName when built");
             }
+
+            if (this.honorificCode == null) {
+                throw new IllegalStateException("CustomerIdentity must have a honorificCode when built");
+            }
+
+            if (this.birthName == null) {
+                throw new IllegalStateException("CustomerIdentity must have a birthName when built");
+            }
+
+            if (this.firstName == null) {
+                throw new IllegalStateException("CustomerIdentity must have a firstName when built");
+            }
+
             if (this.birthDate != null && !this.birthDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 throw new IllegalStateException("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built");
             }

@@ -34,11 +34,12 @@ public class OneyCrypto {
      * @return String, the decrypted message
      */
     public String encrypt(String messageToEncrypt) throws DecryptException {
-        // Convert the key to SecretKeySpec
-        byte[] decodedKey = DatatypeConverter.parseBase64Binary(this.key);
-        SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-
         try { // Initialise a cipher
+            // Convert the key to SecretKeySpec
+            byte[] decodedKey = DatatypeConverter.parseBase64Binary(this.key);
+            SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+
+
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, oneySecret);
             // Make the encryption
@@ -46,8 +47,7 @@ public class OneyCrypto {
             byte[] encryptedBytes = cipher.doFinal(decryptedBytes);
             return DatatypeConverter.printBase64Binary(encryptedBytes);
 
-        } catch (NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException |
-                NoSuchPaddingException | InvalidKeyException e) {
+        } catch (Exception e) {
             LOGGER.error("Unable to encrypt this message", e);
             throw new DecryptException("Unable to encrypt this message", e);
         }

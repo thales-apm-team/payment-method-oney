@@ -33,7 +33,6 @@ public class TestIt extends AbstractPaymentIntegration {
         HashMap<String, ContractProperty> contractConfiguration = new HashMap();
         contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
         contractConfiguration.put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
         contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères

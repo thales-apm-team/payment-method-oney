@@ -6,6 +6,7 @@ import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.utils.Required;
 
 import java.util.Map;
 
@@ -14,23 +15,39 @@ public class OneyPaymentRequest extends OneyRequest {
 
     @SerializedName("language_code")
     private String languageCode;
+
     @SerializedName("skin_id")
     private int skinId; //(enum must be smarter (1 a 5)
+
     private String origin; //(WEB default value)
+
     @SerializedName("merchant_language_code")
     private String merchantLanguageCode; //(ISO 639-1)
+
+    @Required
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
+
+    @Required
     private Purchase purchase;
+
+    @Required
     private Customer customer;
+
+    @Required
     @SerializedName("payment")
     private PaymentData paymentData;
+
     @SerializedName("loyalty_information")
     private LoyaltyInformation loyaltyInformation;
+
+    @Required
     @SerializedName("navigation")
     private NavigationData navigationData;
+
     @SerializedName("merchant_context")
     private String merchantContext;
+
     @SerializedName("psp_context")
     private String pspContext;
 
@@ -211,12 +228,21 @@ public class OneyPaymentRequest extends OneyRequest {
         }
 
         private Builder verifyIntegrity() {
-            if (this.merchantGuid == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
-            }
 
             if (this.merchantRequestId == null) {
                 throw new IllegalStateException("OneyPaymentRequest must have a merchantRequestId when built");
+            }
+
+            if (this.encryptKey == null) {
+                throw new IllegalStateException("OneyPaymentRequest must have a encryptKey when built");
+            }
+
+            if (this.callParameters == null || callParameters.isEmpty()) {
+                throw new IllegalStateException("OneyPaymentRequest must have a callParameters when built");
+            }
+
+            if (this.merchantGuid == null) {
+                throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
             }
 
             if (this.pspGuid == null) {
@@ -235,13 +261,10 @@ public class OneyPaymentRequest extends OneyRequest {
                 throw new IllegalStateException("OneyPaymentRequest must have a paymentData when built");
             }
 
-            if (this.encryptKey == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a encryptKey when built");
+            if (this.navigationData == null) {
+                throw new IllegalStateException("OneyPaymentRequest must have a navigationData when built");
             }
 
-            if (this.callParameters == null || callParameters.isEmpty()) {
-                throw new IllegalStateException("OneyPaymentRequest must have a callParameters when built");
-            }
 
             return this;
 

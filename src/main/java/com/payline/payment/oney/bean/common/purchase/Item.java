@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.common.purchase;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.ItemComparator;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.Order;
 
 import java.util.Collections;
@@ -13,19 +14,33 @@ import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 
 public class Item extends OneyBean {
 
+    @Required
     @SerializedName("is_main_item")
     private Integer isMainItem;
+
+    @Required
     @SerializedName("category_code")
     private Integer categoryCode;
+
+    @Required
     private String label;
+
+    @Required
     @SerializedName("item_external_code")
     private String itemExternalcode;
+
+    @Required
     private Integer quantity;
+
+    @Required
     private Float price;
+
     @SerializedName("marketplace_merchant_flag")
     private Integer marketplaceFlag;
+
     @SerializedName("marketplace_merchant_name")
     private String marketplaceName;
+
     @SerializedName("travel")
     private Travel travel;
 
@@ -174,12 +189,17 @@ public class Item extends OneyBean {
         }
 
         public Item.Builder fromPayline(Order.OrderItem item) {
+            if (item == null) {
+                return null;
+            }
             this.isMainItem = 0;
             this.categoryCode = findCategory(item.getCategory());
             this.label = item.getComment(); //or get Brand +" "+ get comment ?
             this.itemExternalcode = item.getReference();
             this.quantity = item.getQuantity().intValue();
-            this.price = createFloatAmount(item.getAmount().getAmountInSmallestUnit(),item.getAmount().getCurrency());
+            if (item.getAmount() != null) {
+                this.price = createFloatAmount(item.getAmount().getAmountInSmallestUnit(), item.getAmount().getCurrency());
+            }
             //note HME  mapper selon marketplace lot 2
 //            this.marketplaceFlag = 0;
 //            this.marketplaceName = null;
@@ -189,26 +209,33 @@ public class Item extends OneyBean {
         }
 
         private Item.Builder verifyIntegrity() {
-            if (this.label == null) {
-                throw new IllegalStateException("Item must have a label when built");
-            }
+
             if (this.isMainItem == null) {
                 throw new IllegalStateException("Item must have a isMainItem when built");
             }
+
             if (this.categoryCode == null) {
                 throw new IllegalStateException("Item must have a categoryCode when built");
             }
+
+            if (this.label == null) {
+                throw new IllegalStateException("Item must have a label when built");
+            }
+
             if (this.itemExternalcode == null) {
                 throw new IllegalStateException("Item must have a itemExternalcode when built");
             }
+
             if (this.quantity == null) {
                 throw new IllegalStateException("Item must have a quantity when built");
             }
+
             if (this.price == null) {
                 throw new IllegalStateException("Item must have a price when built");
             }
+
             if (this.marketplaceFlag != null && this.marketplaceFlag == 1 && this.marketplaceName == null) {
-                throw new IllegalStateException("Item must have a marketplaceName when built");
+                throw new IllegalStateException("Item with marketplaceFlag == 1 must have a marketplaceName when built");
 
             }
             return this;

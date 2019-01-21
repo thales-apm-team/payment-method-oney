@@ -1,12 +1,17 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.utils.Required;
 
-public class PurchaseCancel extends OneyBean{
+public class PurchaseCancel extends OneyBean {
+
+    @Required
     @SerializedName("cancellation_reason_code")
     private Integer reasonCode; //or enum (0 = cancellation, 1 = fraud)
+
     @SerializedName("cancellation_amount")
     private Float amount; //must be present  if cancellationReason == 1  !! default value == total amount of payment
+
     @SerializedName("refund_down_payment")
     private boolean refundFlag; // must be present  if cancellationReason == 1 true if is refunded
 
@@ -22,7 +27,8 @@ public class PurchaseCancel extends OneyBean{
         return refundFlag;
     }
 
-    private PurchaseCancel(){}
+    private PurchaseCancel() {
+    }
 
     private PurchaseCancel(PurchaseCancel.Builder builder) {
         this.reasonCode = builder.reasonCode;
@@ -48,28 +54,31 @@ public class PurchaseCancel extends OneyBean{
             this.amount = amount;
             return this;
         }
+
         public PurchaseCancel.Builder withRefundFlag(boolean flag) {
             this.refundFlag = flag;
             return this;
         }
 
-        public PurchaseCancel.Builder verifyIntegrity(){
-            if (this.reasonCode == null || this.reasonCode > 1 ) {
+        public PurchaseCancel.Builder verifyIntegrity() {
+
+            if (this.reasonCode == null || this.reasonCode > 1) {
                 throw new IllegalStateException("PurchaseCancel must have a valid reasonCode when built");
             }
+
             if (this.reasonCode == 0 && this.amount == null) {
                 throw new IllegalStateException("PurchaseCancel must have a amount when built");
             }
+
             if (this.reasonCode == 1 && this.refundFlag == null) {
                 throw new IllegalStateException("PurchaseCancel must have a refundFlag when built");
             }
-
-            else return this;
+            return this;
 
         }
 
 
-        public PurchaseCancel build(){
+        public PurchaseCancel build() {
             return new PurchaseCancel(this.verifyIntegrity());
         }
     }
