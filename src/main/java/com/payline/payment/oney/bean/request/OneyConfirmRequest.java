@@ -6,6 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
@@ -19,13 +20,18 @@ public class OneyConfirmRequest extends OneyRequest {
 
     @SerializedName("reference")
     private String purchaseReference;
+
     //RequestBody
     @Expose
     @SerializedName("language_code")
     private String languageCode;
+
+    @Required
     @Expose
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
+
+    @Required
     @Expose
     @SerializedName("payment")
     private PaymentData paymentData;
@@ -79,7 +85,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(),paymentRequest.getAmount().getCurrency()))
+                    .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(), paymentRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
             this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(
@@ -97,7 +103,7 @@ public class OneyConfirmRequest extends OneyRequest {
             this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
-                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit(),transactionStatusRequest.getAmount().getCurrency()))
+                    .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit(), transactionStatusRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
             this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(

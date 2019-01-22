@@ -1,15 +1,22 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.utils.Required;
 
 public class NavigationData extends OneyBean {
 
+    @Required
     @SerializedName("server_response_url")
     private String notificationUrl;
+
+    @Required
     @SerializedName("success_url")
     private String successUrl;
+
+    @Required
     @SerializedName("fail_url")
     private String failUrl;
+
     //alternative return url
     @SerializedName("alternative_return_url")
     private String pendingUrl;
@@ -73,14 +80,17 @@ public class NavigationData extends OneyBean {
         }
 
         private NavigationData.Builder verifyIntegrity() {
+
             if (this.successUrl == null) {
                 throw new IllegalStateException("NavigationData must have a successUrl when built");
             }
+
             if (this.failUrl == null) {
                 throw new IllegalStateException("NavigationData must have a failUrl when built");
-            } else {
-                return this;
             }
+
+            return this;
+
         }
 
         public NavigationData build() {

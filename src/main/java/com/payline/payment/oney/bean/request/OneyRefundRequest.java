@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.util.Map;
@@ -19,11 +20,16 @@ public class OneyRefundRequest extends OneyRequest {
 
     @SerializedName("reference")
     private String purchaseReference;
+
     //RequestBody
     @SerializedName("language_code")
     private String languageCode;
+
+    @Required
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
+
+    @Required
     @SerializedName("purchase")
     private PurchaseCancel purchase;
 
@@ -121,7 +127,7 @@ public class OneyRefundRequest extends OneyRequest {
             this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
-                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(),refundRequest.getAmount().getCurrency()))
+                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(), refundRequest.getAmount().getCurrency()))
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();

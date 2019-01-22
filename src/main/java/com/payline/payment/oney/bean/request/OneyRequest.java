@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.utils.Required;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +15,11 @@ public abstract class OneyRequest extends OneyBean {
 
     private static final Logger LOGGER = LogManager.getLogger(OneyRequest.class);
 
+    @Required
     @SerializedName("merchant_guid")
     protected String merchantGuid;
 
+    @Required
     @SerializedName("psp_guid")
     protected String pspGuid;
 
@@ -60,8 +63,12 @@ public abstract class OneyRequest extends OneyBean {
      * @return
      */
     public static String encryptMessage(String toEncrypt, String key) throws DecryptException {
+        if (key == null || key.isEmpty()) {
+            throw new DecryptException("La clé de chiffrement ne peut pas être nulle", null);
+        }
+
         if (toEncrypt == null) {
-            LOGGER.info("Message to encrypt is empty");
+            LOGGER.warn("Message to encrypt is empty");
             toEncrypt = "";
         }
 

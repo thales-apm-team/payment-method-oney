@@ -3,12 +3,9 @@ package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
-import com.payline.pmapi.bean.ActionRequest;
-import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
-import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.payment.ContractProperty;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -18,8 +15,6 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class PluginUtils {
 
-
-    public static final String URL_DELIMITER = "/";
     public static final String LINE_1 = "line1";
     public static final String LINE_4 = "line4";
 
@@ -32,6 +27,11 @@ public class PluginUtils {
         return s == null || s.isEmpty();
     }
 
+    public static boolean isEmpty(final ContractProperty s) {
+
+        return s == null || isEmpty(s.getValue());
+    }
+
     public static <T> T requireNonNull(T obj, String message) throws InvalidRequestException {
         if (obj == null) {
             throw new InvalidRequestException(message);
@@ -41,18 +41,6 @@ public class PluginUtils {
 
     public static <T> T requireNonNull(Map map, String key, String err) throws InvalidRequestException {
         return PluginUtils.requireNonNull((T) map.get(key), err);
-    }
-
-    public static ConfigEnvironment getEnvironnement(ActionRequest actionRequest) {
-        return actionRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(Request request) {
-        return request.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(ContractParametersCheckRequest contractParametersCheckRequest) {
-        return contractParametersCheckRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
     }
 
 // ------------  Methodes de mapping entre Oney et Payline  -----------------------
@@ -240,6 +228,9 @@ public class PluginUtils {
      * @return
      */
     public static String getIsoAlpha3CodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
         Locale locale = new Locale("", code);
         return locale.getISO3Country();
     }
@@ -251,6 +242,10 @@ public class PluginUtils {
      * @return
      */
     public static String getCountryNameCodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
+
         Locale locale = new Locale("", code);
         return locale.getDisplayCountry();
     }
@@ -274,8 +269,8 @@ public class PluginUtils {
      * @param countryCode the code to compare
      * @return true if countryCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO3166(String countryCode) {
-        return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
+    public static boolean isISO3166(ContractProperty countryCode) {
+        return countryCode != null && Arrays.asList(Locale.getISOCountries()).contains(countryCode.getValue());
     }
 
     /**
@@ -284,8 +279,8 @@ public class PluginUtils {
      * @param languageCode the code to compare
      * @return true if languageCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO639(String languageCode) {
-        return Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
+    public static boolean isISO639(ContractProperty languageCode) {
+        return languageCode != null && Arrays.asList(Locale.getISOLanguages()).contains(languageCode.getValue());
     }
 
     /**
@@ -294,7 +289,7 @@ public class PluginUtils {
      * @param amount
      * @return
      */
-    public static String createStringAmount(BigInteger amount,Currency currency) {
+    public static String createStringAmount(BigInteger amount, Currency currency) {
         //récupérer le nombre de digits dans currency
         int nbDigits = currency.getDefaultFractionDigits();
 
@@ -316,7 +311,10 @@ public class PluginUtils {
      * @return
      */
     public static Float createFloatAmount(BigInteger amount, Currency currency) {
-        return Float.parseFloat(createStringAmount(amount,currency));
+        if (amount == null || currency == null) {
+            return null;
+        }
+        return Float.parseFloat(createStringAmount(amount, currency));
     }
 
 

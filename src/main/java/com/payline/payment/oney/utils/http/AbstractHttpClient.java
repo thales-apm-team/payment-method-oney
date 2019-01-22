@@ -79,6 +79,7 @@ public abstract class AbstractHttpClient {
         final long start = System.currentTimeMillis();
         int count = 0;
         StringResponse strResponse = null;
+        String errMsg = "";
         while (count < 3 && strResponse == null) {
             try (CloseableHttpResponse httpResponse = this.client.execute(httpPostRequest)) {
 
@@ -99,13 +100,14 @@ public abstract class AbstractHttpClient {
             } catch (final IOException e) {
                 LOGGER.error("Error while partner call [T: {}ms]", System.currentTimeMillis() - start, e);
                 strResponse = null;
+                errMsg = e.toString();
             } finally {
                 count++;
             }
         }
 
         if (strResponse == null) {
-            throw new IOException("Partner response empty");
+            throw new IOException("Partner response empty " + errMsg);
         }
         return strResponse;
 

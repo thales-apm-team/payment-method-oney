@@ -4,6 +4,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+
+import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class OneyEncryptedRequest extends OneyBean {
     @SerializedName("merchant_guid")
@@ -53,6 +56,18 @@ public class OneyEncryptedRequest extends OneyBean {
         encryptedRequest.pspGuid = request.pspGuid;
         encryptedRequest.merchantGuid = request.merchantGuid;
 
+        return encryptedRequest;
+    }
+
+    public static OneyEncryptedRequest fromJson(String message,
+                                                ContractParametersCheckRequest contractParametersCheckRequest)
+            throws DecryptException {
+        String key = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+        OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
+        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(message, key);
+        encryptedRequest.pspGuid = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+        encryptedRequest.merchantGuid =
+                contractParametersCheckRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
         return encryptedRequest;
     }
 }

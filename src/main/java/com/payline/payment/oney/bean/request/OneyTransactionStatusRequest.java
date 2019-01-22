@@ -14,6 +14,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
     @SerializedName("reference")
     private String purchaseReference;
+
     @SerializedName("language_code")
     private String languageCode;
 
@@ -84,7 +85,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
                     .withMerchantGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
+                    .withPspGuid(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.PSP_GUID_KEY))
                     .withPurchaseReference(transactionStatusRequest.getTransactionId())
                     .withEncryptKey(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(
@@ -99,7 +100,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode(refundRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
                     .withMerchantGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
+                    .withPspGuid(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.PSP_GUID_KEY))
                     .withPurchaseReference(refundRequest.getTransactionId())
                     .withEncryptKey(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(

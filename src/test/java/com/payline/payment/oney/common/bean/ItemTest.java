@@ -151,7 +151,7 @@ public class ItemTest {
                     .withItemExternalCode("externalCode")
                     .build();
         });
-        Assertions.assertEquals("Item must have a marketplaceName when built", exception.getMessage());
+        Assertions.assertEquals("Item with marketplaceFlag == 1 must have a marketplaceName when built", exception.getMessage());
 
     }
 

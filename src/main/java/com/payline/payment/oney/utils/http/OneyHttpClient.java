@@ -127,13 +127,19 @@ public class OneyHttpClient extends AbstractHttpClient {
         return headers;
     }
 
-
     public StringResponse initiatePayment(OneyPaymentRequest request)
             throws IOException, URISyntaxException, DecryptException {
 
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
         String jsonBody = requestEncrypted.toString();
+        // do the request
+        return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
+
+    }
+
+    public StringResponse initiateCheckPayment(String jsonBody, Map<String, String> parameters)
+            throws IOException, URISyntaxException {
         // do the request
         return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
 
