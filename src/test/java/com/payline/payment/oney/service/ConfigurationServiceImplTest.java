@@ -1,25 +1,49 @@
 package com.payline.payment.oney.service;
 
 import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
+import com.payline.payment.oney.utils.http.OneyHttpClient;
+import com.payline.payment.oney.utils.http.StringResponse;
+import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.ContractProperty;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
-import static com.payline.payment.oney.utils.TestUtils.createContractConfiguration;
 import static com.payline.payment.oney.utils.TestUtils.createDefaultEnvironment;
+import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ConfigurationServiceImplTest {
 
-    private ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+    @InjectMocks
+    private ConfigurationServiceImpl service;
+
+    @Spy
+    OneyHttpClient httpClient;
+
+    private Map<String, String> accountInfo = new HashMap<>();
+
+    @BeforeAll
+    public void setUp() throws Exception {
+        service = new ConfigurationServiceImpl();
+        MockitoAnnotations.initMocks(this);
+
+        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
+        // La partie HTTP call estr traitée dans les tests d'intégration.
+        Mockito.doReturn(responseMockedPending).when(httpClient).initiateCheckPayment(Mockito.anyString(), Mockito.anyMap());
+    }
 
     @Test
     public void testGetParameters() {
@@ -28,28 +52,48 @@ public class ConfigurationServiceImplTest {
         //Assert we have 3 parameters
         Assertions.assertNotNull(parameters);
         Assertions.assertEquals(9, parameters.size());
-        Assertions.assertEquals(X_ONEY_AUTHORIZATION_KEY, parameters.get(1).getKey());
-        Assertions.assertEquals(PSP_GUID_KEY, parameters.get(2).getKey());
-        Assertions.assertEquals(MERCHANT_GUID_KEY, parameters.get(0).getKey());
+
+        List<String> result = new ArrayList<>();
+        for (AbstractParameter paramter : parameters) {
+            result.add(paramter.getKey());
+        }
+        Assertions.assertTrue(result.contains(X_ONEY_AUTHORIZATION_KEY));
+        Assertions.assertTrue(result.contains(PSP_GUID_KEY));
+        Assertions.assertTrue(result.contains(MERCHANT_GUID_KEY));
+        Assertions.assertTrue(result.contains(API_MARKETING_KEY));
+        Assertions.assertTrue(result.contains(OPC_KEY));
+        Assertions.assertTrue(result.contains(NB_ECHEANCES_KEY));
+        Assertions.assertTrue(result.contains(COUNTRY_CODE_KEY));
+        Assertions.assertTrue(result.contains(LANGUAGE_CODE_KEY));
+        Assertions.assertTrue(result.contains(ID_INTERNATIONAL_KEY));
 
     }
 
     @Test
     public void checkOK() {
 
-        Map<String, String> accountInfo = new HashMap<>();
-        accountInfo.put(X_ONEY_AUTHORIZATION_KEY, "mykey");
-        accountInfo.put(PSP_GUID_KEY, "psp_id_test");
-        accountInfo.put(MERCHANT_GUID_KEY, "merchant_guid_test");
-        accountInfo.put(COUNTRY_CODE_KEY, "FR");
-        accountInfo.put(LANGUAGE_CODE_KEY, "FR");
+        final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("merchant_guid_test"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
 
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
                 .withAccountInfo(accountInfo)
                 .withLocale(Locale.FRANCE)
-                .withContractConfiguration(createContractConfiguration())
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withContractConfiguration(contractConfiguration)
                 .withEnvironment(createDefaultEnvironment())
                 .build();
 
@@ -61,17 +105,28 @@ public class ConfigurationServiceImplTest {
     @Test
     public void checkCountryKO() {
 
-        Map<String, String> accountInfo = new HashMap<>();
-        accountInfo.put(X_ONEY_AUTHORIZATION_KEY, "mykey");
-        accountInfo.put(PSP_GUID_KEY, "psp_id_test");
-        accountInfo.put(MERCHANT_GUID_KEY, "merchant_guid_test");
+        final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("merchant_guid_test"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
                 .withAccountInfo(accountInfo)
                 .withLocale(Locale.FRANCE)
-                .withContractConfiguration(createContractConfiguration())
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withContractConfiguration(contractConfiguration)
                 .withEnvironment(createDefaultEnvironment())
                 .build();
         contractParametersCheckRequest.getContractConfiguration().getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BEL"));
@@ -83,17 +138,27 @@ public class ConfigurationServiceImplTest {
     @Test
     public void checkLanguageKO() {
 
-        Map<String, String> accountInfo = new HashMap<>();
-        accountInfo.put(X_ONEY_AUTHORIZATION_KEY, "mykey");
-        accountInfo.put(PSP_GUID_KEY, "psp_id_test");
-        accountInfo.put(MERCHANT_GUID_KEY, "merchant_guid_test");
+        final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("merchant_guid_test"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR"));
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
                 .withAccountInfo(accountInfo)
                 .withLocale(Locale.FRANCE)
-                .withContractConfiguration(createContractConfiguration())
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withContractConfiguration(contractConfiguration)
                 .withEnvironment(createDefaultEnvironment())
                 .build();
         contractParametersCheckRequest.getContractConfiguration().getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
@@ -105,18 +170,30 @@ public class ConfigurationServiceImplTest {
     @Test
     public void checkKO() {
 
-        Map<String, String> accountInfo = new HashMap<>();
+        final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
                 .withAccountInfo(accountInfo)
                 .withLocale(Locale.FRANCE)
-                .withContractConfiguration(createContractConfiguration())
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withContractConfiguration(contractConfiguration)
                 .withEnvironment(createDefaultEnvironment())
                 .build();
         Map<String, String> errors = service.check(contractParametersCheckRequest);
         Assertions.assertEquals(3, errors.size());
-        Assertions.assertNotNull(errors.get(X_ONEY_AUTHORIZATION_KEY));
+        Assertions.assertNotNull(errors.get(PARTNER_AUTHRIZATION_KEY));
         Assertions.assertNotNull(errors.get(PSP_GUID_KEY));
         Assertions.assertNotNull(errors.get(MERCHANT_GUID_KEY));
     }

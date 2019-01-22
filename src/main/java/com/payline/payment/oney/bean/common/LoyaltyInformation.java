@@ -1,17 +1,26 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.utils.Required;
 
 public class LoyaltyInformation extends OneyBean {
 
+    @Required
     @SerializedName("loyalty_id")
     private String loyaltyId;
+
     @SerializedName("loyalty_faq_url")
     private String loyaltyFaqUrl;
+
     @SerializedName("expiration_date")
     private String expirationDate; //date yyyy-MM-dd
+
+    @SerializedName("representation")
+    private String representation;
+
     @SerializedName("type")
     private String type;
+
     @SerializedName("value")
     private String value;
 
@@ -28,6 +37,10 @@ public class LoyaltyInformation extends OneyBean {
         return expirationDate;
     }
 
+    public String getRepresentation() {
+        return representation;
+    }
+
     public String getType() {
         return type;
     }
@@ -40,12 +53,14 @@ public class LoyaltyInformation extends OneyBean {
         this.loyaltyId = builder.loyaltyId;
         this.loyaltyFaqUrl = builder.loyaltyFaqUrl;
         this.expirationDate = builder.expirationDate;
+        this.representation = builder.representation;
         this.type = builder.type;
         this.value = builder.value;
     }
 
     //Constructor
-    private LoyaltyInformation(){}
+    private LoyaltyInformation() {
+    }
 
     // Builder
 
@@ -53,52 +68,59 @@ public class LoyaltyInformation extends OneyBean {
         private String loyaltyId;
         private String loyaltyFaqUrl;
         private String expirationDate; //date yyyy-MM-dd
+        private String representation;
         private String type;
         private String value;
 
 
-        public static LoyaltyInformation.Builder aLoyaltyInformationBuilder(){
+        public static LoyaltyInformation.Builder aLoyaltyInformationBuilder() {
             return new LoyaltyInformation.Builder();
         }
 
-        public LoyaltyInformation.Builder withLoyaltyId(String id){
+        public LoyaltyInformation.Builder withLoyaltyId(String id) {
             this.loyaltyId = id;
             return this;
         }
 
-        public LoyaltyInformation.Builder withLoyatyFaqUrl(String url){
+        public LoyaltyInformation.Builder withLoyatyFaqUrl(String url) {
             this.loyaltyFaqUrl = url;
             return this;
         }
 
-        public LoyaltyInformation.Builder withExpirationDate(String date){
+        public LoyaltyInformation.Builder withExpirationDate(String date) {
             this.expirationDate = date;
             return this;
         }
 
-        public LoyaltyInformation.Builder withType(String type){
+        public LoyaltyInformation.Builder withRepresentation(String representation) {
+            this.representation = representation;
+            return this;
+        }
+
+        public LoyaltyInformation.Builder withType(String type) {
             this.type = type;
             return this;
         }
 
-        public LoyaltyInformation.Builder withValue(String value){
+        public LoyaltyInformation.Builder withValue(String value) {
             this.value = value;
             return this;
         }
 
         private LoyaltyInformation.Builder verifyIntegrity() {
+
             if (this.loyaltyId == null) {
                 throw new IllegalStateException("LoyaltyInformation must have a loyaltyId when built");
             }
+
             if (this.expirationDate != null && !this.expirationDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 throw new IllegalStateException("LoyaltyInformation must have a expirationDate in format 'yyyy-MM-dd' when built");
             }
-            else {
-                return this;
-            }
+            return this;
+
         }
 
-        public LoyaltyInformation build(){
+        public LoyaltyInformation build() {
             return new LoyaltyInformation(this.verifyIntegrity());
         }
     }

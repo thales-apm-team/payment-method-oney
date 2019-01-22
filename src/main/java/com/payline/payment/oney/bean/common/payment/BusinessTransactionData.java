@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.payment;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
 
 import static com.payline.payment.oney.utils.OneyConstants.OPC_KEY;
@@ -9,8 +10,11 @@ import static com.payline.payment.oney.utils.OneyConstants.OPC_KEY;
 public class BusinessTransactionData extends OneyBean {
 
 
+    @Required
     private String code;
+
     private Integer version;
+
     @SerializedName("business_transaction_type")
     private String businessTransactionType; //do enum ?
 
@@ -69,6 +73,10 @@ public class BusinessTransactionData extends OneyBean {
         }
 
         public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract) {
+
+            if (contract == null) {
+                return null;
+            }
 
             if (contract.getProperty(OPC_KEY) == null) {
                 throw new IllegalStateException("Property " + OPC_KEY + " doesn't exists");

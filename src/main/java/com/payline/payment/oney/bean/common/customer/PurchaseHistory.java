@@ -7,12 +7,16 @@ import com.google.gson.annotations.SerializedName;
  */
 @SuppressWarnings(value = "emptyClass")
 public class PurchaseHistory {
+
     @SerializedName("total_number_of_purchase")
     private Integer numberOfPurchase;
+
     @SerializedName("total_amount")
     private float totalAmount;
+
     @SerializedName("first_purchase_date")
     private String firstPurchasedate;
+
     @SerializedName("last_purchase_date")
     private String lastPurchaseDate;
 

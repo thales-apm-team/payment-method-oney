@@ -1,18 +1,35 @@
 package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.bean.common.purchase.Item;
+import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidRequestException;
+import com.payline.pmapi.bean.configuration.PartnerConfiguration;
+import com.payline.pmapi.bean.payment.ContractProperty;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.math.BigInteger;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
+import static com.payline.payment.oney.utils.BeanUtils.*;
+import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PluginUtilsTest {
 
+
+    String merchantId1;
+
+    @BeforeAll
+    public void setUp() {
+        merchantId1 = generateMerchantRequestId("merchantId");
+    }
 
     @Test
     public void testTruncateText() {
@@ -131,11 +148,11 @@ public class PluginUtilsTest {
         BigInteger int4 = BigInteger.valueOf(100);
         BigInteger int5 = BigInteger.valueOf(1000);
 
-        Assertions.assertEquals("0.00", PluginUtils.createStringAmount(int1,Currency.getInstance("EUR")));
-        Assertions.assertEquals("0.01", PluginUtils.createStringAmount(int2,Currency.getInstance("EUR")));
-        Assertions.assertEquals("0.10", PluginUtils.createStringAmount(int3,Currency.getInstance("EUR")));
-        Assertions.assertEquals("1.00", PluginUtils.createStringAmount(int4,Currency.getInstance("EUR")));
-        Assertions.assertEquals("10.00", PluginUtils.createStringAmount(int5,Currency.getInstance("EUR")));
+        Assertions.assertEquals("0.00", PluginUtils.createStringAmount(int1, Currency.getInstance("EUR")));
+        Assertions.assertEquals("0.01", PluginUtils.createStringAmount(int2, Currency.getInstance("EUR")));
+        Assertions.assertEquals("0.10", PluginUtils.createStringAmount(int3, Currency.getInstance("EUR")));
+        Assertions.assertEquals("1.00", PluginUtils.createStringAmount(int4, Currency.getInstance("EUR")));
+        Assertions.assertEquals("10.00", PluginUtils.createStringAmount(int5, Currency.getInstance("EUR")));
     }
 
     @Test
@@ -147,10 +164,10 @@ public class PluginUtilsTest {
         BigInteger int5 = BigInteger.valueOf(1000);
 
         Assertions.assertEquals(new Float("00.00"), PluginUtils.createFloatAmount(int1, Currency.getInstance("EUR")));
-        Assertions.assertEquals(new Float("00.01"), PluginUtils.createFloatAmount(int2,Currency.getInstance("EUR")));
-        Assertions.assertEquals(new Float("00.10"), PluginUtils.createFloatAmount(int3,Currency.getInstance("EUR")));
-        Assertions.assertEquals(new Float("1.00"), PluginUtils.createFloatAmount(int4,Currency.getInstance("EUR")));
-        Assertions.assertEquals(new Float("10.00"), PluginUtils.createFloatAmount(int5,Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("00.01"), PluginUtils.createFloatAmount(int2, Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("00.10"), PluginUtils.createFloatAmount(int3, Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("1.00"), PluginUtils.createFloatAmount(int4, Currency.getInstance("EUR")));
+        Assertions.assertEquals(new Float("10.00"), PluginUtils.createFloatAmount(int5, Currency.getInstance("EUR")));
     }
 
     @Test
@@ -166,7 +183,7 @@ public class PluginUtilsTest {
         String status = "FAVORABLE";
         String status2 = "PENDING";
         boolean flag = getRefundFlag(status);
-        boolean flag2 = getRefundFlag(status);
+        boolean flag2 = getRefundFlag(status2);
 
         Assertions.assertFalse(flag);
         Assertions.assertFalse(flag2);
@@ -194,6 +211,170 @@ public class PluginUtilsTest {
         });
 
         Assertions.assertEquals("a REFUSED transactionStatusRequest can't be cancelled", exception.getMessage());
+    }
+
+    @Test
+    public void getRefundtFlagNotRefundable() {
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            String status = "REFUSED";
+            boolean flag = getRefundFlag(status);
+
+        });
+
+        Assertions.assertEquals("a REFUSED transactionStatusRequest can't be cancelled", exception.getMessage());
+    }
+
+    @Test
+    public void testIsISO639() {
+        Assertions.assertFalse(isISO639(new ContractProperty("FR")));
+        Assertions.assertTrue(isISO639(new ContractProperty("fr")));
+    }
+
+    @Test
+    public void testIsISO3166() {
+        Assertions.assertFalse(isISO3166(new ContractProperty("FRA")));
+        Assertions.assertTrue(isISO3166(new ContractProperty("FR")));
+    }
+
+    @Test
+    public void getParameters_noCoutryCode() {
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            PartnerConfiguration partnerConfiguration =
+                    new PartnerConfiguration(new HashMap<String, String>(), new HashMap<String, String>());
+            getParametersMap(partnerConfiguration, null);
+
+        });
 
     }
+
+    @Test
+    public void getParameters_emptyCoutryCode() {
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            PartnerConfiguration partnerConfiguration =
+                    new PartnerConfiguration(new HashMap<String, String>(), new HashMap<String, String>());
+            getParametersMap(partnerConfiguration, "");
+
+        });
+
+    }
+
+    @Test
+    public void getParameters_noAuthorizationKey() {
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put(PARTNER_API_URL, "PARTNER_API_URL");
+
+            PartnerConfiguration partnerConfiguration =
+                    new PartnerConfiguration(params, new HashMap<String, String>());
+            getParametersMap(partnerConfiguration, "coutryCode");
+
+        });
+
+    }
+
+    @Test
+    public void getParameters_noPartnerUrl() {
+        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put(PARTNER_AUTHRIZATION_KEY, "PARTNER_AUTHRIZATION_KEY");
+
+            PartnerConfiguration partnerConfiguration =
+                    new PartnerConfiguration(params, new HashMap<String, String>());
+            getParametersMap(partnerConfiguration, "coutryCode");
+
+        });
+
+    }
+
+    @Test
+    public void getParameters_ok() {
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(PARTNER_AUTHRIZATION_KEY, "PARTNER_AUTHRIZATION_KEY");
+        params.put(PARTNER_API_URL, "PARTNER_API_URL");
+
+        PartnerConfiguration partnerConfiguration =
+                new PartnerConfiguration(params, new HashMap<String, String>());
+        Map<String, String> result = getParametersMap(partnerConfiguration, "coutryCode");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertTrue(result.containsKey(PARTNER_AUTHRIZATION_KEY));
+        Assertions.assertTrue(result.containsKey(PARTNER_API_URL));
+        Assertions.assertTrue(result.containsKey(HEADER_COUNTRY_CODE));
+
+    }
+
+    @Test
+    public void testGenerateReference() {
+        String expected = "external_reference_type%7Cexternal_reference";
+        Purchase purchase = Purchase.Builder.aPurchaseBuilder()
+                .withPurchaseMerchant(createPurchaseMerchant())
+                .withCurrencyCode("EUR")
+                .withPurchaseAmount(150f)
+                .withDelivery(createDelivery())
+                .withExternalReference("external_reference")
+                .withListItem(createItemList())
+                .withNumberOfItems(2)
+                .withExternalReferenceType("external_reference_type")
+                .build();
+        String result = generateReference(purchase);
+        Assertions.assertEquals(expected, result);
+    }
+
+
+    @Test
+    public void parseReference_noPipe() {
+        Throwable exception = Assertions.assertThrows(InvalidRequestException.class, () -> {
+
+
+            parseReference("test#test");
+
+        });
+
+    }
+
+
+    @Test
+    public void parseReference_emptyReference() {
+        Throwable exception = Assertions.assertThrows(InvalidRequestException.class, () -> {
+
+
+            parseReference("");
+
+        });
+
+    }
+
+
+    @Test
+    public void parseReference_nullReference() {
+        Throwable exception = Assertions.assertThrows(InvalidRequestException.class, () -> {
+
+
+            parseReference(null);
+
+        });
+
+    }
+
+    @Test
+    public void testParseReference() throws InvalidRequestException {
+        String ref = parseReference("xxx%7Ctest");
+        Assertions.assertEquals("test", ref);
+    }
+
+    @Test
+    public void testGenerateMerchantRequestId() {
+
+        String merchantId2 = generateMerchantRequestId("merchantId");
+        Assertions.assertNotEquals(merchantId1, merchantId2);
+    }
+
+
 }
