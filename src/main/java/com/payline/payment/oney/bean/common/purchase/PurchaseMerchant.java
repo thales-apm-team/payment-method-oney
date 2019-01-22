@@ -2,18 +2,26 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.MERCHANT_GUID_KEY;
 
 public class PurchaseMerchant extends OneyBean {
 
+    @Required
     @SerializedName("merchant_guid")
     String merchantGuid;
+
+    @Required
     @SerializedName("external_reference")
     private String externalReference;
+
     @SerializedName("company_name")
     private String companyName;
+
     private String municipality;
 
 
@@ -74,27 +82,36 @@ public class PurchaseMerchant extends OneyBean {
         }
 
 
-        private PurchaseMerchant.Builder checkIntegrity() {
+        private PurchaseMerchant.Builder checkIntegrity() throws InvalidDataException {
+
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("PurchaseMerchant must have a merchantGuid when built");
+                throw new InvalidDataException("PurchaseMerchant must have a merchantGuid when built", "PurchaseMerchant.merchantGuid");
             }
+
             if (this.externalReference == null) {
-                throw new IllegalStateException("PurchaseMerchant must have a externalReference when built");
+                throw new InvalidDataException("PurchaseMerchant must have a externalReference when built", "PurchaseMerchant.externalReference");
             }
             return this;
         }
-        
-        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) {
-            //Note HME mapping companyName (lot 2?)
-            this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
-            this.externalReference = paymentRequest.getOrder().getReference();
+
+        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) throws InvalidDataException {
+            if (paymentRequest == null) {
+                return null;
+            }
+            if (RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY) != null) {
+                //Note HME mapping companyName (lot 2?)
+                this.merchantGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
+            }
+            if (paymentRequest.getOrder() != null) {
+                this.externalReference = paymentRequest.getOrder().getReference();
+            }
 //            this.companyName = null;
 //            this.municipality = paymentRequest.getBuyer().getAddressForType(Buyer.AddressType.BILLING).getCity();
 
             return this;
         }
 
-        public PurchaseMerchant build() {
+        public PurchaseMerchant build() throws InvalidDataException {
             return new PurchaseMerchant(this.checkIntegrity());
         }
     }

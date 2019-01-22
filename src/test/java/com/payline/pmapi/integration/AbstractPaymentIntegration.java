@@ -77,10 +77,16 @@ public abstract class AbstractPaymentIntegration {
         ContractConfiguration contractConfiguration = new ContractConfiguration("", this.generateParameterContract());
         PaymentFormContext paymentFormContext = this.generatePaymentFormContext();
         Environment environment = new Environment("http://google.com/", "https://succesurl.com/", "http://localhost/cancelurl.com/", true);
-        String transactionID = "transactionID";
         Order order = OrderBuilder.anOrder().withReference("transactionID").build();
-        String softDescriptor = "softDescriptor";
-        return PaymentRequest.builder().withAmount(amount).withBrowser(new Browser("", Locale.FRANCE)).withContractConfiguration(contractConfiguration).withPaymentFormContext(paymentFormContext).withEnvironment(environment).withOrder(order).withTransactionId("transactionID").withSoftDescriptor("softDescriptor").build();
+        return PaymentRequest.builder()
+                .withAmount(amount)
+                .withBrowser(new Browser("", Locale.FRANCE))
+                .withContractConfiguration(contractConfiguration)
+                .withPaymentFormContext(paymentFormContext)
+                .withEnvironment(environment)
+                .withOrder(order)
+                .withTransactionId("transactionID")
+                .withSoftDescriptor("softDescriptor").build();
     }
 
     private PaymentResponse handlePartnerResponse(PaymentWithRedirectionService paymentWithRedirectionService, PaymentRequest paymentRequest, PaymentResponseRedirect paymentResponseRedirect) {

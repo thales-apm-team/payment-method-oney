@@ -8,8 +8,7 @@ import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.bean.request.OneyPaymentRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.OneySuccessPaymentResponse;
-import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.exception.InvalidRequestException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.OneyErrorHandler;
@@ -22,12 +21,10 @@ import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
-import com.payline.pmapi.service.PaymentService;
 import com.payline.pmapi.logger.LogManager;
+import com.payline.pmapi.service.PaymentService;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +32,6 @@ import java.util.Map;
 import static com.payline.payment.oney.bean.response.OneySuccessPaymentResponse.paymentSuccessResponseFromJson;
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.*;
-import static com.payline.payment.oney.utils.OneyErrorHandler.getPaymentResponseFailure;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 import static com.payline.payment.oney.utils.PluginUtils.generateReference;
 
@@ -53,11 +49,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
         try {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -77,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withEncryptKey(chiffrementKey)
                     .withMerchantContext(paymentRequest.getSoftDescriptor())
                     .withPspContext(paymentRequest.getTransactionId())
-                    .withCallParameters(PluginUtils.getParametersMap(paymentRequest.getPartnerConfiguration(), "BE"))
+                    .withCallParameters(PluginUtils.getParametersMap(paymentRequest))
                     .build();
 
             final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest);
@@ -85,7 +81,10 @@ public class PaymentServiceImpl implements PaymentService {
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");
                 LOGGER.error("Payment is null");
-                return OneyErrorHandler.getPaymentResponseFailure(FailureCause.INTERNAL_ERROR, oneyRequest.getPurchase().getExternalReference());
+                return OneyErrorHandler.getPaymentResponseFailure(
+                        FailureCause.PARTNER_UNKNOWN_ERROR,
+                        oneyRequest.getPurchase().getExternalReference(),
+                        "Empty partner response");
 
             }
             //Cas ou une erreur est renvoyée au moment du paiement
@@ -102,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
                 //Response OK on recupere url envoyee par Oney
                 OneySuccessPaymentResponse successResponse = paymentSuccessResponseFromJson(oneyResponse.getContent(), oneyRequest.getEncryptKey());
 
-                URL redirectURL = new URL(successResponse.getReturnedUrl());
+                URL redirectURL = successResponse.getReturnedUrlAsUrl();
                 PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder responseRedirectURL = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
                         .withUrl(redirectURL);
 
@@ -128,9 +127,9 @@ public class PaymentServiceImpl implements PaymentService {
                         .build();
             }
 
-        } catch (IOException | URISyntaxException | InvalidRequestException | DecryptException e) {
-            LOGGER.error("unable init the payment", e);
-            return getPaymentResponseFailure(FailureCause.INTERNAL_ERROR);
+        } catch (PluginTechnicalException e) {
+            return e.toPaymentResponseFailure();
+
         }
 
     }

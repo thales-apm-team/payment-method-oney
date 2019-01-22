@@ -1,6 +1,8 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.Map;
@@ -9,18 +11,32 @@ import static com.payline.payment.oney.utils.PluginUtils.*;
 
 public class OneyAddress extends OneyBean {
 
+    @Required
     private String line1;
+
     private String line2;
+
     private String line3;
+
     private String line4;
+
     private String line5;
+
+    @Required
     @SerializedName("postal_code")
     private String postalCode;
+
+    @Required
     private String municipality;
+
+    @Required
     @SerializedName("country_code")
     private String countryCode;
+
+    @Required
     @SerializedName("country_label")
     private String countryLabel;
+
     @SerializedName("arrondissement_code")
     private Integer arrondissementCode;
 
@@ -148,36 +164,40 @@ public class OneyAddress extends OneyBean {
             return this;
         }
 
-        private OneyAddress.Builder checkIntegrity() {
+        private OneyAddress.Builder checkIntegrity() throws InvalidDataException {
             if (this.line1 == null) {
-                throw new IllegalStateException("OneyAddress must have a line1 when built");
+                throw new InvalidDataException("OneyAddress must have a line1 when built", "OneyAddress.line1");
             }
             if (this.countryLabel == null) {
-                throw new IllegalStateException("OneyAddress must have a countryLabel when built");
+                throw new InvalidDataException("OneyAddress must have a countryLabel when built", "OneyAddress.countryLabel");
             }
             if (this.postalCode == null) {
-                throw new IllegalStateException("OneyAddress must have a postalCode when built");
+                throw new InvalidDataException("OneyAddress must have a postalCode when built", "OneyAddress.postalCode");
             }
             if (this.municipality == null) {
-                throw new IllegalStateException("OneyAddress must have a municipality when built");
+                throw new InvalidDataException("OneyAddress must have a municipality when built", "OneyAddress.municipality");
             }
             if (this.countryCode == null) {
-                throw new IllegalStateException("OneyAddress must have a countryCode when built");
+                throw new InvalidDataException("OneyAddress must have a countryCode when built", "OneyAddress.countryCode");
             }
             return this;
 
         }
 
         public Builder fromPayline(Buyer buyer, Buyer.AddressType addressType) {
+            if (buyer == null) {
+                return null;
+            }
 
-            String street = buyer.getAddressForType(addressType).getStreet1();
-            String street2 = buyer.getAddressForType(addressType).getStreet2();
-            this.truncateAddress(street, street2);
+            Buyer.Address address = buyer.getAddressForType(addressType);
+            if (address != null) {
+                this.truncateAddress(address.getStreet1(), address.getStreet2());
 
-            this.municipality = buyer.getAddressForType(addressType).getCity();
-            this.postalCode = buyer.getAddressForType(addressType).getZipCode();
-            this.countryLabel = getCountryNameCodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
-            this.countryCode = getIsoAlpha3CodeFromCountryCode2(buyer.getAddressForType(addressType).getCountry());
+                this.municipality = address.getCity();
+                this.postalCode = address.getZipCode();
+                this.countryLabel = getCountryNameCodeFromCountryCode2(address.getCountry());
+                this.countryCode = getIsoAlpha3CodeFromCountryCode2(address.getCountry());
+            }
 
             return this;
         }
@@ -203,7 +223,7 @@ public class OneyAddress extends OneyBean {
             }
         }
 
-        public OneyAddress build() {
+        public OneyAddress build() throws InvalidDataException {
             return new OneyAddress(this.checkIntegrity());
         }
     }

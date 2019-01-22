@@ -18,11 +18,11 @@ public enum AddressType {
         this.value = value;
     }
 
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 
-    public static AddressType fromOneyForm (int value) {
+    public static AddressType fromOneyForm(int value) {
 
         for (AddressType result : AddressType.values()) {
             if (result.getValue() == value) {
@@ -32,22 +32,24 @@ public enum AddressType {
         return null;
     }
 
-    public static AddressType fromPaylineAddressType(Buyer.AddressType addressType){
-        AddressType addressTypeOney;
-        switch (addressType){
-            case BILLING:
-                addressTypeOney = AddressType.BILLING;
-                break;
-            case DELIVERY:
-                addressTypeOney = AddressType.DELIVERY;
-                break;
+    public static AddressType fromPaylineAddressType(Buyer.AddressType addressType) {
 
-                default:
-                    addressTypeOney= AddressType.BILLING;
+        if (addressType == null) {
+            return null;
         }
 
+        switch (addressType) {
+            case BILLING:
+                return AddressType.BILLING;
 
-        return addressTypeOney;
+            case DELIVERY:
+                return AddressType.DELIVERY;
+
+
+            default:
+                return AddressType.BILLING;
+        }
+
     }
 
 }
