@@ -87,7 +87,7 @@ public class OneyErrorHandlerTest {
     @Test
     public void geRefundResponseFailure() {
         final FailureCause failureCause = FailureCause.SESSION_EXPIRED;
-        RefundResponseFailure result = OneyErrorHandler.geRefundResponseFailure(failureCause, externalReference);
+        RefundResponseFailure result = OneyErrorHandler.geRefundResponseFailure(failureCause, externalReference, "");
 
         Assertions.assertEquals(externalReference, result.getPartnerTransactionId());
         Assertions.assertEquals(failureCause, result.getFailureCause());

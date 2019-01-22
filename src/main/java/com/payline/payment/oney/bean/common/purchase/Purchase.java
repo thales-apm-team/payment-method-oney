@@ -2,6 +2,10 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.Required;
+import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
@@ -13,20 +17,33 @@ import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 
 public class Purchase extends OneyBean {
 
+    @Required
     @SerializedName("external_reference_type")
     private String externalReferenceType; //CMDE
+
+    @Required
     @SerializedName("external_reference")
     private String externalReference;
+
+    @Required
     @SerializedName("purchase_amount")
     private Float purchaseAmount;
+
+    @Required
     @SerializedName("currency_code")
     private String currencyCode; //ISO 4217
+
     @SerializedName("purchase_merchant")
     private PurchaseMerchant purchaseMerchant;
+
+    @Required
     @SerializedName("delivery")
     private Delivery delivery;
+
+    @Required
     @SerializedName("item_list")
     private List<Item> listItem;
+
     @SerializedName("number_of_items")
     private Integer numberOfItems;
 
@@ -138,59 +155,79 @@ public class Purchase extends OneyBean {
         }
 
 
-        public Purchase.Builder fromPayline(PaymentRequest request) {
+        public Purchase.Builder fromPayline(PaymentRequest request) throws PluginTechnicalException {
             this.externalReferenceType = EXTERNAL_REFERENCE_TYPE;
-            this.externalReference = request.getOrder().getReference();
-            this.purchaseAmount = createFloatAmount(request.getOrder().getAmount().getAmountInSmallestUnit(),request.getOrder().getAmount().getCurrency());
-            this.currencyCode = request.getOrder().getAmount().getCurrency().getCurrencyCode();
-            this.purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                    .fromPayline(request)
-                    .build();
-            this.delivery = Delivery.Builder.aDeliveryBuilder()
-                    .fromPayline(request)
-                    .build();
-            List<Order.OrderItem> orderItems = request.getOrder().getItems();
-            this.numberOfItems = orderItems.size();
-            List<Item> listItems = new ArrayList<>();
+            if (request != null) {
+                Order order = request.getOrder();
+                if (order != null) {
+                    this.externalReference = order.getReference();
+                    Amount amount = order.getAmount();
+                    if (amount != null && amount.getCurrency() != null) {
+                        this.purchaseAmount = createFloatAmount(amount.getAmountInSmallestUnit(), amount.getCurrency());
+                        this.currencyCode = amount.getCurrency().getCurrencyCode();
+                    }
 
-            orderItems.forEach(item ->
+                }
+
+
+                this.purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                        .fromPayline(request)
+                        .build();
+                this.delivery = Delivery.Builder.aDeliveryBuilder()
+                        .fromPayline(request)
+                        .build();
+                List<Order.OrderItem> orderItems = request.getOrder().getItems();
+                this.numberOfItems = orderItems.size();
+                List<Item> listItems = new ArrayList<>();
+
+                for (Order.OrderItem item : orderItems) {
                     listItems.add(Item.Builder.aItemBuilder()
                             .fromPayline(item)
-                            .build())
-            );
-            //Define the main item
-            Item.defineMainItem(listItems);
-            this.listItem = listItems;
+                            .build());
+                }
+
+                //Define the main item
+                Item.defineMainItem(listItems);
+                this.listItem = listItems;
+            }
             return this;
         }
 
-        private Purchase.Builder checkIntegrity() {
-            if (this.listItem == null) {
-                throw new IllegalStateException("Purchase must have a listItem when built");
-            }
-            if (this.delivery == null) {
-                throw new IllegalStateException("Purchase must have a delivery when built");
-            }
-            if (this.currencyCode == null) {
-                throw new IllegalStateException("Purchase must have a currencyCode when built");
-            }
+        private Purchase.Builder checkIntegrity() throws InvalidDataException {
+
             if (this.externalReferenceType == null) {
-                throw new IllegalStateException("Purchase must have a externalReferenceType when built");
+                throw new InvalidDataException("Purchase must have a externalReferenceType when built", "Purchase.externalReferenceType");
             }
+
             if (this.externalReference == null) {
-                throw new IllegalStateException("Purchase must have a externalReference when built");
+                throw new InvalidDataException("Purchase must have a externalReference when built", "Purchase.externalReference");
             }
+
             if (this.purchaseAmount == null) {
-                throw new IllegalStateException("Purchase must have a purchaseAmount when built");
+                throw new InvalidDataException("Purchase must have a purchaseAmount when built", "Purchase.purchaseAmount");
             }
+
+            if (this.currencyCode == null) {
+                throw new InvalidDataException("Purchase must have a currencyCode when built", "Purchase.currencyCode");
+            }
+
+            if (this.delivery == null) {
+                throw new InvalidDataException("Purchase must have a delivery when built", "Purchase.delivery");
+            }
+
             if (this.numberOfItems == null) {
-                throw new IllegalStateException("Purchase must have a numberOfItems when built");
+                throw new InvalidDataException("Purchase must have a numberOfItems when built", "Purchase.numberOfItems");
             }
+
+            if (this.listItem == null || this.listItem.isEmpty()) {
+                throw new InvalidDataException("Purchase must have a listItem when built", "Purchase.listItem");
+            }
+
             return this;
         }
 
 
-        public Purchase build() {
+        public Purchase build() throws InvalidDataException {
             return new Purchase(this.checkIntegrity());
         }
     }

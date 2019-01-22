@@ -3,7 +3,6 @@ package com.payline.payment.oney.utils.http;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.utils.OneyConstants;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
@@ -18,8 +17,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +55,7 @@ public class OneyHttpClientTest {
     }
 
     @Test
-    public void doGet() throws IOException, URISyntaxException {
+    public void doGet() throws Exception {
 
         CloseableHttpResponse httpResponse = Mockito.mock(CloseableHttpResponse.class);
         HttpEntity entity = Mockito.mock(HttpEntity.class);
@@ -124,7 +121,7 @@ public class OneyHttpClientTest {
     }
 
     @Test
-    public void initiateGetTransactionStatusTest() throws IOException, URISyntaxException {
+    public void initiateGetTransactionStatusTest() throws Exception {
 
         StringResponse responseMockedOK = createStringResponse(200, "ZZOK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul41+5xLG5BBT+jV4I19n1BxNgTTBkgClTslC3pM/0UXrEOJt3Nv3LTMrGFG1pzsOP6gxM5c+lw57K0YUbQqoGgI\\u003d\\\"}\",\"code\":200,\"message\":\"OK\"}");
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doGet"));
@@ -148,7 +145,7 @@ public class OneyHttpClientTest {
 
 
     @Test
-    public void initiateRefundRequestTest() throws DecryptException, IOException, URISyntaxException {
+    public void initiateRefundRequestTest() throws Exception {
 
         StringResponse responseMockedOK = createStringResponse(200, "OK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}\",\"code\":200,\"message\":\"OK\"}");
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doPost"));

@@ -30,5 +30,12 @@ public class OneyError extends OneyBean {
         return error;
     }
 
+    public String getErrorMessge() {
+        if (error != null) {
+            return error.getErrorLabel();
+        }
+        return errorLabel;
+    }
+
 
 }

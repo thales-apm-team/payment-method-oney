@@ -13,8 +13,8 @@ import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
-import org.apache.commons.lang3.RandomStringUtils;
 import com.payline.pmapi.logger.LogManager;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -38,8 +38,8 @@ public class TestUtils {
     private static final String GUID_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
 
     public HashMap<String, String> extendedData;
-    private static final String SOFT_DESCRIPTOR = "softDescriptor";
-    private static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
+    public static final String SOFT_DESCRIPTOR = "softDescriptor";
+    public static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
     public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = "CMDE" + PIPE + TRANSACTION_ID;
@@ -275,7 +275,6 @@ public class TestUtils {
     public static ContractConfiguration createContractConfiguration() {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.getContractProperties().put(PSP_GUID_KEY, new ContractProperty(GUID_KEY));
         contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
@@ -386,7 +385,7 @@ public class TestUtils {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, GUID_KEY);
         partnerConfiguration.put(SECRET_KEY, "Method-body");
-        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
@@ -434,14 +433,12 @@ public class TestUtils {
     public static RefundRequest createDefaultRefundRequest() {
         final Amount amount = createAmount(CONFIRM_AMOUNT, "EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
-        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final Order order = createOrder(TRANSACTION_ID);
 
 
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
                 .withAmount(amount)
                 .withContractConfiguration(contractConfiguration)
-                .withEnvironment(paylineEnvironment)
                 .withOrder(order)
                 .withBuyer(createDefaultBuyer())
                 .withSoftDescriptor(SOFT_DESCRIPTOR)

@@ -2,13 +2,12 @@ package com.payline.payment.oney.utils;
 
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
-import com.payline.pmapi.bean.ActionRequest;
-import com.payline.pmapi.bean.Request;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
-import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.payment.ContractProperty;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -18,8 +17,6 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class PluginUtils {
 
-
-    public static final String URL_DELIMITER = "/";
     public static final String LINE_1 = "line1";
     public static final String LINE_4 = "line4";
 
@@ -32,6 +29,11 @@ public class PluginUtils {
         return s == null || s.isEmpty();
     }
 
+    public static boolean isEmpty(final ContractProperty s) {
+
+        return s == null || isEmpty(s.getValue());
+    }
+
     public static <T> T requireNonNull(T obj, String message) throws InvalidRequestException {
         if (obj == null) {
             throw new InvalidRequestException(message);
@@ -41,18 +43,6 @@ public class PluginUtils {
 
     public static <T> T requireNonNull(Map map, String key, String err) throws InvalidRequestException {
         return PluginUtils.requireNonNull((T) map.get(key), err);
-    }
-
-    public static ConfigEnvironment getEnvironnement(ActionRequest actionRequest) {
-        return actionRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(Request request) {
-        return request.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(ContractParametersCheckRequest contractParametersCheckRequest) {
-        return contractParametersCheckRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
     }
 
 // ------------  Methodes de mapping entre Oney et Payline  -----------------------
@@ -240,6 +230,9 @@ public class PluginUtils {
      * @return
      */
     public static String getIsoAlpha3CodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
         Locale locale = new Locale("", code);
         return locale.getISO3Country();
     }
@@ -251,6 +244,10 @@ public class PluginUtils {
      * @return
      */
     public static String getCountryNameCodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
+
         Locale locale = new Locale("", code);
         return locale.getDisplayCountry();
     }
@@ -260,10 +257,10 @@ public class PluginUtils {
         return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
     }
 
-    public static String parseReference(String reference) throws InvalidRequestException {
+    public static String parseReference(String reference) throws InvalidFieldFormatException {
 
         if (reference == null || reference.isEmpty() || !reference.contains(OneyConstants.PIPE)) {
-            throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
+            throw new InvalidFieldFormatException("Oney reference should contain a '|' : " + reference, "Oney.PurchaseReference");
         }
         return reference.split(OneyConstants.PIPE)[1];
     }
@@ -274,8 +271,8 @@ public class PluginUtils {
      * @param countryCode the code to compare
      * @return true if countryCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO3166(String countryCode) {
-        return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
+    public static boolean isISO3166(ContractProperty countryCode) {
+        return countryCode != null && Arrays.asList(Locale.getISOCountries()).contains(countryCode.getValue());
     }
 
     /**
@@ -284,17 +281,17 @@ public class PluginUtils {
      * @param languageCode the code to compare
      * @return true if languageCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO639(String languageCode) {
-        return Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
+    public static boolean isISO639(ContractProperty languageCode) {
+        return languageCode != null && Arrays.asList(Locale.getISOLanguages()).contains(languageCode.getValue());
     }
 
     /**
      * Return a string which was converted from cents to euro
      *
      * @param amount
-     * @return
+     * @return Amount as String
      */
-    public static String createStringAmount(BigInteger amount,Currency currency) {
+    public static String createStringAmount(BigInteger amount, Currency currency) {
         //récupérer le nombre de digits dans currency
         int nbDigits = currency.getDefaultFractionDigits();
 
@@ -312,33 +309,15 @@ public class PluginUtils {
     /**
      * Return a Float which was converted from cents to euro
      *
-     * @param amount
-     * @return
+     * @param amount   BigInteger
+     * @param currency Currency
+     * @return Amount as Float
      */
     public static Float createFloatAmount(BigInteger amount, Currency currency) {
-        return Float.parseFloat(createStringAmount(amount,currency));
-    }
-
-
-    public static boolean getRefundFlag(String transactionStatusRequest) {
-        switch (transactionStatusRequest) {
-            case "FUNDED":
-                return true;
-
-            case "PENDING":
-            case "FAVORABLE":
-                return false;
-
-            case "REFUSED":
-            case "ABORTED":
-            case "CANCELLED":
-                throw new IllegalStateException("a " + transactionStatusRequest + " transactionStatusRequest can't be cancelled");
-
-            default:
-                throw new IllegalStateException(transactionStatusRequest + " is not a valid status for refund or cancel");
-
+        if (amount == null || currency == null) {
+            return null;
         }
-
+        return Float.parseFloat(createStringAmount(amount, currency));
     }
 
     /**
@@ -346,30 +325,37 @@ public class PluginUtils {
      *
      * @param partnerConfiguration Payline PartnerConfiguration
      * @param coutryCode           coutryCode from ContractParameters
-     * @return
+     * @return the ParametersMap
      */
-    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) {
+    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) throws InvalidDataException {
 
         if (coutryCode == null || coutryCode.isEmpty()) {
-            throw new IllegalStateException("coutryCode is mandatory");
+            throw new InvalidDataException("coutryCode is mandatory", "coutryCode");
         }
 
-        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHRIZATION_KEY);
+        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHORIZATION_KEY);
         if (authorization == null) {
-            throw new IllegalStateException(PARTNER_AUTHRIZATION_KEY + " is mandatory");
+            throw new InvalidDataException(PARTNER_AUTHORIZATION_KEY + " is mandatory", PARTNER_AUTHORIZATION_KEY);
         }
 
         String url = partnerConfiguration.getProperty(PARTNER_API_URL);
         if (url == null) {
-            throw new IllegalStateException(PARTNER_API_URL + " is mandatory");
+            throw new InvalidDataException(PARTNER_API_URL + " is mandatory", PARTNER_API_URL);
         }
 
 
         Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(PARTNER_AUTHRIZATION_KEY, authorization);
+        parametersMap.put(PARTNER_AUTHORIZATION_KEY, authorization);
         parametersMap.put(PARTNER_API_URL, url);
         parametersMap.put(HEADER_COUNTRY_CODE, coutryCode.toUpperCase());
 
         return parametersMap;
+    }
+
+    public static String truncate(String value, int length) {
+        if (value != null && value.length() > length) {
+            value = value.substring(0, length);
+        }
+        return value;
     }
 }
