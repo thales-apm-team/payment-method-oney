@@ -14,7 +14,7 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationReques
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;

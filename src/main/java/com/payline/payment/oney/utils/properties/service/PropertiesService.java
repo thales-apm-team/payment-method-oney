@@ -1,7 +1,7 @@
 package com.payline.payment.oney.utils.properties.service;
 
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;

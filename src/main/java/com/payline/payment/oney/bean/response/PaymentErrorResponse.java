@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.OneyError;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
