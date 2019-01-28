@@ -17,7 +17,7 @@ apply from: "monext.gradle"
 
 description = 'payment-method-oney'
 group = 'com.payline.payment.oney'
-version = '1.0-RC1'
+version = '1.0-RC2-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -25,8 +25,8 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.0-RC6-SNAPSHOT'
-    paymentMethodIntegrationVersion = '1.0-RC6-SNAPSHOT'
+    paymentMethodApiVersion = '1.0-RC7-SNAPSHOT'
+    paymentMethodIntegrationVersion = '1.0-RC7-SNAPSHOT'
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
 }

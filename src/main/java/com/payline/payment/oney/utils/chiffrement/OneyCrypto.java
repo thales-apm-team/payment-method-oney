@@ -1,7 +1,7 @@
 package com.payline.payment.oney.utils.chiffrement;
 
 import com.payline.payment.oney.exception.DecryptException;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.crypto.BadPaddingException;

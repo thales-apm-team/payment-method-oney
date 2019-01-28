@@ -5,7 +5,7 @@ import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.request.OneyRequest;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class OneyResponse extends OneyBean {
