@@ -1,6 +1,7 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.PluginUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ public class PurchaseTest {
     private Purchase purchase;
 
     @Test
-    public void purchase() {
+    public void purchase() throws Exception {
         purchase = Purchase.Builder.aPurchaseBuilder()
                 .withPurchaseMerchant(createPurchaseMerchant())
                 .withCurrencyCode("EUR")
@@ -33,13 +34,13 @@ public class PurchaseTest {
 
 
     @Test
-    public void fromPaymentRequest() {
+    public void fromPaymentRequest() throws Exception {
         purchase = Purchase.Builder.aPurchaseBuilder()
                 .fromPayline(createCompletePaymentBuilder().build())
                 .build();
 
-        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
-        Assertions.assertEquals(paymentAmountConverted, purchase.getPurchaseAmount(),0.01);
+        Float paymentAmountConverted = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
+        Assertions.assertEquals(paymentAmountConverted, purchase.getPurchaseAmount(), 0.01);
 
         //Test to String here
         Assertions.assertTrue(purchase.toString().contains("external_reference"));
@@ -52,7 +53,7 @@ public class PurchaseTest {
     @Test
     public void withoutListItem() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
@@ -71,7 +72,7 @@ public class PurchaseTest {
     @Test
     public void withoutDelivery() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
@@ -90,7 +91,7 @@ public class PurchaseTest {
     @Test
     public void withoutExternalReferenceType() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
@@ -109,7 +110,7 @@ public class PurchaseTest {
     @Test
     public void withoutExternalReference() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
@@ -128,7 +129,7 @@ public class PurchaseTest {
     @Test
     public void withoutPuchaseAmount() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
@@ -147,7 +148,7 @@ public class PurchaseTest {
     @Test
     public void withoutCurrencyCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
                     .withPurchaseMerchant(createPurchaseMerchant())
                     .withPurchaseAmount(150f)

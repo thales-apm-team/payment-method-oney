@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.payment;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
 
@@ -64,22 +65,22 @@ public class BusinessTransactionData extends OneyBean {
             return this;
         }
 
-        public BusinessTransactionData.Builder verifyIntegrity() {
+        public BusinessTransactionData.Builder verifyIntegrity() throws InvalidFieldFormatException {
             if (this.code == null) {
-                throw new IllegalStateException("BusinessTransactionData must have a code when built");
-            } else {
-                return this;
+                throw new InvalidFieldFormatException("BusinessTransactionData must have a code when built", "BusinessTransactionData.code");
             }
+
+            return this;
         }
 
-        public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract) {
+        public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract) throws InvalidFieldFormatException {
 
             if (contract == null) {
                 return null;
             }
 
             if (contract.getProperty(OPC_KEY) == null) {
-                throw new IllegalStateException("Property " + OPC_KEY + " doesn't exists");
+                throw new InvalidFieldFormatException("Property " + OPC_KEY + " doesn't exists", OPC_KEY);
             }
 
             this.code = contract.getProperty(OPC_KEY).getValue();
@@ -92,7 +93,7 @@ public class BusinessTransactionData extends OneyBean {
             return this;
         }
 
-        public BusinessTransactionData build() {
+        public BusinessTransactionData build() throws InvalidFieldFormatException {
             return new BusinessTransactionData(this.verifyIntegrity());
         }
     }

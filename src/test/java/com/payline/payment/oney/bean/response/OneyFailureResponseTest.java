@@ -1,6 +1,5 @@
-package com.payline.payment.oney.response;
+package com.payline.payment.oney.bean.response;
 
-import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import org.junit.jupiter.api.Assertions;

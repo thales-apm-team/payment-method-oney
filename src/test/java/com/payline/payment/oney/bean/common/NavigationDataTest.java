@@ -1,7 +1,6 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
-import com.payline.payment.oney.bean.common.NavigationData;
-import com.payline.payment.oney.exception.InvalidRequestException;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.service.impl.BeanAssemblerServiceImpl;
 import com.payline.payment.oney.utils.TestUtils;
@@ -27,7 +26,7 @@ public class NavigationDataTest {
     }
 
     @Test
-    public void buildNavigationData() {
+    public void buildNavigationData() throws Exception {
         navigationData = NavigationData.Builder.aNavigationDataBuilder()
                 .withFailUrl("fail/url/")
                 .withSuccesUrl("success/url/")
@@ -45,7 +44,7 @@ public class NavigationDataTest {
     @Test
     public void buildNavigationDataFail() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             navigationData = NavigationData.Builder.aNavigationDataBuilder()
                     .withFailUrl("fail/url/")
                     .withNotificationUrl("notification/url/")
@@ -58,7 +57,7 @@ public class NavigationDataTest {
     }
 
     @Test
-    public void buildNavigationDataFromPayline() throws InvalidRequestException {
+    public void buildNavigationDataFromPayline() throws Exception {
 
         navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
 
@@ -70,7 +69,7 @@ public class NavigationDataTest {
 
 
     @Test
-    public void toStringTest() throws InvalidRequestException {
+    public void toStringTest() throws Exception {
 
         navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
 

@@ -1,6 +1,5 @@
-package com.payline.payment.oney.service;
+package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.service.impl.RefundServiceImpl;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -16,9 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundRequest;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
@@ -39,7 +35,7 @@ public class RefundServiceImplTest {
     }
 
     @Test
-    public void refundRequestTestOK() throws IOException, URISyntaxException {
+    public void refundRequestTestOK() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
 
@@ -58,7 +54,7 @@ public class RefundServiceImplTest {
 
 
     @Test
-    public void refundRequestTestKO() throws IOException, URISyntaxException {
+    public void refundRequestTestKO() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
 
@@ -76,7 +72,7 @@ public class RefundServiceImplTest {
     }
 
     @Test
-    public void handleStatusRequest() throws IOException, URISyntaxException {
+    public void handleStatusRequest() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
@@ -85,4 +81,59 @@ public class RefundServiceImplTest {
         Assertions.assertEquals("FUNDED", status);
     }
 
+
+    @Test
+    public void getRefundFlagTrue() {
+        String status = "FUNDED";
+        boolean flag = service.getRefundFlag(status);
+        Assertions.assertTrue(flag);
+
+    }
+
+    @Test
+    public void getRefundFlagFalse() {
+        String status = "FAVORABLE";
+        String status2 = "PENDING";
+        boolean flag = service.getRefundFlag(status);
+        boolean flag2 = service.getRefundFlag(status2);
+
+        Assertions.assertFalse(flag);
+        Assertions.assertFalse(flag2);
+
+    }
+
+    @Test
+    public void getRefundFlagInvalid() {
+
+        String status = "XOXO";
+        Assertions.assertFalse(service.getRefundFlag(status));
+    }
+
+    @Test
+    public void getRefundFlagNotRefundable() {
+
+        String status = "REFUSED";
+        Assertions.assertFalse(service.getRefundFlag(status));
+    }
+
+    @Test
+    public void getRefundFlagNotRefundable2() {
+
+        String status = "ABORTED";
+        Assertions.assertFalse(service.getRefundFlag(status));
+    }
+
+    @Test
+    public void getRefundFlagNotRefundable3() {
+
+        String status = "CANCELLED";
+        Assertions.assertFalse(service.getRefundFlag(status));
+    }
+
+    @Test
+    public void getRefundFlagNotRefundable4() {
+
+        String status = null;
+        Assertions.assertFalse(service.getRefundFlag(status));
+    }
 }

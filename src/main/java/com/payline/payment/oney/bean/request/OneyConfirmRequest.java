@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
@@ -76,7 +77,7 @@ public class OneyConfirmRequest extends OneyRequest {
         private String encryptKey;
         private Map<String, String> callParameters;
 
-        public Builder(RedirectionPaymentRequest paymentRequest) {
+        public Builder(RedirectionPaymentRequest paymentRequest) throws InvalidDataException {
             String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
@@ -94,7 +95,7 @@ public class OneyConfirmRequest extends OneyRequest {
         }
 
 
-        public Builder(TransactionStatusRequest transactionStatusRequest) {
+        public Builder(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
             String merchantGuidValue = transactionStatusRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
 
             this.purchaseReference = transactionStatusRequest.getTransactionId();
@@ -111,40 +112,40 @@ public class OneyConfirmRequest extends OneyRequest {
                     transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue());
         }
 
-        public OneyConfirmRequest build() {
+        public OneyConfirmRequest build() throws InvalidDataException {
             this.verifyIntegrity();
             return new OneyConfirmRequest(this);
         }
 
 
-        private void verifyIntegrity() {
+        private void verifyIntegrity() throws InvalidDataException {
 
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a merchantGuid when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a merchantGuid when built", "OneyConfirmRequest.merchantGuid");
             }
 
             if (this.merchantRequestId == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a merchantRequestId when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a merchantRequestId when built", "OneyConfirmRequest.merchantRequestId");
             }
 
             if (this.pspGuid == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a pspGuid when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a pspGuid when built", "OneyConfirmRequest.pspGuid");
             }
 
             if (this.purchaseReference == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a reference when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a reference when built", "OneyConfirmRequest.reference");
             }
 
             if (this.paymentData == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a paymentData when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a paymentData when built", "OneyConfirmRequest.paymentData");
             }
 
             if (this.encryptKey == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a encryptKey when built", "OneyConfirmRequest.encryptKey");
             }
 
             if (this.callParameters == null || callParameters.isEmpty()) {
-                throw new IllegalStateException("OneyConfirmRequest must have a callParameters when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a callParameters when built", "OneyConfirmRequest.callParameters");
             }
 
         }

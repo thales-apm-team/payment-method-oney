@@ -1,8 +1,9 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.service.impl.BeanAssemblerServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
@@ -36,7 +37,7 @@ public class PaymentDataTest {
     }
 
     @Test
-    public void paymentDataOK() {
+    public void paymentDataOK() throws Exception {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withCurrency("EUR")
                 .withAmount(100)
@@ -48,7 +49,7 @@ public class PaymentDataTest {
     }
 
     @Test
-    public void paymentDataFromPayline() {
+    public void paymentDataFromPayline() throws Exception {
         final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
         paymentdata = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
 //        paymentdata = PaymentData.Builder.aPaymentData()
@@ -56,7 +57,7 @@ public class PaymentDataTest {
 //                .build();
 
 //conversion de l'amount de centimes d'euros  à euros
-        Float paymentAmountConverted  = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
+        Float paymentAmountConverted = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         Assertions.assertEquals(paymentAmountConverted, paymentdata.getAmount(), 0.01);
         Assertions.assertEquals("EUR", paymentdata.getCurrency());
     }
@@ -64,7 +65,7 @@ public class PaymentDataTest {
     @Test
     public void paymentDataFailAmount() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             paymentdata = PaymentData.Builder.aPaymentData()
                     .withCurrency("EUR")
                     .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
@@ -78,7 +79,7 @@ public class PaymentDataTest {
     @Test
     public void paymentDataFailCurrency() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             paymentdata = PaymentData.Builder.aPaymentData()
                     .withAmount(100)
                     .withBusinessTransactionList(createDefaultBusinessTransactionData("254"))
@@ -92,7 +93,7 @@ public class PaymentDataTest {
     @Test
     public void paymentDataFailBusinessTransactionData() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             paymentdata = PaymentData.Builder.aPaymentData()
                     .withAmount(100)
                     .withCurrency("EUR")
@@ -103,7 +104,7 @@ public class PaymentDataTest {
     }
 
     @Test
-    public void paymentDataOKWithoutBusinessTransactionData() {
+    public void paymentDataOKWithoutBusinessTransactionData() throws Exception {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withPaymentType(PaymentType.CHECK_CARD.getValue())
@@ -113,7 +114,7 @@ public class PaymentDataTest {
     }
 
     @Test
-    public void toStringTest() {
+    public void toStringTest() throws Exception {
         paymentdata = PaymentData.Builder.aPaymentData()
                 .withAmount(100)
                 .withCurrency("EUR")

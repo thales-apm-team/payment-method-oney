@@ -72,8 +72,8 @@ public class OneyConstants {
     public static final String PARTNER_AUTHORIZATION_VALUE = "oney.authorization";
     public static final String PARTNER_CHIFFREMENT_KEY = "partner.oney.access.secret.key";
     public static final String PARTNER_CHIFFREMENT_KEY_MESSAGE_ERROR = "partner.oney.access.secret.key.error.message";
-    public static final String PARTNER_AUTHRIZATION_KEY = "partner.oney.access.key";
-    public static final String PARTNER_AUTHRIZATION_KEY_MESSAGE_ERROR = "partner.oney.access.key.error.message";
+    public static final String PARTNER_AUTHORIZATION_KEY = "partner.oney.access.key";
+    public static final String PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR = "partner.oney.access.key.error.message";
     public static final String PARTNER_API_URL = "partner.oney.url";
     public static final String HEADER_COUNTRY_CODE = "oney.coutry.code";
 
@@ -190,4 +190,7 @@ public class OneyConstants {
     public static final String MERCHANT_GUID_TAG = "#MERCHANT_GUID_KEY#";
     public static final String PSP_GUID_TAG = "#PSP_GUID_KEY#";
     public static final String UNEXPECTED_ERR = "error.unexpected";
+
+
+    public static final String DATE_FORMAT = "\\d{4}-\\d{2}-\\d{2}";
 }

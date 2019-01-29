@@ -1,7 +1,8 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.purchase.Item;
 import com.payline.payment.oney.bean.common.purchase.Travel;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ public class ItemTest {
     private Item item;
 
     @Test
-    public void item() {
+    public void item() throws Exception {
         item = Item.Builder.aItemBuilder()
                 .withMainItem(0)
                 .withCategoryCode(0)
@@ -38,7 +39,7 @@ public class ItemTest {
     @Test
     public void withoutLabel() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withCategoryCode(0)
@@ -55,7 +56,7 @@ public class ItemTest {
     @Test
     public void withoutIsMainItem() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withCategoryCode(0)
                     .withLabel("label")
@@ -72,7 +73,7 @@ public class ItemTest {
     @Test
     public void withoutCategoryCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withLabel("label")
@@ -89,7 +90,7 @@ public class ItemTest {
     @Test
     public void withoutItemexternalCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withCategoryCode(0)
@@ -106,7 +107,7 @@ public class ItemTest {
     @Test
     public void withoutQuantity() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withCategoryCode(0)
@@ -123,7 +124,7 @@ public class ItemTest {
     @Test
     public void withoutPrice() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withCategoryCode(0)
@@ -138,9 +139,9 @@ public class ItemTest {
     }
 
     @Test
-    public void withoutMarketPlaceName() {
+    public void withoutMarketPlaceName() throws Exception {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             item = Item.Builder.aItemBuilder()
                     .withMainItem(0)
                     .withCategoryCode(0)
@@ -156,7 +157,7 @@ public class ItemTest {
     }
 
     @Test
-    public void itemFromPaylineRequest() {
+    public void itemFromPaylineRequest() throws Exception {
         item = Item.Builder.aItemBuilder()
                 .fromPayline(createOrderItem("someRef", createAmount("EUR")))
                 .build();
@@ -170,7 +171,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         item = Item.Builder.aItemBuilder()
                 .fromPayline(createOrderItem("someRefe", createAmount("EUR")))
                 .withTravel(new Travel())
@@ -187,7 +188,7 @@ public class ItemTest {
     }
 
     @Test
-    public void defineMainItem() {
+    public void defineMainItem() throws Exception {
         //to implement
         List<Item> itemList = new ArrayList<>();
         itemList.add(Item.Builder.aItemBuilder()

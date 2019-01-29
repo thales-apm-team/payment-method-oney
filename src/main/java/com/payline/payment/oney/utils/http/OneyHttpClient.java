@@ -3,12 +3,13 @@ package com.payline.payment.oney.utils.http;
 
 import com.payline.payment.oney.bean.request.*;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,18 +55,21 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @param path           URL path
      * @param requestContent The JSON content, as a string
      * @return The response returned from the HTTP call
-     * @throws IOException        I/O error
-     * @throws URISyntaxException URI Syntax Exception
+     * @throws HttpCallException COMMUNICATION_ERROR
      */
     public StringResponse doPost(String path, String requestContent, Map<String, String> params)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
 
-        String url = params.get(PARTNER_API_URL);
-        StringEntity entity = new StringEntity(requestContent);
-        Header[] headers = createHeaders(params);
+        try {
+            String url = params.get(PARTNER_API_URL);
+            StringEntity entity = new StringEntity(requestContent);
+            Header[] headers = createHeaders(params);
 
+            return super.doPost(url, path, headers, entity);
 
-        return super.doPost(url, path, headers, entity);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpCallException(e, "OneyHttpClient.doPost.UnsupportedEncodingException");
+        }
 
     }
 
@@ -74,11 +78,10 @@ public class OneyHttpClient extends AbstractHttpClient {
      *
      * @param path URL path
      * @return The response returned from the HTTP call
-     * @throws IOException        I/O error
-     * @throws URISyntaxException URI Syntax Exception
+     * @throws HttpCallException COMMUNICATION_ERROR
      */
     public StringResponse doGet(String path, Map<String, String> params)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
 
         String url = params.get(PARTNER_API_URL);
 
@@ -117,7 +120,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     private Header[] createHeaders(Map<String, String> params) {
 
         String countryCode = params.get(HEADER_COUNTRY_CODE);
-        String authorizationKey = params.get(PARTNER_AUTHRIZATION_KEY);
+        String authorizationKey = params.get(PARTNER_AUTHORIZATION_KEY);
         Header[] headers = new Header[4];
         headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(AUTHORIZATION, authorizationKey);
@@ -128,7 +131,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiatePayment(OneyPaymentRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws HttpCallException, DecryptException, InvalidDataException {
 
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
@@ -139,14 +142,14 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateCheckPayment(String jsonBody, Map<String, String> parameters)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
         // do the request
         return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
 
     }
 
     public StringResponse initiateConfirmationPayment(OneyConfirmRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws HttpCallException, DecryptException, InvalidDataException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
@@ -160,7 +163,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateRefundPayment(OneyRefundRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws HttpCallException, DecryptException, InvalidDataException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
@@ -174,7 +177,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());

@@ -1,6 +1,10 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.Required;
 
 public class LoyaltyInformation extends OneyBean {
@@ -107,20 +111,21 @@ public class LoyaltyInformation extends OneyBean {
             return this;
         }
 
-        private LoyaltyInformation.Builder verifyIntegrity() {
+        private LoyaltyInformation.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
 
             if (this.loyaltyId == null) {
-                throw new IllegalStateException("LoyaltyInformation must have a loyaltyId when built");
+                throw new InvalidDataException("LoyaltyInformation must have a loyaltyId when built", "LoyaltyInformation.loyaltyId");
             }
 
-            if (this.expirationDate != null && !this.expirationDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                throw new IllegalStateException("LoyaltyInformation must have a expirationDate in format 'yyyy-MM-dd' when built");
+            if (this.expirationDate != null && !this.expirationDate.matches(OneyConstants.DATE_FORMAT)) {
+                throw new InvalidFieldFormatException("LoyaltyInformation must have a expirationDate in format 'yyyy-MM-dd' when built", "LoyaltyInformation.expirationDate");
             }
+
             return this;
 
         }
 
-        public LoyaltyInformation build() {
+        public LoyaltyInformation build() throws PluginTechnicalException {
             return new LoyaltyInformation(this.verifyIntegrity());
         }
     }

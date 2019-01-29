@@ -12,8 +12,14 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 
-apply from: "monext.gradle"
-//apply from: "external.gradle"
+
+def externalFileName = "$projectDir/.Thales"
+
+if (file(externalFileName).exists()) {
+    apply from: "external.gradle"
+} else {
+    apply from: "monext.gradle"
+}
 
 description = 'payment-method-oney'
 group = 'com.payline.payment.oney'
@@ -25,8 +31,8 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.0-RC7-SNAPSHOT'
-    paymentMethodIntegrationVersion = '1.0-RC7-SNAPSHOT'
+    paymentMethodApiVersion = '1.0'
+    paymentMethodIntegrationVersion = '1.0'
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
 }

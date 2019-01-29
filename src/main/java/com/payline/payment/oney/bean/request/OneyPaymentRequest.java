@@ -6,6 +6,7 @@ import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 
 import java.util.Map;
@@ -227,42 +228,42 @@ public class OneyPaymentRequest extends OneyRequest {
             return this;
         }
 
-        private Builder verifyIntegrity() {
+        private Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.merchantRequestId == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a merchantRequestId when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a merchantRequestId when built", "OneyPaymentRequest.merchantRequestId");
             }
 
             if (this.encryptKey == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a encryptKey when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a encryptKey when built", "OneyPaymentRequest.encryptKey");
             }
 
             if (this.callParameters == null || callParameters.isEmpty()) {
-                throw new IllegalStateException("OneyPaymentRequest must have a callParameters when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a callParameters when built", "OneyPaymentRequest.callParameters");
             }
 
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a merchantGuid when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a merchantGuid when built", "OneyPaymentRequest.merchantGuid");
             }
 
             if (this.pspGuid == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a pspGuid when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a pspGuid when built", "OneyPaymentRequest.pspGuid");
             }
 
             if (this.purchase == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a purchase when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a purchase when built", "OneyPaymentRequest.purchase");
             }
 
             if (this.customer == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a customer when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a customer when built", "OneyPaymentRequest.customer");
             }
 
             if (this.paymentData == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a paymentData when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a paymentData when built", "OneyPaymentRequest.paymentData");
             }
 
             if (this.navigationData == null) {
-                throw new IllegalStateException("OneyPaymentRequest must have a navigationData when built");
+                throw new InvalidDataException("OneyPaymentRequest must have a navigationData when built", "OneyPaymentRequest.navigationData");
             }
 
 
@@ -270,7 +271,7 @@ public class OneyPaymentRequest extends OneyRequest {
 
         }
 
-        public OneyPaymentRequest build() {
+        public OneyPaymentRequest build() throws InvalidDataException {
             return new OneyPaymentRequest(this.verifyIntegrity());
         }
 

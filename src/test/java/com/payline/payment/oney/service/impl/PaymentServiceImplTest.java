@@ -1,6 +1,6 @@
-package com.payline.payment.oney.service;
+package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.service.impl.PaymentServiceImpl;
+import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -15,9 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
@@ -41,7 +38,7 @@ public class PaymentServiceImplTest {
 
 
     @Test
-    public void paymentRequestOK() throws IOException, URISyntaxException {
+    public void paymentRequestOK() throws HttpCallException {
 
         StringResponse responseEncryptedMocked = createStringResponse(200, "", "{\"encrypted_message\": \"FhzjXBU2Ek+/dmCMVB4wWn6ytL2+dh5mIx+gxDtcp4rTSzO/LA1Q72aClEvNoeXVdc3wg8L8PpMvAhRkWkLc1DyuX14icAZP8C7uA5COgRIzklUPJq/d9tiDWXxszS9o4ALbCfpGYqSgUN38fBnJhC9Y7RBqY4eq+H0iTRtvfYSLmKumsYvQFJY/21j+Xou/ZLppruwA6/MNC0nDGXw2o2PJeMGm+e5i4lUlqowvecmZ+GWQM91pOrb95B/pqriDYwZnnRQrewuhAyvIkR8LVQ==\"}");
         Mockito.doReturn(responseEncryptedMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
@@ -52,7 +49,7 @@ public class PaymentServiceImplTest {
     }
 
     @Test
-    public void paymentRequestKO() throws IOException, URISyntaxException {
+    public void paymentRequestKO() throws HttpCallException {
         StringResponse responseMocked = createStringResponse(400, "Bad request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"purchase.delivery.delivery_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"customer.customer_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"payment.payment_type\",\"error_code\":\"ERR_03\",\"error_label\":\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
@@ -108,7 +105,7 @@ public class PaymentServiceImplTest {
     }
 
     @Test
-    public void paymentRequestKO404() throws IOException, URISyntaxException {
+    public void paymentRequestKO404() throws HttpCallException {
         StringResponse responseMocked = createStringResponse(404, "Bad request", "{Payments_Error_Response:{error_list:[{field:purchase.delivery.delivery_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:purchase.item_list.category_code,error_code:ERR_04,error_label:\"Value of the field is invalid [{Integer}]\"},{field:customer.customer_address.country_code,error_code:ERR_02,error_label:\"Size of the field should be equal to [3] characters\"},{field:payment.payment_type,error_code:ERR_03,error_label:\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());

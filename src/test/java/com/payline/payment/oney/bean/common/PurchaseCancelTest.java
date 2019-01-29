@@ -1,6 +1,6 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
-import com.payline.payment.oney.bean.common.PurchaseCancel;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ public class PurchaseCancelTest {
 
 
     @Test
-    public void testPurchaseCancel() {
+    public void testPurchaseCancel() throws Exception {
         purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                 .withRefundFlag(true)
                 .withReasonCode(0)
@@ -22,7 +22,7 @@ public class PurchaseCancelTest {
 
 
     @Test
-    public void testPurchaseCancel1() {
+    public void testPurchaseCancel1() throws Exception {
         purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                 .withRefundFlag(true)
                 .withReasonCode(1)
@@ -34,7 +34,7 @@ public class PurchaseCancelTest {
 
     @Test
     public void withoutReasonCode() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withRefundFlag(true)
@@ -47,7 +47,7 @@ public class PurchaseCancelTest {
 
     @Test
     public void withInvalidReasonCode() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withRefundFlag(true)
@@ -60,7 +60,7 @@ public class PurchaseCancelTest {
 
     @Test
     public void withoutRefundFlag() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withReasonCode(1)
@@ -72,7 +72,7 @@ public class PurchaseCancelTest {
 
     @Test
     public void withoutAmount() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withRefundFlag(true)
@@ -83,7 +83,7 @@ public class PurchaseCancelTest {
     }
 
     @Test
-    public void testToString(){
+    public void testToString() throws Exception {
         purchaseCancel = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                 .withRefundFlag(true)
                 .withReasonCode(0)

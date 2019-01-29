@@ -1,6 +1,5 @@
-package com.payline.payment.oney.request;
+package com.payline.payment.oney.bean.request;
 
-import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ public class OneyConfirmRequestTest {
     private OneyConfirmRequest paymentRequest;
 
     @Test
-    public void buildOneyConfirmRequest() {
+    public void buildOneyConfirmRequest() throws Exception {
 
         paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
                 .build();

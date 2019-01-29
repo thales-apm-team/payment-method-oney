@@ -1,6 +1,6 @@
-package com.payline.payment.oney.request;
+package com.payline.payment.oney.bean.request;
 
-import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -14,7 +14,7 @@ public class OneyTransactionStatusRequestTest {
     @Test
     public void testBuildRequestKO_emptyCallParameters() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withMerchantGuid("guid")
@@ -29,7 +29,7 @@ public class OneyTransactionStatusRequestTest {
     @Test
     public void testBuildRequestKO_nullCallParameters() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withMerchantGuid("guid")
@@ -45,7 +45,7 @@ public class OneyTransactionStatusRequestTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withMerchantGuid("guid")
@@ -61,7 +61,7 @@ public class OneyTransactionStatusRequestTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withMerchantGuid("guid")
@@ -77,7 +77,7 @@ public class OneyTransactionStatusRequestTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withMerchantGuid("guid")
@@ -93,7 +93,7 @@ public class OneyTransactionStatusRequestTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .withLanguageCode("FR")
                     .withPspGuid("pspG")
@@ -106,7 +106,7 @@ public class OneyTransactionStatusRequestTest {
 
 
     @Test
-    public void testBuildRequestOK() {
+    public void testBuildRequestOK() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
