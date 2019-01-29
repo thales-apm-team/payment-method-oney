@@ -1,18 +1,15 @@
 package com.payline.payment.oney.utils.chiffrement;
 
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 public class OneyCrypto {
 
@@ -34,7 +31,8 @@ public class OneyCrypto {
      * @return String, the decrypted message
      */
     public String encrypt(String messageToEncrypt) throws DecryptException {
-        try { // Initialise a cipher
+        try {
+            // Initialise a cipher
             // Convert the key to SecretKeySpec
             byte[] decodedKey = DatatypeConverter.parseBase64Binary(this.key);
             SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
@@ -48,8 +46,8 @@ public class OneyCrypto {
             return DatatypeConverter.printBase64Binary(encryptedBytes);
 
         } catch (Exception e) {
-            LOGGER.error("Unable to encrypt this message", e);
-            throw new DecryptException("Unable to encrypt this message", e);
+            LOGGER.error(e.getMessage(), e);
+            throw new DecryptException(e, "OneyCrypto.encrypt." + e.getClass().getSimpleName());
         }
     }
 
@@ -60,7 +58,7 @@ public class OneyCrypto {
      * @param messageEncrypted String, message to decrypt
      * @return String, the decrypted message
      */
-    public String decrypt(String messageEncrypted) throws DecryptException {
+    public String decrypt(String messageEncrypted) throws DecryptException, DecryptException {
         // Convert the key to SecretKeySpec
         byte[] decodedKey = DatatypeConverter.parseBase64Binary(this.key);
         SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
@@ -75,10 +73,32 @@ public class OneyCrypto {
             byte[] decryptedBytes = cipher.doFinal(encryptedMessage);
             return new String(decryptedBytes, StandardCharsets.UTF_8);
 
-        } catch (NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException |
-                NoSuchPaddingException | InvalidKeyException e) {
-            LOGGER.error("Unable to decrypt this message", e);
-            throw new DecryptException("Unable to decrypt this message", e);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new DecryptException(e, "OneyCrypto.decrypt." + e.getClass().getSimpleName());
         }
     }
+
+
+    /**
+     * Encrypt a request  message
+     *
+     * @param toEncrypt, the String to encrypt
+     * @param key,       String,  the chiffrement key
+     * @return
+     */
+    public static String encryptMessage(String toEncrypt, String key) throws InvalidDataException, DecryptException {
+        if (key == null || key.isEmpty()) {
+            throw new InvalidDataException("La clé de chiffrement ne peut pas être nulle", OneyConstants.PARTNER_CHIFFREMENT_KEY);
+        }
+
+        if (toEncrypt == null) {
+            LOGGER.warn("Message to encrypt is empty");
+            toEncrypt = "";
+        }
+
+        OneyCrypto crypto = new OneyCrypto(key);
+        return crypto.encrypt(toEncrypt);
+    }
+
 }

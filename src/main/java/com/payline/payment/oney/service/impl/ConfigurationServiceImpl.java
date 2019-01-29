@@ -144,9 +144,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         // apiKey
-        final String partnerKey = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_AUTHRIZATION_KEY);
+        final String partnerKey = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_AUTHORIZATION_KEY);
         if (PluginUtils.isEmpty(partnerKey)) {
-            errors.put(PARTNER_AUTHRIZATION_KEY, this.i18n.getMessage(PARTNER_AUTHRIZATION_KEY_MESSAGE_ERROR, locale));
+            errors.put(PARTNER_AUTHORIZATION_KEY, this.i18n.getMessage(PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR, locale));
         }
 
         // merchant guid
@@ -195,9 +195,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                         String errMsg = err.getPrintableMessage();
                         LOGGER.error(errMsg);
                         if (errMsg.contains("invalid subscription key")) {
-                            errors.put(PARTNER_AUTHRIZATION_KEY, err.getMessage());
+                            errors.put(PARTNER_AUTHORIZATION_KEY, err.getMessage());
                         } else {
-                            LOGGER.error("Les paramètres {} et {} ne correspondent pas", PARTNER_AUTHRIZATION_KEY, COUNTRY_CODE_KEY);
+                            LOGGER.error("Les paramètres {} et {} ne correspondent pas", PARTNER_AUTHORIZATION_KEY, COUNTRY_CODE_KEY);
                             errors.put(COUNTRY_CODE_KEY, err.getMessage());
 
                         }

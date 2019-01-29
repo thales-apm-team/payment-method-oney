@@ -1,6 +1,5 @@
-package com.payline.payment.oney.service;
+package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.service.impl.PaymentFormConfigurationServiceImpl;
 import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.paymentform.bean.PaymentFormLogo;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;

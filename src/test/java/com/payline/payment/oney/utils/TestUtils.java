@@ -13,8 +13,8 @@ import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
-import org.apache.commons.lang3.RandomStringUtils;
 import com.payline.pmapi.logger.LogManager;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -385,7 +385,7 @@ public class TestUtils {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, GUID_KEY);
         partnerConfiguration.put(SECRET_KEY, "Method-body");
-        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
@@ -433,14 +433,12 @@ public class TestUtils {
     public static RefundRequest createDefaultRefundRequest() {
         final Amount amount = createAmount(CONFIRM_AMOUNT, "EUR");
         final ContractConfiguration contractConfiguration = createContractConfiguration();
-        final Environment paylineEnvironment = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
         final Order order = createOrder(TRANSACTION_ID);
 
 
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
                 .withAmount(amount)
                 .withContractConfiguration(contractConfiguration)
-                .withEnvironment(paylineEnvironment)
                 .withOrder(order)
                 .withBuyer(createDefaultBuyer())
                 .withSoftDescriptor(SOFT_DESCRIPTOR)

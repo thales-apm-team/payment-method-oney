@@ -1,7 +1,8 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
-import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.pmapi.bean.common.Buyer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ public class DeliveryTest {
 
 
     @Test
-    public void testDelivery() {
+    public void testDelivery() throws Exception {
         delivery = Delivery.Builder.aDeliveryBuilder()
                 .withDeliveryDate("1998-07-12")
                 .withDeliveryModeCode(1)
@@ -37,7 +38,7 @@ public class DeliveryTest {
     @Test
     public void wrongDate() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
 
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("111998-07-12")
@@ -56,7 +57,7 @@ public class DeliveryTest {
     @Test
     public void withoutDeliveryModeCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
@@ -74,7 +75,7 @@ public class DeliveryTest {
     @Test
     public void withoutDeliveryOption() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
                     .withDeliveryModeCode(1)
@@ -91,7 +92,7 @@ public class DeliveryTest {
     @Test
     public void withoutAddressType() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
@@ -109,7 +110,7 @@ public class DeliveryTest {
     @Test
     public void withoutRecipient() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
                     .withDeliveryModeCode(1)
@@ -120,13 +121,13 @@ public class DeliveryTest {
                             .build())
                     .build();
         });
-        Assertions.assertEquals("Delivery must have a recipient when built", exception.getMessage());
+        Assertions.assertEquals("Delivery with addressType == 5 must have a recipient when built", exception.getMessage());
     }
 
     @Test
     public void withoutDeliveryAddress() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             delivery = Delivery.Builder.aDeliveryBuilder()
                     .withDeliveryDate("1998-07-12")
                     .withDeliveryModeCode(1)
@@ -141,7 +142,7 @@ public class DeliveryTest {
 
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         delivery = Delivery.Builder.aDeliveryBuilder()
                 .withDeliveryDate("1998-07-12")
                 .withDeliveryModeCode(1)

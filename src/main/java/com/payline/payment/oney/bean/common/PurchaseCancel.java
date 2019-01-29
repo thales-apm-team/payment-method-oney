@@ -1,6 +1,7 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 
 public class PurchaseCancel extends OneyBean {
@@ -60,25 +61,25 @@ public class PurchaseCancel extends OneyBean {
             return this;
         }
 
-        public PurchaseCancel.Builder verifyIntegrity() {
+        public PurchaseCancel.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.reasonCode == null || this.reasonCode > 1) {
-                throw new IllegalStateException("PurchaseCancel must have a valid reasonCode when built");
+                throw new InvalidDataException("PurchaseCancel must have a valid reasonCode when built", "PurchaseCancel.reasonCode");
             }
 
             if (this.reasonCode == 0 && this.amount == null) {
-                throw new IllegalStateException("PurchaseCancel must have a amount when built");
+                throw new InvalidDataException("PurchaseCancel must have a amount when built", "PurchaseCancel.amount");
             }
 
             if (this.reasonCode == 1 && this.refundFlag == null) {
-                throw new IllegalStateException("PurchaseCancel must have a refundFlag when built");
+                throw new InvalidDataException("PurchaseCancel must have a refundFlag when built", "PurchaseCancel.refundFlag");
             }
             return this;
 
         }
 
 
-        public PurchaseCancel build() {
+        public PurchaseCancel build() throws InvalidDataException {
             return new PurchaseCancel(this.verifyIntegrity());
         }
     }

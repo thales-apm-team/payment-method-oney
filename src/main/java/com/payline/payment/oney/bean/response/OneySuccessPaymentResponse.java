@@ -3,8 +3,16 @@ package com.payline.payment.oney.bean.response;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.pmapi.logger.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class OneySuccessPaymentResponse extends OneyResponse {
+
+    private static final Logger LOGGER = LogManager.getLogger(OneySuccessPaymentResponse.class);
 
     @SerializedName("returned_url")
     private String returnedUrl;
@@ -12,6 +20,16 @@ public class OneySuccessPaymentResponse extends OneyResponse {
 
     public String getReturnedUrl() {
         return returnedUrl;
+    }
+
+    public URL getReturnedUrlAsUrl() throws HttpCallException {
+
+        try {
+            return new URL(returnedUrl);
+        } catch (MalformedURLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new HttpCallException(e, "OneySuccessPaymentResponse.MalformedURLException");
+        }
     }
 
     public void setReturnedUrl(String url) {

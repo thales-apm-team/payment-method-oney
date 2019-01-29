@@ -2,6 +2,10 @@ package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
@@ -244,36 +248,36 @@ public class CustomerIdentity extends OneyBean {
             return this;
         }
 
-        private CustomerIdentity.Builder verifyIntegrity() {
+        private CustomerIdentity.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
 
             if (this.personType == null) {
-                throw new IllegalStateException("CustomerIdentity must have a personType when built");
+                throw new InvalidDataException("CustomerIdentity must have a personType when built", "CustomerIdentity.personType");
             }
 
             if (this.personType == 1 && this.companyName == null) {
-                throw new IllegalStateException("CustomerIdentity must have a companyName when built");
+                throw new InvalidDataException("CustomerIdentity must have a companyName when built", "CustomerIdentity.companyName");
             }
 
             if (this.honorificCode == null) {
-                throw new IllegalStateException("CustomerIdentity must have a honorificCode when built");
+                throw new InvalidDataException("CustomerIdentity must have a honorificCode when built", "CustomerIdentity.honorificCode");
             }
 
             if (this.birthName == null) {
-                throw new IllegalStateException("CustomerIdentity must have a birthName when built");
+                throw new InvalidDataException("CustomerIdentity must have a birthName when built", "CustomerIdentity.birthName");
             }
 
             if (this.firstName == null) {
-                throw new IllegalStateException("CustomerIdentity must have a firstName when built");
+                throw new InvalidDataException("CustomerIdentity must have a firstName when built", "CustomerIdentity.firstName");
             }
 
-            if (this.birthDate != null && !this.birthDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                throw new IllegalStateException("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built");
+            if (this.birthDate != null && !this.birthDate.matches(OneyConstants.DATE_FORMAT)) {
+                throw new InvalidFieldFormatException("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built", "CustomerIdentity.birthDate");
             }
             return this;
 
         }
 
-        public CustomerIdentity build() {
+        public CustomerIdentity build() throws PluginTechnicalException {
             return new CustomerIdentity(this.verifyIntegrity());
         }
     }

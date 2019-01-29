@@ -1,6 +1,7 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.customer.Customer;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ public class CustomerTest {
 
 
     @Test
-    public void customerOK() {
+    public void customerOK() throws Exception {
         customer = Customer.Builder.aCustomBuilder()
                 .withCustomerIdentity(createDefaultCustomerIdentity())
                 .withLanguageCode("FR")
@@ -29,7 +30,7 @@ public class CustomerTest {
     @Test
     public void withoutCustomerIdentity() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             customer = Customer.Builder.aCustomBuilder()
                     .withLanguageCode("FR")
                     .withCustumerExternalCode("code")
@@ -45,7 +46,7 @@ public class CustomerTest {
     @Test
     public void withoutLanguageCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             customer = Customer.Builder.aCustomBuilder()
                     .withCustomerIdentity(createDefaultCustomerIdentity())
                     .withCustumerExternalCode("code")
@@ -62,7 +63,7 @@ public class CustomerTest {
     @Test
     public void withoutCustomerExternalCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             customer = Customer.Builder.aCustomBuilder()
                     .withCustomerIdentity(createDefaultCustomerIdentity())
                     .withLanguageCode("FR")
@@ -79,7 +80,7 @@ public class CustomerTest {
     @Test
     public void withoutContactDetails() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             customer = Customer.Builder.aCustomBuilder()
                     .withCustomerIdentity(createDefaultCustomerIdentity())
                     .withLanguageCode("FR")
@@ -96,7 +97,7 @@ public class CustomerTest {
     @Test
     public void withoutCustomerAddress() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             customer = Customer.Builder.aCustomBuilder()
                     .withCustomerIdentity(createDefaultCustomerIdentity())
                     .withLanguageCode("FR")
@@ -111,7 +112,7 @@ public class CustomerTest {
     }
 
     @Test
-    public void fromPaylineRequest() {
+    public void fromPaylineRequest() throws Exception {
         customer = Customer.Builder.aCustomBuilder()
                 .fromPaylineRequest(createDefaultPaymentRequest())
                 .build();
@@ -119,7 +120,7 @@ public class CustomerTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         customer = createDefaultCustomer();
 
         Assertions.assertTrue(customer.toString().contains("customer_external_code"));

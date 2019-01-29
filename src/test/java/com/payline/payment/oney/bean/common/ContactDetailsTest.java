@@ -1,6 +1,8 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.customer.ContactDetails;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ public class ContactDetailsTest {
 
 
     @Test
-    public void contactDetails() {
+    public void contactDetails() throws Exception {
         contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                 .withLandLineNumber("0436656565")
                 .withMobilePhoneNumber("0636656565")
@@ -25,7 +27,7 @@ public class ContactDetailsTest {
     @Test
     public void withoutLandlineNumber() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                     .withMobilePhoneNumber("0636656565")
@@ -40,7 +42,7 @@ public class ContactDetailsTest {
     @Test
     public void withoutMobilePhoneNumber() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                     .withLandLineNumber("0436656565")
                     .withEmailAdress("foo@bar.fr")
@@ -54,7 +56,7 @@ public class ContactDetailsTest {
     @Test
     public void withoutEmail() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                     .withLandLineNumber("0436656565")
@@ -62,13 +64,29 @@ public class ContactDetailsTest {
                     .build();
 
         });
-        Assertions.assertEquals("ContactDetails must have a  valid emailAddress when built", exception.getMessage());
+        Assertions.assertEquals("ContactDetails must have a valid emailAddress when built", exception.getMessage());
+
+    }
+
+    @Test
+    public void withEmailKo() {
+
+        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
+
+            contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
+                    .withLandLineNumber("0436656565")
+                    .withMobilePhoneNumber("0636656565")
+                    .withEmailAdress("fo+o@bar.fr")
+                    .build();
+
+        });
+        Assertions.assertEquals("character '+' is  is not allowed for ContactDetails.emailAddress", exception.getMessage());
 
     }
 
 
     @Test
-    public void fromPayline() {
+    public void fromPayline() throws Exception {
 
         contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                 .fromPayline(createDefaultBuyer())
@@ -79,7 +97,7 @@ public class ContactDetailsTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
                 .withLandLineNumber("0436656565")
                 .withMobilePhoneNumber("0636656565")
@@ -91,6 +109,5 @@ public class ContactDetailsTest {
 
 
     }
-
 
 }

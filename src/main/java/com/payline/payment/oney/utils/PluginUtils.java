@@ -2,6 +2,8 @@ package com.payline.payment.oney.utils;
 
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
@@ -255,10 +257,10 @@ public class PluginUtils {
         return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
     }
 
-    public static String parseReference(String reference) throws InvalidRequestException {
+    public static String parseReference(String reference) throws InvalidFieldFormatException {
 
         if (reference == null || reference.isEmpty() || !reference.contains(OneyConstants.PIPE)) {
-            throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
+            throw new InvalidFieldFormatException("Oney reference should contain a '|' : " + reference, "Oney.PurchaseReference");
         }
         return reference.split(OneyConstants.PIPE)[1];
     }
@@ -317,28 +319,6 @@ public class PluginUtils {
         return Float.parseFloat(createStringAmount(amount, currency));
     }
 
-
-    public static boolean getRefundFlag(String transactionStatusRequest) {
-        switch (transactionStatusRequest) {
-            case "FUNDED":
-                return true;
-
-            case "PENDING":
-            case "FAVORABLE":
-                return false;
-
-            case "REFUSED":
-            case "ABORTED":
-            case "CANCELLED":
-                throw new IllegalStateException("a " + transactionStatusRequest + " transactionStatusRequest can't be cancelled");
-
-            default:
-                throw new IllegalStateException(transactionStatusRequest + " is not a valid status for refund or cancel");
-
-        }
-
-    }
-
     /**
      * Buid a map with all needed parameters for HTTP calls
      *
@@ -346,28 +326,35 @@ public class PluginUtils {
      * @param coutryCode           coutryCode from ContractParameters
      * @return
      */
-    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) {
+    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) throws InvalidDataException {
 
         if (coutryCode == null || coutryCode.isEmpty()) {
-            throw new IllegalStateException("coutryCode is mandatory");
+            throw new InvalidDataException("coutryCode is mandatory", "coutryCode");
         }
 
-        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHRIZATION_KEY);
+        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHORIZATION_KEY);
         if (authorization == null) {
-            throw new IllegalStateException(PARTNER_AUTHRIZATION_KEY + " is mandatory");
+            throw new InvalidDataException(PARTNER_AUTHORIZATION_KEY + " is mandatory", PARTNER_AUTHORIZATION_KEY);
         }
 
         String url = partnerConfiguration.getProperty(PARTNER_API_URL);
         if (url == null) {
-            throw new IllegalStateException(PARTNER_API_URL + " is mandatory");
+            throw new InvalidDataException(PARTNER_API_URL + " is mandatory", PARTNER_API_URL);
         }
 
 
         Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(PARTNER_AUTHRIZATION_KEY, authorization);
+        parametersMap.put(PARTNER_AUTHORIZATION_KEY, authorization);
         parametersMap.put(PARTNER_API_URL, url);
         parametersMap.put(HEADER_COUNTRY_CODE, coutryCode.toUpperCase());
 
         return parametersMap;
+    }
+
+    public static String truncate(String value, int length) {
+        if (value != null && value.length() > length) {
+            value = value.substring(0, length);
+        }
+        return value;
     }
 }

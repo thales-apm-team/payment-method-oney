@@ -1,6 +1,7 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +11,7 @@ public class BusinessTransactionDataTest {
 
 
     @Test
-    public void businessTransactionDataOK() {
+    public void businessTransactionDataOK() throws Exception {
         businessTransactionData = BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                 .withCode("24")
                 .withBusinessTransactionType("type")
@@ -25,7 +26,7 @@ public class BusinessTransactionDataTest {
     @Test
     public void withoutCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
             businessTransactionData = BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                     .withBusinessTransactionType("type")
                     .withVersion(1)
@@ -35,7 +36,7 @@ public class BusinessTransactionDataTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws Exception {
         businessTransactionData = BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                 .withCode("24")
                 .withBusinessTransactionType("type")

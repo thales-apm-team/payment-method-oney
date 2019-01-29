@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
@@ -80,12 +81,14 @@ public class PurchaseMerchant extends OneyBean {
         }
 
 
-        private PurchaseMerchant.Builder checkIntegrity() {
+        private PurchaseMerchant.Builder checkIntegrity() throws InvalidDataException {
+
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("PurchaseMerchant must have a merchantGuid when built");
+                throw new InvalidDataException("PurchaseMerchant must have a merchantGuid when built", "PurchaseMerchant.merchantGuid");
             }
+
             if (this.externalReference == null) {
-                throw new IllegalStateException("PurchaseMerchant must have a externalReference when built");
+                throw new InvalidDataException("PurchaseMerchant must have a externalReference when built", "PurchaseMerchant.externalReference");
             }
             return this;
         }
@@ -108,7 +111,7 @@ public class PurchaseMerchant extends OneyBean {
             return this;
         }
 
-        public PurchaseMerchant build() {
+        public PurchaseMerchant build() throws InvalidDataException {
             return new PurchaseMerchant(this.checkIntegrity());
         }
     }

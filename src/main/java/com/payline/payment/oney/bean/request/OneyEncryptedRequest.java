@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
@@ -34,25 +36,25 @@ public class OneyEncryptedRequest extends OneyBean {
         this.encryptedMessage = encryptedMessage;
     }
 
-    public static OneyEncryptedRequest fromOneyPaymentRequest(OneyPaymentRequest request) throws DecryptException {
+    public static OneyEncryptedRequest fromOneyPaymentRequest(OneyPaymentRequest request) throws DecryptException, InvalidDataException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
+        encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
         encryptedRequest.merchantGuid = request.merchantGuid;
 
         return encryptedRequest;
     }
 
-    public static OneyEncryptedRequest fromOneyConfirmRequest(OneyConfirmRequest request) throws DecryptException {
+    public static OneyEncryptedRequest fromOneyConfirmRequest(OneyConfirmRequest request) throws DecryptException, InvalidDataException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
+        encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
 
         return encryptedRequest;
     }
 
-    public static OneyEncryptedRequest fromOneyRefundRequest(OneyRefundRequest request) throws DecryptException {
+    public static OneyEncryptedRequest fromOneyRefundRequest(OneyRefundRequest request) throws DecryptException, InvalidDataException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(request.toString(), request.getEncryptKey());
+        encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
         encryptedRequest.merchantGuid = request.merchantGuid;
 
@@ -61,10 +63,10 @@ public class OneyEncryptedRequest extends OneyBean {
 
     public static OneyEncryptedRequest fromJson(String message,
                                                 ContractParametersCheckRequest contractParametersCheckRequest)
-            throws DecryptException {
+            throws DecryptException, InvalidDataException {
         String key = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
-        encryptedRequest.encryptedMessage = OneyRequest.encryptMessage(message, key);
+        encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(message, key);
         encryptedRequest.pspGuid = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
         encryptedRequest.merchantGuid =
                 contractParametersCheckRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();

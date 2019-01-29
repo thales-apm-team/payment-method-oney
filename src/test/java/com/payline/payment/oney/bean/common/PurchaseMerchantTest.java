@@ -1,6 +1,7 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
+import com.payline.payment.oney.exception.InvalidDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ public class PurchaseMerchantTest {
 
 
     @Test
-    public void purchaseMerchantOK() {
+    public void purchaseMerchantOK() throws Exception {
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                 .withCompanyName("cie")
                 .withExternalReference("ref")
@@ -32,7 +33,7 @@ public class PurchaseMerchantTest {
 
     @Test
     public void withoutExternalRef() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                     .withCompanyName("cie")
                     .withMerchantGuid("guid")
@@ -46,19 +47,19 @@ public class PurchaseMerchantTest {
 
     @Test
     public void withoutMerchantGuid() {
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-                    purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                            .withCompanyName("cie")
-                            .withExternalReference("ref")
-                            .withMunicipality("city")
-                            .build();
-                });
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
+            purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
+                    .withCompanyName("cie")
+                    .withExternalReference("ref")
+                    .withMunicipality("city")
+                    .build();
+        });
         Assertions.assertEquals("PurchaseMerchant must have a merchantGuid when built", exception.getMessage());
 
     }
 
     @Test
-    public void fromPayline() {
+    public void fromPayline() throws Exception {
 
         purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
                 .fromPayline(createCompletePaymentBuilder().build())
@@ -67,7 +68,6 @@ public class PurchaseMerchantTest {
         Assertions.assertNotNull(purchaseMerchant.getExternalReference());
         Assertions.assertNotNull(purchaseMerchant.getMerchantGuid());
     }
-
 
 
 }

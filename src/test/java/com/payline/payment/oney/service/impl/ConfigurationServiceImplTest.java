@@ -1,6 +1,5 @@
-package com.payline.payment.oney.service;
+package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
@@ -19,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.TestUtils.createDefaultEnvironment;
@@ -43,6 +43,15 @@ public class ConfigurationServiceImplTest {
         StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
         // La partie HTTP call estr traitée dans les tests d'intégration.
         Mockito.doReturn(responseMockedPending).when(httpClient).initiateCheckPayment(Mockito.anyString(), Mockito.anyMap());
+    }
+
+    @Test
+    public void testGetParametersKeys() {
+        List<AbstractParameter> parameters = service.getParameters(Locale.FRANCE);
+        Pattern p = Pattern.compile("[a-zA-Z]*");
+        for (AbstractParameter param : parameters) {
+            Assertions.assertTrue(p.matcher(param.getKey()).matches(), param.getKey() + " comporte des caracteres interdits");
+        }
     }
 
     @Test
@@ -82,7 +91,7 @@ public class ConfigurationServiceImplTest {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
         partnerConfiguration.put(SECRET_KEY, "Method-body");
-        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
@@ -114,7 +123,7 @@ public class ConfigurationServiceImplTest {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
         partnerConfiguration.put(SECRET_KEY, "Method-body");
-        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
@@ -146,7 +155,7 @@ public class ConfigurationServiceImplTest {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
         partnerConfiguration.put(SECRET_KEY, "Method-body");
-        partnerConfiguration.put(PARTNER_AUTHRIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
@@ -193,7 +202,7 @@ public class ConfigurationServiceImplTest {
                 .build();
         Map<String, String> errors = service.check(contractParametersCheckRequest);
         Assertions.assertEquals(3, errors.size());
-        Assertions.assertNotNull(errors.get(PARTNER_AUTHRIZATION_KEY));
+        Assertions.assertNotNull(errors.get(PARTNER_AUTHORIZATION_KEY));
         Assertions.assertNotNull(errors.get(PSP_GUID_KEY));
         Assertions.assertNotNull(errors.get(MERCHANT_GUID_KEY));
     }

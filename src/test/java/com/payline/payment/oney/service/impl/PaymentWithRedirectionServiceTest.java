@@ -1,7 +1,7 @@
-package com.payline.payment.oney.service;
+package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
-import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
+import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -19,9 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static com.payline.payment.oney.utils.TestUtils.*;
 
@@ -90,7 +87,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void finalizeRedirectionPaymentTestOK() throws IOException, URISyntaxException {
+    public void finalizeRedirectionPaymentTestOK() throws HttpCallException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
 
@@ -108,7 +105,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void finalizeRedirectionPaymentTestKO() throws IOException, URISyntaxException {
+    public void finalizeRedirectionPaymentTestKO() throws HttpCallException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
 
@@ -124,7 +121,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void handleSessionExpiredTestFunded() throws IOException, URISyntaxException {
+    public void handleSessionExpiredTestFunded() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
@@ -136,7 +133,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void handleSessionExpiredTestOnHold() throws IOException, URISyntaxException {
+    public void handleSessionExpiredTestOnHold() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"Zfxsl1nYU+7gI2vAD7S+JSO1EkNNk4gaIQcX++gJrX7NfjZ417t0L7ruzUCqFyxIVQWywc2FqrUK6J4kU5EPh0ksAzV6KmKWDolDoGte7uENMlMzcTriutnu5d/fJEf1\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
@@ -148,7 +145,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void handleSessionExpiredTestRefused() throws IOException, URISyntaxException {
+    public void handleSessionExpiredTestRefused() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
@@ -160,7 +157,7 @@ public class PaymentWithRedirectionServiceTest {
     }
 
     @Test
-    public void handleSessionExpiredTestFavorable() throws IOException, URISyntaxException {
+    public void handleSessionExpiredTestFavorable() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());

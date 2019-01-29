@@ -1,6 +1,5 @@
-package com.payline.payment.oney.response;
+package com.payline.payment.oney.bean.response;
 
-import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.utils.http.StringResponse;
 import org.junit.jupiter.api.Assertions;

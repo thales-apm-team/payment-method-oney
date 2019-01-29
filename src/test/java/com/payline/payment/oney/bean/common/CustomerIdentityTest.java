@@ -1,6 +1,8 @@
-package com.payline.payment.oney.common.bean;
+package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.pmapi.bean.common.Buyer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,69 +15,72 @@ public class CustomerIdentityTest {
 
 
     @Test
-    public void customerIdentityTest(){
-     customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-             .withBirthName("Doe")
-             .withPersonType(2)
-             .withHonorificCode(1)
-             .withFirstName("John")
-             //Optinals
-             .withLastName("LN")
-             .withGivenNames("GN")
-             .withBithDate("1990-12-11")
-             .build();
-     Assertions.assertNotNull(customerIdentity);
+    public void customerIdentityTest() throws Exception {
+        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                .withBirthName("Doe")
+                .withPersonType(2)
+                .withHonorificCode(1)
+                .withFirstName("John")
+                //Optinals
+                .withLastName("LN")
+                .withGivenNames("GN")
+                .withBithDate("1990-12-11")
+                .build();
+        Assertions.assertNotNull(customerIdentity);
     }
 
 
     @Test
-    public void withoutBirthName(){
+    public void withoutBirthName() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withPersonType(2)
-                .withHonorificCode(1)
-                .withFirstName("John")
-                .withLastName("LN")
-             .build();
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .withLastName("LN")
+                    .build();
         });
         Assertions.assertEquals("CustomerIdentity must have a birthName when built", exception.getMessage());
     }
+
     @Test
     public void withoutPersonType() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withHonorificCode(1)
-                .withFirstName("John")
-                .build();
-    });
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .build();
+        });
         Assertions.assertEquals("CustomerIdentity must have a personType when built", exception.getMessage());
     }
+
     @Test
     public void withoutHonorificCode() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withFirstName("John")
-                .build();
-    });
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withFirstName("John")
+                    .build();
+        });
         Assertions.assertEquals("CustomerIdentity must have a honorificCode when built", exception.getMessage());
     }
+
     @Test
     public void withoutFirstName() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withHonorificCode(1)
-                .build();
+        Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .build();
         });
         Assertions.assertEquals("CustomerIdentity must have a firstName when built", exception.getMessage());
     }
@@ -83,25 +88,25 @@ public class CustomerIdentityTest {
     @Test
     public void wrongBirthDateFormat() {
 
-        Throwable exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
 
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-                .withBirthName("Doe")
-                .withPersonType(2)
-                .withHonorificCode(1)
-                .withFirstName("John")
-                .withBithDate("1990-ZZ12-11")
-                .build();
+            customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                    .withBirthName("Doe")
+                    .withPersonType(2)
+                    .withHonorificCode(1)
+                    .withFirstName("John")
+                    .withBithDate("1990-ZZ12-11")
+                    .build();
         });
         Assertions.assertEquals("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built", exception.getMessage());
     }
 
 
     @Test
-    public void fromPaylineBuyer(){
-        Buyer buyer  =createDefaultBuyer();
+    public void fromPaylineBuyer() throws Exception {
+        Buyer buyer = createDefaultBuyer();
         customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
-               .fromPayline(buyer)
+                .fromPayline(buyer)
                 .build();
         Assertions.assertNotNull(customerIdentity.getFirstName());
         Assertions.assertNotNull(customerIdentity.getBirthDate());
@@ -115,7 +120,7 @@ public class CustomerIdentityTest {
     }
 
     @Test
-    public void testToString(){
+    public void testToString() throws Exception {
         customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)

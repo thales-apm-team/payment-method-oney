@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.ItemComparator;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.Order;
@@ -208,40 +209,40 @@ public class Item extends OneyBean {
             return this;
         }
 
-        private Item.Builder verifyIntegrity() {
+        private Item.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.isMainItem == null) {
-                throw new IllegalStateException("Item must have a isMainItem when built");
+                throw new InvalidDataException("Item must have a isMainItem when built", "Item.isMainItem");
             }
 
             if (this.categoryCode == null) {
-                throw new IllegalStateException("Item must have a categoryCode when built");
+                throw new InvalidDataException("Item must have a categoryCode when built", "Item.categoryCode");
             }
 
             if (this.label == null) {
-                throw new IllegalStateException("Item must have a label when built");
+                throw new InvalidDataException("Item must have a label when built", "Item.label");
             }
 
             if (this.itemExternalcode == null) {
-                throw new IllegalStateException("Item must have a itemExternalcode when built");
+                throw new InvalidDataException("Item must have a itemExternalcode when built", "Item.itemExternalcode");
             }
 
             if (this.quantity == null) {
-                throw new IllegalStateException("Item must have a quantity when built");
+                throw new InvalidDataException("Item must have a quantity when built", "Item.quantity");
             }
 
             if (this.price == null) {
-                throw new IllegalStateException("Item must have a price when built");
+                throw new InvalidDataException("Item must have a price when built", "Item.price");
             }
 
             if (this.marketplaceFlag != null && this.marketplaceFlag == 1 && this.marketplaceName == null) {
-                throw new IllegalStateException("Item with marketplaceFlag == 1 must have a marketplaceName when built");
-
+                throw new InvalidDataException("Item with marketplaceFlag == 1 must have a marketplaceName when built", "Item.marketplaceName");
             }
+
             return this;
         }
 
-        public Item build() {
+        public Item build() throws InvalidDataException {
             return new Item(this.verifyIntegrity());
         }
     }
