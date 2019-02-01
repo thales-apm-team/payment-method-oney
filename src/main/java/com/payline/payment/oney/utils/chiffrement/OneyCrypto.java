@@ -2,6 +2,7 @@ package com.payline.payment.oney.utils.chiffrement;
 
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +59,7 @@ public class OneyCrypto {
      * @param messageEncrypted String, message to decrypt
      * @return String, the decrypted message
      */
-    public String decrypt(String messageEncrypted) throws DecryptException, DecryptException {
+    public String decrypt(String messageEncrypted) throws DecryptException {
         // Convert the key to SecretKeySpec
         byte[] decodedKey = DatatypeConverter.parseBase64Binary(this.key);
         SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
@@ -85,9 +86,9 @@ public class OneyCrypto {
      *
      * @param toEncrypt, the String to encrypt
      * @param key,       String,  the chiffrement key
-     * @return
+     * @return ecrypted message
      */
-    public static String encryptMessage(String toEncrypt, String key) throws InvalidDataException, DecryptException {
+    public static String encryptMessage(String toEncrypt, String key) throws PluginTechnicalException {
         if (key == null || key.isEmpty()) {
             throw new InvalidDataException("La clé de chiffrement ne peut pas être nulle", OneyConstants.PARTNER_CHIFFREMENT_KEY);
         }

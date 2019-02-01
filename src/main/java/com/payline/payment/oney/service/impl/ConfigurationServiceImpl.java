@@ -5,6 +5,7 @@ import com.payline.payment.oney.bean.common.OneyError40x;
 import com.payline.payment.oney.bean.request.OneyEncryptedRequest;
 import com.payline.payment.oney.bean.response.PaymentErrorResponse;
 import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -24,7 +25,6 @@ import com.payline.pmapi.service.ConfigurationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -162,12 +162,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         final ContractProperty merchantLanguageCode = contractParametersCheckRequest.getContractConfiguration().getProperty(LANGUAGE_CODE_KEY);
-        if (!PluginUtils.isISO639(merchantLanguageCode)) {
+        if (merchantLanguageCode == null) {
+            errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_CODE_MESSAGE_ERROR, locale));
+        } else if (!PluginUtils.isISO639(merchantLanguageCode)) {
             errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_NOT_ISO, locale));
         }
 
         final ContractProperty codePays = contractParametersCheckRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY);
-        if (!PluginUtils.isISO3166(codePays)) {
+        if (merchantLanguageCode == null) {
+            errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_CODE_MESSAGE_ERROR, locale));
+        } else if (!PluginUtils.isISO3166(codePays)) {
             errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_NOT_ISO, locale));
         }
 
@@ -176,6 +180,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return errors;
         }
 
+        return validateCall(contractParametersCheckRequest, errors, partnerConfiguration, pspId, merchantGuid, opcKey, codePays);
+    }
+
+    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, PartnerConfiguration partnerConfiguration, String pspId, ContractProperty merchantGuid, ContractProperty opcKey, ContractProperty codePays) {
         try {
 
             String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey);
@@ -210,8 +218,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                         }
                         break;
                     case HTTP_500:
-                        OneyError oneyError = null;
+                        OneyError oneyError;
                         List<OneyError> oneyErrors = paymentErrorResponse.getErrorList();
+                        if (paymentErrorResponse != null) {
+                            oneyErrors = paymentErrorResponse.getErrorList();
+                        }
                         if (oneyErrors == null || oneyErrors.isEmpty() || oneyErrors.get(0) == null) {
                             LOGGER.error("Oney error is not parsable");
                             errors.put(PARTNER_API_URL, UNEXPECTED_ERR);
@@ -232,17 +243,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
             }
 
+        } catch (DecryptException e) {
+            LOGGER.error("URL call throws an DecryptException", e);
+            errors.put(PARTNER_CHIFFREMENT_KEY, e.getMessage());
+        } catch (HttpCallException e) {
+            LOGGER.error("URL call throws an HttpCallException", e);
+            errors.put(PARTNER_API_URL, e.getMessage());
         } catch (Exception e) {
-            if (e instanceof DecryptException) {
-                LOGGER.error("URL call throws an IOException", e);
-                errors.put(PARTNER_CHIFFREMENT_KEY, e.getMessage());
-            } else if (e instanceof IOException) {
-                LOGGER.error("URL call throws an IOException", e);
-                errors.put(PARTNER_API_URL, e.getMessage());
-            } else {
-                LOGGER.error("HTTP response is not parsable");
-                errors.put(PARTNER_API_URL, UNEXPECTED_ERR);
-            }
+            LOGGER.error("HTTP response is not parsable");
+            errors.put(PARTNER_API_URL, UNEXPECTED_ERR);
         }
         return errors;
     }

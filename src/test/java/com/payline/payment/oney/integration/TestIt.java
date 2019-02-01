@@ -59,7 +59,7 @@ public class TestIt extends AbstractPaymentIntegration {
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
         WebDriver driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 
         try {
             // Go to partner's website
@@ -78,7 +78,7 @@ public class TestIt extends AbstractPaymentIntegration {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']"))).selectByVisibleText("Avr");
 
-            WebDriverWait wait2 = new WebDriverWait(driver, 30);
+            WebDriverWait wait2 = new WebDriverWait(driver, 60);
             wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
 

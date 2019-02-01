@@ -2,7 +2,7 @@ package com.payline.payment.oney.exception;
 
 import com.payline.pmapi.bean.common.FailureCause;
 
-public class InvalidFieldFormatException extends PluginTechnicalException {
+public class InvalidFieldFormatException extends InvalidDataException {
 
     /**
      * @param message the complete error message (as print in log files)

@@ -141,7 +141,40 @@ public class ConfigurationServiceImplTest {
         contractParametersCheckRequest.getContractConfiguration().getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BEL"));
         Map<String, String> errors = service.check(contractParametersCheckRequest);
         Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.keySet().contains(COUNTRY_CODE_DESCRIPTION));
+        Assertions.assertTrue(errors.containsKey(COUNTRY_CODE_KEY));
+    }
+
+    @Test
+    public void checkCountryKO_null() {
+
+        final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("merchant_guid_test"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY, "psp_id_test");
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY, "mykey");
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
+
+
+        ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
+                .aCheckRequest()
+                .withAccountInfo(accountInfo)
+                .withLocale(Locale.FRANCE)
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withContractConfiguration(contractConfiguration)
+                .withEnvironment(createDefaultEnvironment())
+                .build();
+        contractParametersCheckRequest.getContractConfiguration().getContractProperties().remove(COUNTRY_CODE_KEY);
+        Map<String, String> errors = service.check(contractParametersCheckRequest);
+        Assertions.assertEquals(1, errors.size());
+        Assertions.assertTrue(errors.containsKey(COUNTRY_CODE_KEY));
     }
 
     @Test

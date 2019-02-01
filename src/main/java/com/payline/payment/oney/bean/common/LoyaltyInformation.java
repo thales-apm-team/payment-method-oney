@@ -111,7 +111,7 @@ public class LoyaltyInformation extends OneyBean {
             return this;
         }
 
-        private LoyaltyInformation.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
+        private LoyaltyInformation.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.loyaltyId == null) {
                 throw new InvalidDataException("LoyaltyInformation must have a loyaltyId when built", "LoyaltyInformation.loyaltyId");

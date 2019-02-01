@@ -1,7 +1,6 @@
 package com.payline.payment.oney.utils.properties.service;
 
 import com.payline.payment.oney.utils.config.ConfigEnvironment;
-import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -9,9 +8,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public interface PropertiesService {
-
-
-    Logger LOGGER = LogManager.getLogger(PropertiesService.class);
 
     /**
      * Get a config property by its name.
@@ -56,7 +52,7 @@ public interface PropertiesService {
     /**
      * Reads the properties file and stores the result.
      */
-    default void readProperties(Properties properties) {
+    default void readProperties(Properties properties, final Logger logger) {
 
         String fileName = getFilename();
 
@@ -71,7 +67,7 @@ public interface PropertiesService {
             properties.load(inputStream);
 
         } catch (IOException e) {
-            LOGGER.error("Unable to load the file {}", fileName, e);
+            logger.error("Unable to load the file {}", fileName, e);
             throw new RuntimeException(e);
         }
 

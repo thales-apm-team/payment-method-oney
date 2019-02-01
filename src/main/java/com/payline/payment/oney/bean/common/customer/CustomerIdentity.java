@@ -227,7 +227,7 @@ public class CustomerIdentity extends OneyBean {
                     this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
                 }
                 this.birthName = buyer.getFullName().getLastName();
-                if (this.honorificCode != null || this.honorificCode == 2 || this.honorificCode == 3) {
+                if (this.honorificCode != null && (this.honorificCode == 2 || this.honorificCode == 3)) {
                     this.lastName = buyer.getFullName().getLastName();
                 }
                 this.firstName = buyer.getFullName().getFirstName();
@@ -248,7 +248,7 @@ public class CustomerIdentity extends OneyBean {
             return this;
         }
 
-        private CustomerIdentity.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
+        private CustomerIdentity.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.personType == null) {
                 throw new InvalidDataException("CustomerIdentity must have a personType when built", "CustomerIdentity.personType");

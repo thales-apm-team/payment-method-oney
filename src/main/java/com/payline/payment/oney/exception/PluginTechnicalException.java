@@ -12,11 +12,11 @@ public class PluginTechnicalException extends Exception {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginTechnicalException.class);
 
-    private static Integer MAX_LENGHT = 50;
+    private static final Integer MAX_LENGHT = 50;
 
-    private String message;
+    private final String message;
 
-    protected String errorCodeOrLabel;
+    protected final String errorCodeOrLabel;
 
     public PluginTechnicalException(String message, String errorCodeOrLabel) {
         super();
@@ -70,7 +70,7 @@ public class PluginTechnicalException extends Exception {
     }
 
     public FailureCause getFailureCause() {
-        return FailureCause.INVALID_DATA;
+        return FailureCause.PARTNER_UNKNOWN_ERROR;
     }
 
     @Override

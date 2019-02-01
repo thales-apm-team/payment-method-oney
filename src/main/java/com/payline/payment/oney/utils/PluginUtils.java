@@ -289,7 +289,7 @@ public class PluginUtils {
      * Return a string which was converted from cents to euro
      *
      * @param amount
-     * @return
+     * @return Amount as String
      */
     public static String createStringAmount(BigInteger amount, Currency currency) {
         //récupérer le nombre de digits dans currency
@@ -309,8 +309,9 @@ public class PluginUtils {
     /**
      * Return a Float which was converted from cents to euro
      *
-     * @param amount
-     * @return
+     * @param amount   BigInteger
+     * @param currency Currency
+     * @return Amount as Float
      */
     public static Float createFloatAmount(BigInteger amount, Currency currency) {
         if (amount == null || currency == null) {
@@ -324,7 +325,7 @@ public class PluginUtils {
      *
      * @param partnerConfiguration Payline PartnerConfiguration
      * @param coutryCode           coutryCode from ContractParameters
-     * @return
+     * @return the ParametersMap
      */
     public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) throws InvalidDataException {
 
