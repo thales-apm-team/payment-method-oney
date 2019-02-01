@@ -80,7 +80,7 @@ public class ContactDetails extends OneyBean {
             return this;
         }
 
-        private ContactDetails.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
+        private ContactDetails.Builder verifyIntegrity() throws InvalidDataException {
             //.matches("\\d{10}") ?
             if (this.landLineNumber == null) {
                 throw new InvalidDataException("ContactDetails must have a landLineNumber when built", "ContactDetails.landLineNumber");

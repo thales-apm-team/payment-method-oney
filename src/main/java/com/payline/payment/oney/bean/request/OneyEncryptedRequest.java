@@ -3,8 +3,7 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.chiffrement.OneyCrypto;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 
@@ -36,7 +35,7 @@ public class OneyEncryptedRequest extends OneyBean {
         this.encryptedMessage = encryptedMessage;
     }
 
-    public static OneyEncryptedRequest fromOneyPaymentRequest(OneyPaymentRequest request) throws DecryptException, InvalidDataException {
+    public static OneyEncryptedRequest fromOneyPaymentRequest(OneyPaymentRequest request) throws PluginTechnicalException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
         encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
@@ -45,14 +44,14 @@ public class OneyEncryptedRequest extends OneyBean {
         return encryptedRequest;
     }
 
-    public static OneyEncryptedRequest fromOneyConfirmRequest(OneyConfirmRequest request) throws DecryptException, InvalidDataException {
+    public static OneyEncryptedRequest fromOneyConfirmRequest(OneyConfirmRequest request) throws PluginTechnicalException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
         encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
 
         return encryptedRequest;
     }
 
-    public static OneyEncryptedRequest fromOneyRefundRequest(OneyRefundRequest request) throws DecryptException, InvalidDataException {
+    public static OneyEncryptedRequest fromOneyRefundRequest(OneyRefundRequest request) throws PluginTechnicalException {
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
         encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(request.toString(), request.getEncryptKey());
         encryptedRequest.pspGuid = request.pspGuid;
@@ -63,7 +62,7 @@ public class OneyEncryptedRequest extends OneyBean {
 
     public static OneyEncryptedRequest fromJson(String message,
                                                 ContractParametersCheckRequest contractParametersCheckRequest)
-            throws DecryptException, InvalidDataException {
+            throws PluginTechnicalException {
         String key = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
         OneyEncryptedRequest encryptedRequest = new OneyEncryptedRequest();
         encryptedRequest.encryptedMessage = OneyCrypto.encryptMessage(message, key);

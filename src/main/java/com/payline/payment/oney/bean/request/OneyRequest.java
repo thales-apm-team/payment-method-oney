@@ -3,15 +3,10 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.utils.Required;
-import com.payline.pmapi.logger.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public abstract class OneyRequest extends OneyBean {
-    //Construit une requête Oney
-
-    private static final Logger LOGGER = LogManager.getLogger(OneyRequest.class);
 
     @Required
     @SerializedName("merchant_guid")

@@ -134,7 +134,7 @@ public class Delivery extends OneyBean {
             return this;
         }
 
-        private Delivery.Builder verifyIntegrity() throws InvalidDataException, InvalidFieldFormatException {
+        private Delivery.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.deliveryModeCode == null) {
                 throw new InvalidDataException("Delivery must have a deliveryModeCode when built", "Delivery.deliveryModeCode");
@@ -175,9 +175,9 @@ public class Delivery extends OneyBean {
                 }
             }
 
-            AddressType addressType = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY);
-            if (addressType != null) {
-                this.addressType = addressType.getValue();
+            AddressType addressTyp = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY);
+            if (addressTyp != null) {
+                this.addressType = addressTyp.getValue();
             }
 
             Buyer buyer = request.getBuyer();

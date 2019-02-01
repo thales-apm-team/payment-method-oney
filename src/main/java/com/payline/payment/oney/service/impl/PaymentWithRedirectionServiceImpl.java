@@ -35,7 +35,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     private static final Logger LOGGER = LogManager.getLogger(PaymentWithRedirectionServiceImpl.class);
     private OneyHttpClient httpClient;
 
-    private final String errorCode = "Purchase status : ";
+    private static final String ERROR_CODE = "Purchase status : ";
 
     public PaymentWithRedirectionServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
@@ -122,7 +122,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     return OneyErrorHandler.getPaymentResponseFailure(
                             FailureCause.CANCEL,
                             oneyTransactionStatusRequest.getPurchaseReference(),
-                            errorCode + "null");
+                            ERROR_CODE + "null");
                 }
 
             } else {
@@ -143,7 +143,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     /**
      * Effectue l'appel http permettant de confirmer une commande
      *
-     * @return
+     * @return PaymentResponse
      */
     public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest) throws PluginTechnicalException {
 
@@ -180,7 +180,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 return OneyErrorHandler.getPaymentResponseFailure(
                         FailureCause.REFUSED,
                         confirmRequest.getPurchaseReference(),
-                        errorCode + "null");
+                        ERROR_CODE + "null");
             }
 
             //definir les additionals data a renvoyer
@@ -199,6 +199,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     }
 
     private String addErrorCode(TransactionStatusResponse response) {
-        return errorCode + response.getStatusPurchase().getStatusCode();
+        return ERROR_CODE + response.getStatusPurchase().getStatusCode();
     }
 }

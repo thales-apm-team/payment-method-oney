@@ -51,19 +51,19 @@ public class OneyConstants {
     public static final String NB_ECHEANCES_LABEL = "nb.echeances.label";
     public static final String NB_ECHEANCES_MESSAGE_ERROR = "nb.echeances.error.message";
 
-    public static final String COUNTRY_CODE_KEY = "X-Oney-Partner-Country-Code";
-    public static final String COUNTRY_CODE_VALUE = "country.code.value";
+    public static final String COUNTRY_CODE_KEY = "xOneyPatnerCountryCode";
+    public static final String COUNTRY_CODE_HEADER = "X-Oney-Partner-Country-Code";
     public static final String COUNTRY_CODE_LABEL = "country.code.label";
     public static final String COUNTRY_CODE_DESCRIPTION = "X-Oney-Partner-Country-Code";
     public static final String COUNTRY_CODE_MESSAGE_ERROR = "country.code.error.message";
 
-    public static final String LANGUAGE_CODE_KEY = "merchant_language_code";
+    public static final String LANGUAGE_CODE_KEY = "merchantLanguageCode";
     public static final String LANGUAGE_CODE_DESCRIPTION = "language.code.description";
     public static final String LANGUAGE_CODE_LABEL = "language.code.label";
     public static final String LANGUAGE_CODE_MESSAGE_ERROR = "language.code.error.message";
 
 
-    public static final String ID_INTERNATIONAL_KEY = "oney_international_id";
+    public static final String ID_INTERNATIONAL_KEY = "oneyInternationalId";
     public static final String ID_INTERNATIONAL_DESCRIPTION = "X-Oney-International-Partner-ID";
     public static final String ID_INTERNATIONAL_LABEL = "international.code.label";
     public static final String ID_INTERNATIONAL_MESSAGE_ERROR = "international.code.error.message";

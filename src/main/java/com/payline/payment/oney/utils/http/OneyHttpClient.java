@@ -2,9 +2,8 @@ package com.payline.payment.oney.utils.http;
 
 
 import com.payline.payment.oney.bean.request.*;
-import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.exception.HttpCallException;
-import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
@@ -124,14 +123,14 @@ public class OneyHttpClient extends AbstractHttpClient {
         Header[] headers = new Header[4];
         headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(AUTHORIZATION, authorizationKey);
-        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, countryCode);
+        headers[2] = new BasicHeader(COUNTRY_CODE_HEADER, countryCode);
         headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
 
         return headers;
     }
 
     public StringResponse initiatePayment(OneyPaymentRequest request)
-            throws HttpCallException, DecryptException, InvalidDataException {
+            throws PluginTechnicalException {
 
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
@@ -149,7 +148,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateConfirmationPayment(OneyConfirmRequest request)
-            throws HttpCallException, DecryptException, InvalidDataException {
+            throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
@@ -163,7 +162,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateRefundPayment(OneyRefundRequest request)
-            throws HttpCallException, DecryptException, InvalidDataException {
+            throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
