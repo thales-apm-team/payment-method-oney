@@ -23,12 +23,8 @@ public class OneyConstants {
 
     //Constant specific of this payment method
 
-    public static final String X_ONEY_AUTHORIZATION_LABEL = "api.key.label";
-    public static final String X_ONEY_AUTHORIZATION_KEY = "apiKey";
-    public static final String X_ONEY_AUTHORIZATION_DESCRIPTION = "api.key.description";
-
     public static final String PSP_GUID_LABEL = "psp.id.label";
-    public static final String PSP_GUID_KEY = "pspId";
+    public static final String PSP_GUID_KEY = "psp.id";
     public static final String PSP_GUID_DESCRIPTION = "psp.id.description";
     public static final String PSP_GUID_MESSAGE_ERROR = "psp.id.error.message";
 

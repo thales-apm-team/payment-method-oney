@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.common.purchase;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
@@ -93,14 +94,13 @@ public class PurchaseMerchant extends OneyBean {
             return this;
         }
 
-        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) {
+        public PurchaseMerchant.Builder fromPayline(PaymentRequest paymentRequest) throws InvalidDataException {
             if (paymentRequest == null) {
                 return null;
             }
-            if (paymentRequest.getContractConfiguration() != null
-                    && paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY) != null) {
+            if (RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY) != null) {
                 //Note HME mapping companyName (lot 2?)
-                this.merchantGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+                this.merchantGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             }
             if (paymentRequest.getOrder() != null) {
                 this.externalReference = paymentRequest.getOrder().getReference();

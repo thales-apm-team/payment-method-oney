@@ -1,12 +1,14 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.pmapi.bean.common.Amount;
+import com.payline.pmapi.bean.payment.Environment;
 import com.payline.pmapi.bean.paymentform.bean.PaymentFormLogo;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
 import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseSpecific;
 import com.payline.pmapi.bean.paymentform.response.logo.PaymentFormLogoResponse;
 import com.payline.pmapi.bean.paymentform.response.logo.impl.PaymentFormLogoResponseFile;
+import com.payline.pmapi.integration.AbstractPaymentIntegration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,8 +27,11 @@ public class PaymentFormConfigurationServiceImplTest {
     @InjectMocks
     private PaymentFormConfigurationServiceImpl service = new PaymentFormConfigurationServiceImpl();
 
+
     @Test
     public void testGetPaymentFormConfiguration() {
+        final Environment environment = new Environment("http://google.com/", AbstractPaymentIntegration.SUCCESS_URL, "http://localhost/cancelurl.com/", true);
+
         //Create a form config request
         PaymentFormConfigurationRequest paymentFormConfigurationRequest = PaymentFormConfigurationRequest.PaymentFormConfigurationRequestBuilder.aPaymentFormConfigurationRequest()
                 .withLocale(Locale.FRANCE)
@@ -34,7 +39,7 @@ public class PaymentFormConfigurationServiceImplTest {
                 .withAmount(new Amount(null, Currency.getInstance("EUR")))
                 .withContractConfiguration(createContractConfiguration())
                 .withOrder(createOrder("007"))
-                .withEnvironment(createDefaultEnvironment())
+                .withEnvironment(environment)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .build();
 

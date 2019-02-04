@@ -2,14 +2,13 @@ package com.payline.payment.oney.bean.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.util.Map;
-
-import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_KEY;
 
 public class OneyTransactionStatusRequest extends OneyRequest {
 
@@ -84,14 +83,12 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
         public OneyTransactionStatusRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                    .withLanguageCode(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
-                    .withMerchantGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.PSP_GUID_KEY))
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PSP_GUID_KEY))
                     .withPurchaseReference(transactionStatusRequest.getTransactionId())
-                    .withEncryptKey(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
-                    .withCallParameters(PluginUtils.getParametersMap(
-                            transactionStatusRequest.getPartnerConfiguration(),
-                            transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue()));
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(transactionStatusRequest));
 
 
         }
@@ -99,14 +96,12 @@ public class OneyTransactionStatusRequest extends OneyRequest {
         //Creer une transactionStatusRequest depuis une refund Request
         public OneyTransactionStatusRequest.Builder fromRefundRequest(RefundRequest refundRequest) throws InvalidDataException {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                    .withLanguageCode(refundRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
-                    .withMerchantGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.PSP_GUID_KEY))
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PSP_GUID_KEY))
                     .withPurchaseReference(refundRequest.getTransactionId())
-                    .withEncryptKey(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
-                    .withCallParameters(PluginUtils.getParametersMap(
-                            refundRequest.getPartnerConfiguration(),
-                            refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue()));
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(refundRequest));
 
 
         }

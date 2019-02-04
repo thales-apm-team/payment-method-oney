@@ -3,6 +3,7 @@ package com.payline.payment.oney.bean.request;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
@@ -119,23 +120,21 @@ public class OneyRefundRequest extends OneyRequest {
 
         public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest, boolean refundFlag) throws InvalidDataException {
 
-            String merchantGuidValue = refundRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, MERCHANT_GUID_KEY);
 
             this.purchaseReference = refundRequest.getTransactionId();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
 
-            this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
                     .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(), refundRequest.getAmount().getCurrency()))
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();
-            this.encryptKey = refundRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
-            this.callParameters = PluginUtils.getParametersMap(
-                    refundRequest.getPartnerConfiguration(),
-                    refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue());
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(refundRequest);
 
             return this;
         }

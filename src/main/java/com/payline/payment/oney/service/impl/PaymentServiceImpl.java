@@ -49,11 +49,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
         try {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -73,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withEncryptKey(chiffrementKey)
                     .withMerchantContext(paymentRequest.getSoftDescriptor())
                     .withPspContext(paymentRequest.getTransactionId())
-                    .withCallParameters(PluginUtils.getParametersMap(paymentRequest.getPartnerConfiguration(), "BE"))
+                    .withCallParameters(PluginUtils.getParametersMap(paymentRequest))
                     .build();
 
             final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest);

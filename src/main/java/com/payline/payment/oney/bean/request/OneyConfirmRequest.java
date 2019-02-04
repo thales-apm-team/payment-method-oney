@@ -6,6 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
@@ -78,38 +79,34 @@ public class OneyConfirmRequest extends OneyRequest {
         private Map<String, String> callParameters;
 
         public Builder(RedirectionPaymentRequest paymentRequest) throws InvalidDataException {
-            String merchantGuidValue = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
             this.languageCode = paymentRequest.getLocale().getLanguage();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
-            this.pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
                     .withAmount(createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(), paymentRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
-            this.encryptKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
-            this.callParameters = PluginUtils.getParametersMap(
-                    paymentRequest.getPartnerConfiguration(),
-                    paymentRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue());
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(paymentRequest);
         }
 
 
         public Builder(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
-            String merchantGuidValue = transactionStatusRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, MERCHANT_GUID_KEY);
 
             this.purchaseReference = transactionStatusRequest.getTransactionId();
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
-            this.pspGuid = transactionStatusRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.paymentData = PaymentData.Builder.aPaymentData()
                     .withAmount(createFloatAmount(transactionStatusRequest.getAmount().getAmountInSmallestUnit(), transactionStatusRequest.getAmount().getCurrency()))
                     .buildForConfirmRequest();
-            this.encryptKey = transactionStatusRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
-            this.callParameters = PluginUtils.getParametersMap(
-                    transactionStatusRequest.getPartnerConfiguration(),
-                    transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue());
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(transactionStatusRequest);
         }
 
         public OneyConfirmRequest build() throws InvalidDataException {

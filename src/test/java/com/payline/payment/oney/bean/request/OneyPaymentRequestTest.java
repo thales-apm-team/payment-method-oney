@@ -8,6 +8,7 @@ import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.service.impl.BeanAssemblerServiceImpl;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.TestUtils;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -41,11 +42,12 @@ public class OneyPaymentRequestTest {
     public void buildOneyPaymentRequest_emptyCallParameters() {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -75,11 +77,11 @@ public class OneyPaymentRequestTest {
     public void buildOneyPaymentRequest_nullCallParameters() {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -110,11 +112,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -145,11 +147,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -180,11 +182,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -215,11 +217,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -250,11 +252,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -285,11 +287,11 @@ public class OneyPaymentRequestTest {
         map.put("test", "test");
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-            final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-            final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-            final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+            final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+            final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
             final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
             final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
             final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
@@ -320,11 +322,11 @@ public class OneyPaymentRequestTest {
         Map<String, String> map = new HashMap<>();
         map.put("test", "test");
 
-        final String merchGuid = paymentRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+        final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
         final String language = paymentRequest.getLocale().getLanguage();
         final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
-        final String pspGuid = paymentRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
-        final String chiffrementKey = paymentRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
+        final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
+        final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);
         final BusinessTransactionData businessTransaction = beanAssembleService.assembleBuisnessTransactionData(paymentRequest);
         final PaymentData paymentData = beanAssembleService.assemblePaymentData(paymentRequest, businessTransaction);
         final NavigationData navigationData = beanAssembleService.assembleNavigationData(paymentRequest);

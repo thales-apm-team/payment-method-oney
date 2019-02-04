@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import static com.payline.payment.oney.utils.TestUtils.createAmount;
@@ -15,6 +16,8 @@ import static com.payline.payment.oney.utils.TestUtils.createOrderItem;
 public class ItemTest {
 
     private Item item;
+
+    private static final Currency CURRENCY = Currency.getInstance("EUR");
 
     @Test
     public void item() throws Exception {
@@ -159,7 +162,7 @@ public class ItemTest {
     @Test
     public void itemFromPaylineRequest() throws Exception {
         item = Item.Builder.aItemBuilder()
-                .fromPayline(createOrderItem("someRef", createAmount("EUR")))
+                .fromPayline(createOrderItem("someRef", createAmount(CURRENCY)))
                 .build();
 
         Assertions.assertNotNull(item.getIsMainItem());
@@ -173,7 +176,7 @@ public class ItemTest {
     @Test
     public void testToString() throws Exception {
         item = Item.Builder.aItemBuilder()
-                .fromPayline(createOrderItem("someRefe", createAmount("EUR")))
+                .fromPayline(createOrderItem("someRefe", createAmount(CURRENCY)))
                 .withTravel(new Travel())
                 .build();
 

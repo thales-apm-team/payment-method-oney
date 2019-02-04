@@ -35,7 +35,6 @@ buildscript {
 }
 
 tasks.compileJava.dependsOn("generateMetaInf")
-tasks.compileJava.dependsOn("generateGitIgnore")
 
 task generateMetaInf {
 
@@ -84,33 +83,6 @@ task generateMetaInf {
 
             }
 
-        }
-    }
-}
-
-
-task generateGitIgnore {
-    def externalFileName = "$projectDir/.gitignore"
-
-    if (file(externalFileName).exists()) {
-        def ignore = new File("$projectDir/.gitignore");
-        ignore.write(".gradle/\nout/\nbuild/\n.idea/\n.Thales\n");
-    } else {
-        Boolean toWrite = true;
-
-        file.eachLine { line ->
-            // check if the line contains your data
-
-            if (line.contains('.Thales')) {
-                toWrite = false;
-
-            }
-
-        }
-
-        if (toWrite) {
-
-            ignore.write(".Thales\n");
         }
     }
 }

@@ -6,21 +6,19 @@ import com.payline.payment.oney.bean.request.OneyEncryptedRequest;
 import com.payline.payment.oney.bean.response.PaymentErrorResponse;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.payment.oney.utils.properties.constants.ConfigurationConstants;
 import com.payline.payment.oney.utils.properties.service.ReleasePropertiesEnum;
-import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
 import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.InputParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.PasswordParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import com.payline.pmapi.bean.payment.ContractConfiguration;
-import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.service.ConfigurationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,14 +49,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         merchantGuid.setDescription(this.i18n.getMessage(MERCHANT_GUID_DESCRIPTION, locale));
         merchantGuid.setRequired(true);
         parameters.add(merchantGuid);
-
-        //Api Key
-        final PasswordParameter apiKey = new PasswordParameter();
-        apiKey.setKey(X_ONEY_AUTHORIZATION_KEY);
-        apiKey.setLabel(this.i18n.getMessage(X_ONEY_AUTHORIZATION_LABEL, locale));
-        apiKey.setDescription(this.i18n.getMessage(X_ONEY_AUTHORIZATION_DESCRIPTION, locale));
-        apiKey.setRequired(true);
-        parameters.add(apiKey);
 
         // psp guid
         final InputParameter pspGuid = new InputParameter();
@@ -95,12 +85,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         nbEcheancesParameter.setList(nbEcheances);
         parameters.add(nbEcheancesParameter);
 
+
         // X-Oney-Partner-Country-Code ISO 3166-1 alpha-2
-        final InputParameter codePays = new InputParameter();
+        final ListBoxParameter codePays = new ListBoxParameter();
         codePays.setKey(COUNTRY_CODE_KEY);
         codePays.setLabel(this.i18n.getMessage(COUNTRY_CODE_LABEL, locale));
         codePays.setDescription(COUNTRY_CODE_DESCRIPTION);
         codePays.setRequired(true);
+        final LinkedHashMap<String, String> codes = new LinkedHashMap<>();
+        codes.put("FR", "FR");
+        codes.put("BE", "BE");
+        codes.put("IT", "IT");
+        codes.put("ES", "ES");
+        codePays.setList(codes);
         parameters.add(codePays);
 
         //merchant_language_code ISO 639-1
@@ -112,6 +109,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         parameters.add(merchantLanguageCode);
 
         //X-Oney-International-Partner-ID
+        //Optional Unique international code for the partner (merchant)
         final InputParameter internationalPartnerId = new InputParameter();
         internationalPartnerId.setKey(ID_INTERNATIONAL_KEY);
         internationalPartnerId.setLabel(this.i18n.getMessage(ID_INTERNATIONAL_LABEL, locale));
@@ -129,50 +127,60 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Locale locale = contractParametersCheckRequest.getLocale();
         final Map<String, String> errors = new HashMap<>();
-        PartnerConfiguration partnerConfiguration = contractParametersCheckRequest.getPartnerConfiguration();
-        ContractConfiguration contractConfiguration = contractParametersCheckRequest.getContractConfiguration();
 
         // psp id
-        final String pspId = partnerConfiguration.getProperty(PSP_GUID_KEY);
-        if (PluginUtils.isEmpty(pspId)) {
-            errors.put(PSP_GUID_KEY, this.i18n.getMessage(PSP_GUID_MESSAGE_ERROR, locale));
-        }
+        String pspId = null;
+        String merchantGuid = null;
+        String opcKey = null;
+        try {
 
-        final String key = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
-        if (PluginUtils.isEmpty(key)) {
-            errors.put(PARTNER_CHIFFREMENT_KEY, this.i18n.getMessage(PARTNER_CHIFFREMENT_KEY_MESSAGE_ERROR, locale));
-        }
+            final String codePays = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, COUNTRY_CODE_KEY);
+            if (codePays == null) {
+                errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_CODE_MESSAGE_ERROR, locale));
+                return errors;
+            } else if (!PluginUtils.isISO3166(codePays)) {
+                errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_NOT_ISO, locale));
+                return errors;
+            }
 
-        // apiKey
-        final String partnerKey = contractParametersCheckRequest.getPartnerConfiguration().getProperty(PARTNER_AUTHORIZATION_KEY);
-        if (PluginUtils.isEmpty(partnerKey)) {
-            errors.put(PARTNER_AUTHORIZATION_KEY, this.i18n.getMessage(PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR, locale));
-        }
+            pspId = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PSP_GUID_KEY);
+            if (PluginUtils.isEmpty(pspId)) {
+                errors.put(PSP_GUID_KEY, this.i18n.getMessage(PSP_GUID_MESSAGE_ERROR, locale));
+            }
 
-        // merchant guid
-        final ContractProperty merchantGuid = contractConfiguration.getProperty(MERCHANT_GUID_KEY);
-        if (PluginUtils.isEmpty(merchantGuid)) {
-            errors.put(MERCHANT_GUID_KEY, this.i18n.getMessage(MERCHANT_GUID_MESSAGE_ERROR, locale));
-        }
 
-        // OPC
-        final ContractProperty opcKey = contractConfiguration.getProperty(OPC_KEY);
-        if (PluginUtils.isEmpty(opcKey)) {
-            errors.put(OPC_KEY, this.i18n.getMessage(OPC_MESSAGE_ERROR, locale));
-        }
+            final String key = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_CHIFFREMENT_KEY);
+            if (PluginUtils.isEmpty(key)) {
+                errors.put(PARTNER_CHIFFREMENT_KEY, this.i18n.getMessage(PARTNER_CHIFFREMENT_KEY_MESSAGE_ERROR, locale));
+            }
 
-        final ContractProperty merchantLanguageCode = contractParametersCheckRequest.getContractConfiguration().getProperty(LANGUAGE_CODE_KEY);
-        if (merchantLanguageCode == null) {
-            errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_CODE_MESSAGE_ERROR, locale));
-        } else if (!PluginUtils.isISO639(merchantLanguageCode)) {
-            errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_NOT_ISO, locale));
-        }
+            // apiKey
+            final String partnerKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_AUTHORIZATION_KEY);
+            if (PluginUtils.isEmpty(partnerKey)) {
+                errors.put(PARTNER_AUTHORIZATION_KEY, this.i18n.getMessage(PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR, locale));
+            }
 
-        final ContractProperty codePays = contractParametersCheckRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY);
-        if (merchantLanguageCode == null) {
-            errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_CODE_MESSAGE_ERROR, locale));
-        } else if (!PluginUtils.isISO3166(codePays)) {
-            errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_NOT_ISO, locale));
+            // merchant guid
+            merchantGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, MERCHANT_GUID_KEY);
+            if (PluginUtils.isEmpty(merchantGuid)) {
+                errors.put(MERCHANT_GUID_KEY, this.i18n.getMessage(MERCHANT_GUID_MESSAGE_ERROR, locale));
+            }
+
+            // OPC
+            opcKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, OPC_KEY);
+            if (PluginUtils.isEmpty(opcKey)) {
+                errors.put(OPC_KEY, this.i18n.getMessage(OPC_MESSAGE_ERROR, locale));
+            }
+
+            final String merchantLanguageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, LANGUAGE_CODE_KEY);
+            if (merchantLanguageCode == null) {
+                errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_CODE_MESSAGE_ERROR, locale));
+            } else if (!PluginUtils.isISO639(merchantLanguageCode)) {
+                errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_NOT_ISO, locale));
+            }
+
+        } catch (InvalidDataException e) {
+            errors.put(e.getErrorCodeOrLabel(), this.i18n.getMessage(COUNTRY_CODE_MESSAGE_ERROR, locale));
         }
 
 
@@ -180,14 +188,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return errors;
         }
 
-        return validateCall(contractParametersCheckRequest, errors, partnerConfiguration, pspId, merchantGuid, opcKey, codePays);
+        return validateCall(contractParametersCheckRequest, errors, pspId, merchantGuid, opcKey);
     }
 
-    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, PartnerConfiguration partnerConfiguration, String pspId, ContractProperty merchantGuid, ContractProperty opcKey, ContractProperty codePays) {
+    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, String pspId, String merchantGuid, String opcKey) {
         try {
 
             String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey);
-            Map<String, String> parameters = PluginUtils.getParametersMap(partnerConfiguration, codePays.getValue());
+            Map<String, String> parameters = PluginUtils.getParametersMap(contractParametersCheckRequest);
             OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromJson(jsonMsg, contractParametersCheckRequest);
             StringResponse stringResponse = httpClient.initiateCheckPayment(requestEncrypted.toString(), parameters);
             if (stringResponse == null) {
@@ -219,7 +227,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                         break;
                     case HTTP_500:
                         OneyError oneyError;
-                        List<OneyError> oneyErrors = paymentErrorResponse.getErrorList();
+                        List<OneyError> oneyErrors = null;
                         if (paymentErrorResponse != null) {
                             oneyErrors = paymentErrorResponse.getErrorList();
                         }
@@ -256,10 +264,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return errors;
     }
 
-    private String getFinalJsonMessage(String pspId, ContractProperty merchantGuid, ContractProperty opcKey) {
+    private String getFinalJsonMessage(String pspId, String merchantGuid, String opcKey) {
         return TEST_JSON_MSG.replace(PSP_GUID_TAG, pspId)
-                .replace(MERCHANT_GUID_TAG, merchantGuid.getValue())
-                .replace(OPC_KEY_TAG, opcKey.getValue());
+                .replace(MERCHANT_GUID_TAG, merchantGuid)
+                .replace(OPC_KEY_TAG, opcKey);
     }
 
     @Override

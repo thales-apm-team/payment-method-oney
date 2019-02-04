@@ -5,9 +5,12 @@ import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.pmapi.bean.common.Buyer;
-import com.payline.pmapi.bean.configuration.PartnerConfiguration;
-import com.payline.pmapi.bean.payment.ContractProperty;
+import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
+import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -27,11 +30,6 @@ public class PluginUtils {
     public static boolean isEmpty(String s) {
 
         return s == null || s.isEmpty();
-    }
-
-    public static boolean isEmpty(final ContractProperty s) {
-
-        return s == null || isEmpty(s.getValue());
     }
 
     public static <T> T requireNonNull(T obj, String message) throws InvalidRequestException {
@@ -271,8 +269,8 @@ public class PluginUtils {
      * @param countryCode the code to compare
      * @return true if countryCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO3166(ContractProperty countryCode) {
-        return countryCode != null && Arrays.asList(Locale.getISOCountries()).contains(countryCode.getValue());
+    public static boolean isISO3166(String countryCode) {
+        return countryCode != null && Arrays.asList(Locale.getISOCountries()).contains(countryCode);
     }
 
     /**
@@ -281,8 +279,8 @@ public class PluginUtils {
      * @param languageCode the code to compare
      * @return true if languageCode is in ISO-3166 list, else return false
      */
-    public static boolean isISO639(ContractProperty languageCode) {
-        return languageCode != null && Arrays.asList(Locale.getISOLanguages()).contains(languageCode.getValue());
+    public static boolean isISO639(String languageCode) {
+        return languageCode != null && Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
     }
 
     /**
@@ -323,22 +321,78 @@ public class PluginUtils {
     /**
      * Buid a map with all needed parameters for HTTP calls
      *
-     * @param partnerConfiguration Payline PartnerConfiguration
-     * @param coutryCode           coutryCode from ContractParameters
+     * @param refundRequest Payline RefundRequest
      * @return the ParametersMap
      */
-    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) throws InvalidDataException {
+    public static Map<String, String> getParametersMap(RefundRequest refundRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param contractParametersCheckRequest Payline ContractParametersCheckRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(ContractParametersCheckRequest contractParametersCheckRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param transactionStatusRequest Payline TransactionStatusRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param paymentRequest Payline PaymentRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(PaymentRequest paymentRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param authorization PARTNER_AUTHORIZATION_KEY
+     * @param url           PARTNER_API_URL
+     * @param coutryCode    coutryCode from ContractParameters
+     * @return the ParametersMap
+     */
+    private static Map<String, String> getParametersMap(String authorization, String url, String coutryCode) throws InvalidDataException {
 
         if (coutryCode == null || coutryCode.isEmpty()) {
             throw new InvalidDataException("coutryCode is mandatory", "coutryCode");
         }
 
-        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHORIZATION_KEY);
         if (authorization == null) {
             throw new InvalidDataException(PARTNER_AUTHORIZATION_KEY + " is mandatory", PARTNER_AUTHORIZATION_KEY);
         }
 
-        String url = partnerConfiguration.getProperty(PARTNER_API_URL);
         if (url == null) {
             throw new InvalidDataException(PARTNER_API_URL + " is mandatory", PARTNER_API_URL);
         }
@@ -351,6 +405,7 @@ public class PluginUtils {
 
         return parametersMap;
     }
+
 
     public static String truncate(String value, int length) {
         if (value != null && value.length() > length) {

@@ -5,11 +5,14 @@ import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.ContractProperty;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.powermock.reflect.Whitebox;
 
 import java.math.BigInteger;
 import java.util.Currency;
@@ -27,9 +30,23 @@ public class PluginUtilsTest {
 
     String merchantId1;
 
+    private PaymentRequest paymentRequest;
+
+    private PartnerConfiguration partnerConfiguration;
+
+    private ContractConfiguration contractConfiguration;
+
     @BeforeAll
     public void setUp() {
         merchantId1 = generateMerchantRequestId("merchantId");
+        paymentRequest = TestUtils.createCompletePaymentBuilder().build();
+        partnerConfiguration = paymentRequest.getPartnerConfiguration();
+        contractConfiguration = paymentRequest.getContractConfiguration();
+        Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
+        Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+        Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+
+
     }
 
     @Test
@@ -173,23 +190,24 @@ public class PluginUtilsTest {
 
     @Test
     public void testIsISO639() {
-        Assertions.assertFalse(isISO639(new ContractProperty("FR")));
-        Assertions.assertTrue(isISO639(new ContractProperty("fr")));
+        Assertions.assertFalse(isISO639("FR"));
+        Assertions.assertTrue(isISO639("fr"));
     }
 
     @Test
     public void testIsISO3166() {
-        Assertions.assertFalse(isISO3166(new ContractProperty("FRA")));
-        Assertions.assertTrue(isISO3166(new ContractProperty("FR")));
+        Assertions.assertFalse(isISO3166("FRA"));
+        Assertions.assertTrue(isISO3166("FR"));
     }
 
     @Test
     public void getParameters_noCoutryCode() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
-            PartnerConfiguration partnerConfiguration =
-                    new PartnerConfiguration(new HashMap<String, String>(), new HashMap<String, String>());
-            getParametersMap(partnerConfiguration, null);
+            Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
+            Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+            getParametersMap(paymentRequest);
 
         });
 
@@ -199,9 +217,14 @@ public class PluginUtilsTest {
     public void getParameters_emptyCoutryCode() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
-            PartnerConfiguration partnerConfiguration =
-                    new PartnerConfiguration(new HashMap<String, String>(), new HashMap<String, String>());
-            getParametersMap(partnerConfiguration, "");
+            Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
+            Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+
+            Map<String, String> contractConfigurationMap = new HashMap<>();
+            contractConfigurationMap.put(COUNTRY_CODE_KEY, "");
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+            getParametersMap(paymentRequest);
 
         });
 
@@ -211,12 +234,16 @@ public class PluginUtilsTest {
     public void getParameters_noAuthorizationKey() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(PARTNER_API_URL, "PARTNER_API_URL");
 
-            PartnerConfiguration partnerConfiguration =
-                    new PartnerConfiguration(params, new HashMap<String, String>());
-            getParametersMap(partnerConfiguration, "coutryCode");
+            Map<String, String> partnerConfigurationMap = new HashMap<>();
+            partnerConfigurationMap.put(PARTNER_API_URL, "PARTNER_API_URL");
+            Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", partnerConfigurationMap);
+            Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+            Map<String, String> contractConfigurationMap = new HashMap<>();
+            contractConfigurationMap.put(COUNTRY_CODE_KEY, "coutryCode");
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+            getParametersMap(paymentRequest);
 
         });
 
@@ -225,13 +252,14 @@ public class PluginUtilsTest {
     @Test
     public void getParameters_noPartnerUrl() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
-
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(PARTNER_AUTHORIZATION_KEY, "PARTNER_AUTHORIZATION_KEY");
-
-            PartnerConfiguration partnerConfiguration =
-                    new PartnerConfiguration(params, new HashMap<String, String>());
-            getParametersMap(partnerConfiguration, "coutryCode");
+            Map<String, String> partnerConfigurationMap = new HashMap<>();
+            partnerConfigurationMap.put(PARTNER_API_URL, "PARTNER_AUTHORIZATION_KEY");
+            Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", partnerConfigurationMap);
+            Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+            Map<String, String> contractConfigurationMap = new HashMap<>();
+            contractConfigurationMap.put(COUNTRY_CODE_KEY, "coutryCode");
+            Whitebox.setInternalState(contractConfiguration, "contractProperties", new HashMap<>());
+            getParametersMap(paymentRequest);
 
         });
 
@@ -239,14 +267,16 @@ public class PluginUtilsTest {
 
     @Test
     public void getParameters_ok() throws Exception {
+        Map<String, String> partnerConfigurationMap = new HashMap<>();
+        partnerConfigurationMap.put(PARTNER_AUTHORIZATION_KEY + ".coutrycode", "PARTNER_AUTHORIZATION_KEY");
+        partnerConfigurationMap.put(PARTNER_API_URL, "PARTNER_API_URL");
+        Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", partnerConfigurationMap);
+        Whitebox.setInternalState(partnerConfiguration, "sensitivePartnerConfigurationMap", new HashMap<>());
+        Map<String, ContractProperty> contractConfigurationMap = new HashMap<>();
+        contractConfigurationMap.put(COUNTRY_CODE_KEY, new ContractProperty("coutryCode"));
+        Whitebox.setInternalState(contractConfiguration, "contractProperties", contractConfigurationMap);
 
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(PARTNER_AUTHORIZATION_KEY, "PARTNER_AUTHORIZATION_KEY");
-        params.put(PARTNER_API_URL, "PARTNER_API_URL");
-
-        PartnerConfiguration partnerConfiguration =
-                new PartnerConfiguration(params, new HashMap<String, String>());
-        Map<String, String> result = getParametersMap(partnerConfiguration, "coutryCode");
+        Map<String, String> result = getParametersMap(paymentRequest);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(3, result.size());

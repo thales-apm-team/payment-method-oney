@@ -61,10 +61,10 @@ public class NavigationDataTest {
 
         navigationData = beanAssembleService.assembleNavigationData(paymentRequest);
 
-        Assertions.assertEquals("https://succesurl.com/", navigationData.getNotificationUrl());
-        Assertions.assertEquals("http://redirectionURL.com", navigationData.getPendingUrl());
-        Assertions.assertEquals("http://redirectionURL.com", navigationData.getSuccessUrl());
-        Assertions.assertEquals("http://redirectionCancelURL.com", navigationData.getFailUrl());
+        Assertions.assertEquals("http://google.com/", navigationData.getNotificationUrl());
+        Assertions.assertEquals("https://succesurl.com/", navigationData.getPendingUrl());
+        Assertions.assertEquals("https://succesurl.com/", navigationData.getSuccessUrl());
+        Assertions.assertEquals("http://localhost/cancelurl.com/", navigationData.getFailUrl());
     }
 
 
