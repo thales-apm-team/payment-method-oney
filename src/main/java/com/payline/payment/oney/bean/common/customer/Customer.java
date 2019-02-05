@@ -3,26 +3,41 @@ package com.payline.payment.oney.bean.common.customer;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public class Customer extends OneyBean {
+
     @SerializedName("trust_flag")
     private Integer trustFlag;
+
+    @Required
     @SerializedName("customer_external_code")
     private String customerExternalCode;
+
+    @Required
     @SerializedName("language_code")
     private String languageCode;
+
+    @Required
     @SerializedName("identity")
     private CustomerIdentity identity;
+
+    @Required
     @SerializedName("contact_details")
     private ContactDetails contactDetails;
+
+    @Required
     @SerializedName("customer_address")
     private OneyAddress customerAddress;
 
     // a implementer plus tard  maybe
     @SerializedName("purchase_history")
     private PurchaseHistory purchaseHistory;
+
     @SerializedName("supporting_documents")
     private SupportingDocuments supportingDocuments;
 
@@ -124,42 +139,52 @@ public class Customer extends OneyBean {
             return this;
         }
 
-        private Customer.Builder verifyIntegrity() {
+        private Customer.Builder verifyIntegrity() throws InvalidDataException {
 
             if (this.customerExternalCode == null) {
-                throw new IllegalStateException("Customer must have a customerExternalCode when built");
+                throw new InvalidDataException("Customer must have a customerExternalCode when built", "Customer.customerExternalCode");
             }
+
             if (this.languageCode == null) {
-                throw new IllegalStateException("Customer must have a languageCode when built");
+                throw new InvalidDataException("Customer must have a languageCode when built", "Customer.languageCode");
             }
+
             if (this.identity == null) {
-                throw new IllegalStateException("Customer must have a identity when built");
+                throw new InvalidDataException("Customer must have a identity when built", "Customer.identity");
             }
+
             if (this.contactDetails == null) {
-                throw new IllegalStateException("Customer must have a contactDetails when built");
+                throw new InvalidDataException("Customer must have a contactDetails when built", "Customer.contactDetails");
             }
+
             if (this.customerAddress == null) {
-                throw new IllegalStateException("Customer must have a customerAddress when built");
-            } else return this;
+                throw new InvalidDataException("Customer must have a customerAddress when built", "Customer.customerAddress");
+            }
+            return this;
+
         }
 
-        public Customer.Builder fromPaylineRequest(PaymentRequest request) {
+        public Customer.Builder fromPaylineRequest(PaymentRequest request) throws PluginTechnicalException {
             this.trustFlag = null;
-            this.customerExternalCode = request.getBuyer().getCustomerIdentifier();
+            Buyer buyer = request.getBuyer();
+            if (buyer == null) {
+                return null;
+            }
+            this.customerExternalCode = buyer.getCustomerIdentifier();
             this.languageCode = request.getLocale().getLanguage();
             this.identity = CustomerIdentity.Builder.aCustomerIdentity()
-                    .fromPayline(request.getBuyer())
+                    .fromPayline(buyer)
                     .build();
             this.contactDetails = ContactDetails.Builder.aContactDetailsBuilder()
-                    .fromPayline(request.getBuyer())
+                    .fromPayline(buyer)
                     .build();
             this.customerAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .fromPayline(request.getBuyer(), Buyer.AddressType.BILLING)
+                    .fromPayline(buyer, Buyer.AddressType.BILLING)
                     .build();
             return this;
         }
 
-        public Customer build() {
+        public Customer build() throws InvalidDataException {
             return new Customer(this.verifyIntegrity());
         }
     }

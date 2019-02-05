@@ -2,16 +2,25 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
 public class Recipient extends OneyBean {
 
+    @Required
     @SerializedName("recipient_honorific_code")
     private Integer honorificCode;
+
+    @Required
     private String surname;
+
+    @Required
     @SerializedName("first_name")
     private String firstName;
+
+    @Required
     @SerializedName("phone_number")
     private String phoneNumber;
 
@@ -72,25 +81,44 @@ public class Recipient extends OneyBean {
         }
 
         public Recipient.Builder fromPayline(Buyer buyer) {
-            this.surname = buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getLastName();
-            this.firstName = buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getFirstName();
+            if (buyer == null) {
+                return null;
+            }
+
+            Buyer.Address deliveryAddress = buyer.getAddressForType(Buyer.AddressType.DELIVERY);
+            if (deliveryAddress != null && deliveryAddress.getFullName() != null) {
+                Buyer.FullName fullName = deliveryAddress.getFullName();
+                this.surname = fullName.getLastName();
+                this.firstName = fullName.getFirstName();
+                this.honorificCode = PluginUtils.getHonorificCode(fullName.getCivility());
+            }
             this.phoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.BILLING);
-            this.honorificCode = PluginUtils.getHonorificCode(buyer.getAddressForType(Buyer.AddressType.DELIVERY).getFullName().getCivility());
+
             return this;
         }
 
-        private Recipient.Builder verifyIntegrity() {
+        private Recipient.Builder verifyIntegrity() throws InvalidDataException {
+
+            if (this.honorificCode == null) {
+                throw new InvalidDataException(" must have a honorificCode when built", "Recipient.honorificCode");
+            }
+
             if (this.surname == null) {
-                throw new IllegalStateException("Recipient must have a surname when built");
+                throw new InvalidDataException("Recipient must have a surname when built", "Recipient.surname");
             }
+
             if (this.firstName == null) {
-                throw new IllegalStateException("Recipient must have a firstName when built");
+                throw new InvalidDataException("Recipient must have a firstName when built", "Recipient.firstName");
+            }
+
+            if (this.phoneNumber == null) {
+                throw new InvalidDataException("Recipient must have a phoneNumber when built", "Recipient.phoneNumber");
             }
             return this;
 
         }
 
-        public Recipient build() {
+        public Recipient build() throws InvalidDataException {
             return new Recipient(this.verifyIntegrity());
         }
     }

@@ -5,18 +5,18 @@ import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
-import com.payline.payment.oney.exception.InvalidRequestException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 public interface BeanAssembleService {
 
-    Customer assembleCustomer(PaymentRequest paymentRequest);
+    Customer assembleCustomer(PaymentRequest paymentRequest) throws PluginTechnicalException;
 
-    PaymentData assemblePaymentData(PaymentRequest paymentRequest, BusinessTransactionData businessTransaction);
+    PaymentData assemblePaymentData(PaymentRequest paymentRequest, BusinessTransactionData businessTransaction) throws PluginTechnicalException;
 
-    BusinessTransactionData assembleBuisnessTransactionData(PaymentRequest paymentRequest);
+    BusinessTransactionData assembleBuisnessTransactionData(PaymentRequest paymentRequest) throws PluginTechnicalException;
 
-    NavigationData assembleNavigationData(PaymentRequest paymentRequest) throws InvalidRequestException;
+    NavigationData assembleNavigationData(PaymentRequest paymentRequest) throws PluginTechnicalException;
 
-    Purchase assemblePurchase(PaymentRequest paymentRequest);
+    Purchase assemblePurchase(PaymentRequest paymentRequest) throws PluginTechnicalException;
 }

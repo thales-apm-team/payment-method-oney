@@ -26,7 +26,7 @@ public abstract class OneyResponse extends OneyBean {
      *
      * @param toDecrypt, the String to decrypt
      * @param key,       String,  the chiffrement key
-     * @return
+     * @return decrypted message
      */
     public static String decryptMessage(String toDecrypt, String key) throws DecryptException {
         if (toDecrypt == null || toDecrypt.equals("")) {

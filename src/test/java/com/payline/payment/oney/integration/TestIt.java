@@ -33,7 +33,6 @@ public class TestIt extends AbstractPaymentIntegration {
         HashMap<String, ContractProperty> contractConfiguration = new HashMap();
         contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.put(PSP_GUID_KEY, new ContractProperty("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a"));
         contractConfiguration.put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
         contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères
@@ -60,7 +59,7 @@ public class TestIt extends AbstractPaymentIntegration {
     protected String payOnPartnerWebsite(String partnerUrl) {
         // Start browser
         WebDriver driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 
         try {
             // Go to partner's website
@@ -79,7 +78,7 @@ public class TestIt extends AbstractPaymentIntegration {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowMonth']"))).selectByVisibleText("Avr");
 
-            WebDriverWait wait2 = new WebDriverWait(driver, 30);
+            WebDriverWait wait2 = new WebDriverWait(driver, 60);
             wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
 

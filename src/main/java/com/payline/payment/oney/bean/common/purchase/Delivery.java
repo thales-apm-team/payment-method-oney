@@ -4,25 +4,42 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.enums.AddressType;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
+import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
 import java.text.SimpleDateFormat;
 
 public class Delivery extends OneyBean {
 
+    @Required
     @SerializedName("delivery_date")
     private String deliveryDate;
+
+    @Required
     @SerializedName("delivery_mode_code")
     private Integer deliveryModeCode; //creer enum ?
+
+    @Required
     @SerializedName("delivery_option")
     private Integer deliveryOption;
+
     @SerializedName("priority_delivery_code")
     private Integer priorityDeliveryCode;
+
+    @Required
     @SerializedName("address_type")
     private Integer addressType; //Creer ENUM ??
+
     private Recipient recipient;
+
+    @Required
     @SerializedName("delivery_address")
     private OneyAddress deliveryAddress;
 
@@ -117,44 +134,62 @@ public class Delivery extends OneyBean {
             return this;
         }
 
-        private Delivery.Builder verifyIntegrity() {
+        private Delivery.Builder verifyIntegrity() throws InvalidDataException {
+
             if (this.deliveryModeCode == null) {
-                throw new IllegalStateException("Delivery must have a deliveryModeCode when built");
+                throw new InvalidDataException("Delivery must have a deliveryModeCode when built", "Delivery.deliveryModeCode");
             }
-            if (this.deliveryDate == null || !this.deliveryDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                throw new IllegalStateException("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built");
+
+            if (this.deliveryDate == null) {
+                throw new InvalidDataException("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built", "Delivery.deliveryDate");
+            } else if (!this.deliveryDate.matches(OneyConstants.DATE_FORMAT)) {
+                throw new InvalidFieldFormatException("Delivery must have a deliveryDate in format 'yyyy-MM-dd' when built", "Delivery.deliveryDate");
             }
+
             if (this.deliveryOption == null) {
-                throw new IllegalStateException("Delivery must have a deliveryOption when built");
+                throw new InvalidDataException("Delivery must have a deliveryOption when built", "Delivery.deliveryOption");
             }
+
             if (this.addressType == null) {
-                throw new IllegalStateException("Delivery must have a addressType when built");
+                throw new InvalidDataException("Delivery must have a addressType when built", "Delivery.addressType");
             }
 
             if (this.deliveryAddress == null) {
-                throw new IllegalStateException("Delivery must have a deliveryAddress when built");
+                throw new InvalidDataException("Delivery must have a deliveryAddress when built", "Delivery.deliveryAddress");
             }
+
             if (this.addressType == 5 && this.recipient == null) {
-                throw new IllegalStateException("Delivery must have a recipient when built");
+                throw new InvalidDataException("Delivery with addressType == 5 must have a recipient when built", "Delivery.recipient");
             }
             return this;
         }
 
-        public Delivery.Builder fromPayline(PaymentRequest request) {
-            this.deliveryDate = (new SimpleDateFormat("yyyy-MM-dd"))
-                     .format(request.getOrder().getExpectedDeliveryDate());
-            this.deliveryModeCode = PluginUtils.getOneyDeliveryModeCode(request.getOrder().getDeliveryMode());
-            this.deliveryOption = PluginUtils.getOneyDeliveryOption(request.getOrder().getDeliveryTime());
-            this.addressType = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY).getValue();
-            this.recipient = Recipient.Builder.aRecipientBuilder()
-                    .fromPayline(request.getBuyer()).build();
-            this.deliveryAddress = OneyAddress.Builder.aOneyAddressBuilder()
-                    .fromPayline(request.getBuyer(), Buyer.AddressType.DELIVERY)
-                    .build();
+        public Delivery.Builder fromPayline(PaymentRequest request) throws InvalidDataException {
+
+            Order order = request.getOrder();
+            if (order != null) {
+                this.deliveryDate = (new SimpleDateFormat("yyyy-MM-dd")).format(order.getExpectedDeliveryDate());
+                if (request.getOrder() != null) {
+                    this.deliveryModeCode = PluginUtils.getOneyDeliveryModeCode(order.getDeliveryMode());
+                    this.deliveryOption = PluginUtils.getOneyDeliveryOption(order.getDeliveryTime());
+                }
+            }
+
+            AddressType addressTyp = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY);
+            if (addressTyp != null) {
+                this.addressType = addressTyp.getValue();
+            }
+
+            Buyer buyer = request.getBuyer();
+            if (buyer != null) {
+                this.recipient = Recipient.Builder.aRecipientBuilder().fromPayline(buyer).build();
+                this.deliveryAddress = OneyAddress.Builder.aOneyAddressBuilder().fromPayline(buyer, Buyer.AddressType.DELIVERY)
+                        .build();
+            }
             return this;
         }
 
-        public Delivery build() {
+        public Delivery build() throws PluginTechnicalException {
             return new Delivery(this.verifyIntegrity());
         }
 

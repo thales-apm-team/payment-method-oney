@@ -11,8 +11,8 @@ import com.payline.pmapi.bean.paymentform.response.configuration.PaymentFormConf
 import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseSpecific;
 import com.payline.pmapi.bean.paymentform.response.logo.PaymentFormLogoResponse;
 import com.payline.pmapi.bean.paymentform.response.logo.impl.PaymentFormLogoResponseFile;
-import com.payline.pmapi.service.PaymentFormConfigurationService;
 import com.payline.pmapi.logger.LogManager;
+import com.payline.pmapi.service.PaymentFormConfigurationService;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
