@@ -50,22 +50,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         merchantGuid.setRequired(true);
         parameters.add(merchantGuid);
 
-        // psp guid
-        final InputParameter pspGuid = new InputParameter();
-        pspGuid.setKey(PSP_GUID_KEY);
-        pspGuid.setLabel(this.i18n.getMessage(PSP_GUID_LABEL, locale));
-        pspGuid.setDescription(this.i18n.getMessage(PSP_GUID_DESCRIPTION, locale));
-        pspGuid.setRequired(true);
-        parameters.add(pspGuid);
-
-        // api Marketing
-        final PasswordParameter apiMarketing = new PasswordParameter();
-        apiMarketing.setKey(API_MARKETING_KEY);
-        apiMarketing.setLabel(this.i18n.getMessage(API_MARKETING_LABEL, locale));
-        apiMarketing.setDescription(this.i18n.getMessage(API_MARKETING_DESCRIPTION, locale));
-        apiMarketing.setRequired(true);
-        parameters.add(apiMarketing);
-
         // OPC
         final InputParameter opc = new InputParameter();
         opc.setKey(OPC_KEY);
@@ -118,6 +102,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         parameters.add(internationalPartnerId);
 
 
+        // secret key
+        final PasswordParameter secretKey = new PasswordParameter();
+        secretKey.setKey(PARTNER_CHIFFREMENT_KEY);
+        secretKey.setLabel(this.i18n.getMessage(PARTNER_CHIFFREMENT_LABEL, locale));
+        secretKey.setDescription(this.i18n.getMessage(PARTNER_CHIFFREMENT_DESCRIPTION, locale));
+        secretKey.setRequired(true);
+        parameters.add(secretKey);
+
         return parameters;
 
     }
@@ -127,6 +119,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Locale locale = contractParametersCheckRequest.getLocale();
         final Map<String, String> errors = new HashMap<>();
+        final Map<String, String> accountInfo = contractParametersCheckRequest.getAccountInfo();
 
         // psp id
         String pspId = null;

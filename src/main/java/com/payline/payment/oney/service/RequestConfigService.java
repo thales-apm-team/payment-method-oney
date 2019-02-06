@@ -14,6 +14,8 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.reset.request.ResetRequest;
 
+import java.util.Map;
+
 public interface RequestConfigService {
 
     String DOT = ".";
@@ -154,6 +156,19 @@ public interface RequestConfigService {
             return null;
         }
         return contractConfiguration.getProperty(key).getValue();
+    }
+
+    /**
+     * @param accountInfo a account info map
+     * @param key         property key
+     * @return the corresponding String value
+     */
+    default String safeGetValue(Map<String, String> accountInfo, String key) {
+
+        if (accountInfo == null || key == null) {
+            return null;
+        }
+        return accountInfo.get(key);
     }
 
 

@@ -25,14 +25,13 @@ public class CheckTestIt {
     public static final String AUTHOR_KEY = "7fd3f1c53b9a47f7b85c801a32971895";
     public static final String PSP_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
     public static final String ONEY_API_URL = "https://oney-staging.azure-api.net";
-    public static final String CHIFFREMENT_KEY = "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=";
+    public static final ContractProperty CHIFFREMENT_KEY = new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
     public static final String METHOD_BODY = "Method-body";
     public static final String COUNTRY_CODE = "BE";
     public static final String LANG_CODE = "fr";
 
     public static final String TEST_PARTNER_AUTHORIZATION_KEY = PARTNER_AUTHORIZATION_KEY + ".be";
     public static final String TEST_PSP_GUID_KEY = PSP_GUID_KEY + ".be";
-    public static final String TEST_PARTNER_CHIFFREMENT_KEY = PARTNER_CHIFFREMENT_KEY + ".be";
 
     private ConfigurationServiceImpl service = new ConfigurationServiceImpl();
 
@@ -52,6 +51,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -60,11 +60,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -85,6 +84,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -93,11 +93,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -119,6 +118,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("badPartnerCountryCode")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -127,11 +127,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -154,6 +153,8 @@ public class CheckTestIt {
         // code country correct, mais qui retourne une erreur bad request ...
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
+
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
         partnerConfiguration.put(SECRET_KEY, METHOD_BODY);
@@ -161,11 +162,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -176,7 +176,6 @@ public class CheckTestIt {
         Assertions.assertTrue(errors.size() >= 1);
         Assertions.assertTrue(errors.keySet().contains(PARTNER_AUTHORIZATION_KEY));
         Assertions.assertTrue(errors.keySet().contains(PSP_GUID_KEY));
-        Assertions.assertTrue(errors.keySet().contains(PARTNER_CHIFFREMENT_KEY));
 
     }
 
@@ -190,6 +189,7 @@ public class CheckTestIt {
         // code country correct, mais qui retourne une erreur bad request ...
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("ZW")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -198,11 +198,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -213,7 +212,6 @@ public class CheckTestIt {
         Assertions.assertTrue(errors.size() >= 1);
         Assertions.assertTrue(errors.keySet().contains(PARTNER_AUTHORIZATION_KEY));
         Assertions.assertTrue(errors.keySet().contains(PSP_GUID_KEY));
-        Assertions.assertTrue(errors.keySet().contains(PARTNER_CHIFFREMENT_KEY));
 
     }
 
@@ -226,6 +224,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("zu"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -234,11 +233,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney3x-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -260,6 +258,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("zu"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -268,11 +267,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, "https://google.com");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -294,6 +292,8 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY,
+                new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kx8rhtRpXtY="));
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -302,11 +302,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kx8rhtRpXtY=");
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -328,6 +327,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, PSP_KEY);
@@ -336,11 +336,10 @@ public class CheckTestIt {
         partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(new HashMap<>())
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withContractConfiguration(contractConfiguration)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
@@ -351,5 +350,14 @@ public class CheckTestIt {
         Assertions.assertEquals(1, errors.size());
         Assertions.assertTrue(errors.keySet().contains(OPC_KEY));
 
+    }
+
+
+    private Map<String, String> toAccountInfo(ContractConfiguration contractConfiguration) {
+        Map<String, String> accountInfo = new HashMap<>();
+        for (String key : contractConfiguration.getContractProperties().keySet()) {
+            accountInfo.put(key, contractConfiguration.getContractProperties().get(key).getValue());
+        }
+        return accountInfo;
     }
 }
