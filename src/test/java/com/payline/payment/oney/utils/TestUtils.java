@@ -48,7 +48,6 @@ public class TestUtils {
 
     private static final Environment TEST_ENVIRONMENT = new Environment(NOTIFICATION_URL, SUCCESS_URL, CANCEL_URL, true);
 
-    private static final String TEST_PARTNER_CHIFFREMENT_KEY = PARTNER_CHIFFREMENT_KEY + ".be";
     private static final String TEST_PSP_GUID_KEY = PSP_GUID_KEY + ".be";
     private static final String TEST_CHIFFREMENT_KEY = "\"66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=\"";
     private static final String TEST_PARTNER_AUTHORIZATION_KEY = PARTNER_AUTHORIZATION_KEY + ".be";
@@ -57,7 +56,7 @@ public class TestUtils {
 
     private static String getTestphoneNumber() {
         if (testPhonenumber == null) {
-            testPhonenumber = "+32" + RandomStringUtils.random(10, false, true);
+            testPhonenumber = "+32" + RandomStringUtils.random(9, false, true);
         }
         return testPhonenumber;
     }
@@ -275,12 +274,12 @@ public class TestUtils {
     public static ContractConfiguration createContractConfiguration() {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.getContractProperties().put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
         contractConfiguration.getContractProperties().put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty(TEST_CHIFFREMENT_KEY));
 //used for Confirm
 
         return contractConfiguration;
@@ -383,7 +382,6 @@ public class TestUtils {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, TEST_CHIFFREMENT_KEY);
 
 
         return new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration);
