@@ -35,12 +35,11 @@ public class ConfigurationServiceImplTest {
     @Spy
     OneyHttpClient httpClient;
 
-    private Map<String, String> accountInfo = new HashMap<>();
+    private ContractProperty secretKey = new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
     public static final String TEST_PARTNER_AUTHORIZATION_KEY = PARTNER_AUTHORIZATION_KEY + ".be";
     public static final String TEST_PSP_GUID_KEY = PSP_GUID_KEY + ".be";
-    public static final String TEST_PARTNER_CHIFFREMENT_KEY = PARTNER_CHIFFREMENT_KEY + ".be";
 
     private Environment environment;
 
@@ -128,15 +127,13 @@ public class ConfigurationServiceImplTest {
         List<AbstractParameter> parameters = service.getParameters(Locale.FRANCE);
         //Assert we have 3 parameters
         Assertions.assertNotNull(parameters);
-        Assertions.assertEquals(8, parameters.size());
+        Assertions.assertEquals(7, parameters.size());
 
         List<String> result = new ArrayList<>();
         for (AbstractParameter paramter : parameters) {
             result.add(paramter.getKey());
         }
-        Assertions.assertTrue(result.contains(PSP_GUID_KEY));
         Assertions.assertTrue(result.contains(MERCHANT_GUID_KEY));
-        Assertions.assertTrue(result.contains(API_MARKETING_KEY));
         Assertions.assertTrue(result.contains(OPC_KEY));
         Assertions.assertTrue(result.contains(NB_ECHEANCES_KEY));
         Assertions.assertTrue(result.contains(COUNTRY_CODE_KEY));
@@ -154,6 +151,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
@@ -162,11 +160,10 @@ public class ConfigurationServiceImplTest {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(accountInfo)
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
                 .withContractConfiguration(contractConfiguration)
@@ -186,6 +183,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
@@ -194,12 +192,11 @@ public class ConfigurationServiceImplTest {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(accountInfo)
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
                 .withContractConfiguration(contractConfiguration)
@@ -219,6 +216,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
@@ -227,12 +225,11 @@ public class ConfigurationServiceImplTest {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(accountInfo)
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
                 .withContractConfiguration(contractConfiguration)
@@ -252,6 +249,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
         partnerConfiguration.put(SECRET_KEY, "Method-body");
@@ -259,12 +257,11 @@ public class ConfigurationServiceImplTest {
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(accountInfo)
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
                 .withContractConfiguration(contractConfiguration)
@@ -284,17 +281,18 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(SECRET_KEY, "Method-body");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
-        sensitivePartnerConfiguration.put(TEST_PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
+        sensitivePartnerConfiguration.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
         ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
                 .aCheckRequest()
-                .withAccountInfo(accountInfo)
+                .withAccountInfo(toAccountInfo(contractConfiguration))
                 .withLocale(Locale.FRANCE)
                 .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
                 .withContractConfiguration(contractConfiguration)
@@ -331,4 +329,11 @@ public class ConfigurationServiceImplTest {
         Assertions.assertTrue(releaseInformation.getVersion().matches("^\\d\\.\\d(\\.\\d)?$"));
     }
 
+    private Map<String, String> toAccountInfo(ContractConfiguration contractConfiguration) {
+        Map<String, String> accountInfo = new HashMap<>();
+        for (String key : contractConfiguration.getContractProperties().keySet()) {
+            accountInfo.put(key, contractConfiguration.getContractProperties().get(key).getValue());
+        }
+        return accountInfo;
+    }
 }

@@ -41,10 +41,9 @@ public enum RequestConfigServiceImpl implements RequestConfigService {
         PARAMETERS_MAP.put(OneyConstants.LANGUAGE_CODE_KEY, PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER);
         PARAMETERS_MAP.put(OneyConstants.ID_INTERNATIONAL_KEY, PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER);
         PARAMETERS_MAP.put(OneyConstants.PSP_GUID_KEY, PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER);
-        PARAMETERS_MAP.put(OneyConstants.PARTNER_CHIFFREMENT_KEY, PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER);
+        PARAMETERS_MAP.put(OneyConstants.PARTNER_CHIFFREMENT_KEY, PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER);
         PARAMETERS_MAP.put(OneyConstants.PARTNER_AUTHORIZATION_KEY, PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER);
         PARAMETERS_MAP.put(OneyConstants.PARTNER_API_URL, PaylineParameterType.PARTNER_CONFIGURATION_PARAMETER);
-        PARAMETERS_MAP.put(OneyConstants.API_MARKETING_KEY, PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER);
     }
 
     RequestConfigServiceImpl() {
@@ -154,7 +153,8 @@ public enum RequestConfigServiceImpl implements RequestConfigService {
     public String getParameterValue(ContractParametersCheckRequest request, String key) throws InvalidDataException {
         PaylineParameterType paylineParameterType = PARAMETERS_MAP.get(key);
         if (PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER == paylineParameterType) {
-            return safeGetValue(request.getContractConfiguration(), key);
+            // Dans le cas de la ContractParametersCheckRequest les Contract parameters sont lus dans account Info
+            return safeGetValue(request.getAccountInfo(), key);
         } else if (PaylineParameterType.PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {
             return safeGetValue(request.getPartnerConfiguration(), key);
         } else if (PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {

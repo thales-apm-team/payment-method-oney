@@ -33,11 +33,11 @@ public class TestIt extends AbstractPaymentIntegration {
         HashMap<String, ContractProperty> contractConfiguration = new HashMap();
         contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
         contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.put(API_MARKETING_KEY, new ContractProperty("01c6ea9021574d608c631f1c3b880b3be"));
         contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
         contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères
         contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("BE"));
+        contractConfiguration.put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY="));
         return contractConfiguration;
     }
 
@@ -46,8 +46,8 @@ public class TestIt extends AbstractPaymentIntegration {
         Map<String, String> paymentFormParameter = new HashMap<>();
         paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
-        sensitivePaymentFormParameter.put(PARTNER_CHIFFREMENT_KEY, "66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
+//
         return PaymentFormContext.PaymentFormContextBuilder
                 .aPaymentFormContext()
                 .withPaymentFormParameter(paymentFormParameter)
@@ -65,8 +65,9 @@ public class TestIt extends AbstractPaymentIntegration {
             // Go to partner's website
             driver.get(partnerUrl);
 
-            String struct = "//*[@id='wt1_wt7_Oney_Theme_wt158_block_wtMainContent_WebPatterns_wtStructure";
+            String struct = "//*[@id='wt1_wt7_Oney_Theme_wt162_block_wtMainContent_WebPatterns_wtStructure";
             //Id du bouton nouveau client
+//            wt1_wt7_Oney_Theme_wt162_block_wtMainContent_WebPatterns_wtStructure_block_wtColumn1_wtWithoutAccount_rb2
             driver.findElement(By.xpath(struct + "_block_wtColumn1_wtWithoutAccount_rb2']")).click();
 //            driver.findElement(By.name("wt1_wt7$1105887523")).click();
             //champs date de naissance

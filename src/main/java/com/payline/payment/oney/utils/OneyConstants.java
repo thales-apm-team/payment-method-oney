@@ -33,11 +33,6 @@ public class OneyConstants {
     public static final String MERCHANT_GUID_DESCRIPTION = "merchant.guid.description";
     public static final String MERCHANT_GUID_MESSAGE_ERROR = "merchant.guid.error.message";
 
-    public static final String API_MARKETING_KEY = "apiMarketing";
-    public static final String API_MARKETING_LABEL = "api.marketing.label";
-    public static final String API_MARKETING_DESCRIPTION = "api.marketing.description";
-    public static final String API_MARKETING_MESSAGE_ERROR = "api.marketing.error.message";
-
     public static final String OPC_KEY = "opc";
     public static final String OPC_LABEL = "opc.label";
     public static final String OPC_DESCRIPTION = "opc.description";
@@ -67,6 +62,8 @@ public class OneyConstants {
 
     public static final String PARTNER_AUTHORIZATION_VALUE = "oney.authorization";
     public static final String PARTNER_CHIFFREMENT_KEY = "partner.oney.access.secret.key";
+    public static final String PARTNER_CHIFFREMENT_DESCRIPTION = "partner.oney.access.secret.key.description";
+    public static final String PARTNER_CHIFFREMENT_LABEL = "partner.oney.access.secret.key.label";
     public static final String PARTNER_CHIFFREMENT_KEY_MESSAGE_ERROR = "partner.oney.access.secret.key.error.message";
     public static final String PARTNER_AUTHORIZATION_KEY = "partner.oney.access.key";
     public static final String PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR = "partner.oney.access.key.error.message";
