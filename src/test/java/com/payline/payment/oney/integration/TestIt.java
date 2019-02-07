@@ -3,11 +3,9 @@ package com.payline.payment.oney.integration;
 import com.payline.payment.oney.service.impl.PaymentServiceImpl;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
 import com.payline.payment.oney.utils.TestUtils;
-import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.bean.payment.PaymentFormContext;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,25 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
 
 
-public class TestIt extends AbstractPaymentIntegration {
-    private PaymentServiceImpl paymentService = new PaymentServiceImpl();
-    private PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
+public abstract class TestIt extends AbstractPaymentIntegration {
+    protected PaymentServiceImpl paymentService = new PaymentServiceImpl();
+    protected PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
 
-    @Override
-    protected Map<String, ContractProperty> generateParameterContract() {
-        HashMap<String, ContractProperty> contractConfiguration = new HashMap();
-        contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
-        contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
-        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères
-        contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
-        contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("BE"));
-        contractConfiguration.put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY="));
-        return contractConfiguration;
-    }
 
     @Override
     protected PaymentFormContext generatePaymentFormContext() {
@@ -166,7 +152,7 @@ public class TestIt extends AbstractPaymentIntegration {
         return null;
     }
 
-    @Test
+
     public void fullPaymentTest() {
         PaymentRequest request = createDefaultPaymentRequest();
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);

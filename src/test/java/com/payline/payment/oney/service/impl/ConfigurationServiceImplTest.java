@@ -242,7 +242,7 @@ public class ConfigurationServiceImplTest {
     }
 
     @Test
-    public void checkLanguageKO() {
+    public void checkLanguageOkwoLanguageCode() {
 
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("merchant_guid_test"));
@@ -269,8 +269,7 @@ public class ConfigurationServiceImplTest {
                 .build();
         contractParametersCheckRequest.getContractConfiguration().getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.keySet().contains(LANGUAGE_CODE_KEY));
+        Assertions.assertEquals(0, errors.size());
     }
 
     @Test

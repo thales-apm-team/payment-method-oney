@@ -124,7 +124,7 @@ public class OneyConstants {
             "\t\t\t\t\"line1\": \"1 rue xxx\",\n" +
             "\t\t\t\t\"postal_code\": \"1000\",\n" +
             "\t\t\t\t\"municipality\": \"xxx\",\n" +
-            "\t\t\t\t\"country_code\": \"BEL\",\n" +
+            "\t\t\t\t\"country_code\": \"#COUNTRY_ADDRESS#\",\n" +
             "\t\t\t\t\"country_label\": \"xxx\"\n" +
             "\t\t\t}\n" +
             "\t\t},\n" +
@@ -140,7 +140,7 @@ public class OneyConstants {
             "\t},\n" +
             "\t\"customer\": {\n" +
             "\t\t\"customer_external_code\": \"xxx\",\n" +
-            "\t\t\"language_code\": \"fr\",\n" +
+            "\t\t\"language_code\": \"#LANGUAGE_CODE#\",\n" +
             "\t\t\"identity\": {\n" +
             "\t\t\t\"person_type\": 2,\n" +
             "\t\t\t\"honorific_code\": 1,\n" +
@@ -157,7 +157,7 @@ public class OneyConstants {
             "\t\t\t\"line1\": \"1 rue xxx\",\n" +
             "\t\t\t\"postal_code\": \"1000\",\n" +
             "\t\t\t\"municipality\": \"xxx\",\n" +
-            "\t\t\t\"country_code\": \"BEL\",\n" +
+            "\t\t\t\"country_code\": \"#COUNTRY_ADDRESS#\",\n" +
             "\t\t\t\"country_label\": \"xxx\"\n" +
             "\t\t}\n" +
             "\t},\n" +
@@ -182,6 +182,8 @@ public class OneyConstants {
     public static final String OPC_KEY_TAG = "#OPC_KEY#";
     public static final String MERCHANT_GUID_TAG = "#MERCHANT_GUID_KEY#";
     public static final String PSP_GUID_TAG = "#PSP_GUID_KEY#";
+    public static final String COUNTRY_ADDRESS = "#COUNTRY_ADDRESS#";
+    public static final String LANGUAGE_CODE = "#LANGUAGE_CODE#";
     public static final String UNEXPECTED_ERR = "error.unexpected";
 
 

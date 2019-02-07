@@ -119,15 +119,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Locale locale = contractParametersCheckRequest.getLocale();
         final Map<String, String> errors = new HashMap<>();
-        final Map<String, String> accountInfo = contractParametersCheckRequest.getAccountInfo();
 
         // psp id
         String pspId = null;
         String merchantGuid = null;
         String opcKey = null;
+        String codePays = null;
         try {
 
-            final String codePays = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, COUNTRY_CODE_KEY);
+            codePays = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, COUNTRY_CODE_KEY);
             if (codePays == null) {
                 errors.put(COUNTRY_CODE_KEY, this.i18n.getMessage(COUNTRY_CODE_MESSAGE_ERROR, locale));
                 return errors;
@@ -165,10 +165,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 errors.put(OPC_KEY, this.i18n.getMessage(OPC_MESSAGE_ERROR, locale));
             }
 
+            // language code n'est pas obligatoire
             final String merchantLanguageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, LANGUAGE_CODE_KEY);
-            if (merchantLanguageCode == null) {
-                errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_CODE_MESSAGE_ERROR, locale));
-            } else if (!PluginUtils.isISO639(merchantLanguageCode)) {
+            if (merchantLanguageCode != null && !PluginUtils.isISO639(merchantLanguageCode)) {
                 errors.put(LANGUAGE_CODE_KEY, this.i18n.getMessage(LANGUAGE_NOT_ISO, locale));
             }
 
@@ -181,13 +180,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return errors;
         }
 
-        return validateCall(contractParametersCheckRequest, errors, pspId, merchantGuid, opcKey);
+        return validateCall(contractParametersCheckRequest, errors, pspId, merchantGuid, opcKey, codePays);
     }
 
-    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, String pspId, String merchantGuid, String opcKey) {
+    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, String pspId, String merchantGuid, String opcKey, String codePays) {
         try {
 
-            String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey);
+            String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey, codePays);
             Map<String, String> parameters = PluginUtils.getParametersMap(contractParametersCheckRequest);
             OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromJson(jsonMsg, contractParametersCheckRequest);
             StringResponse stringResponse = httpClient.initiateCheckPayment(requestEncrypted.toString(), parameters);
@@ -216,6 +215,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                         LOGGER.error("Paramètre {} incorrect (non supporté par Oney) {}", COUNTRY_CODE_KEY, err.getMessage());
                         if (err.getMessage().contains("X-Oney-Partner-Country-Code")) {
                             errors.put(COUNTRY_CODE_KEY, err.getMessage());
+                        } else if (stringResponse != null) {
+                            LOGGER.error(stringResponse.toString());
+                            // FIXME améliorer le parsing pour avoir un message explicite
+                            errors.put("HTTP REPONSE CODE 400", "erreur dans les données");
                         }
                         break;
                     case HTTP_500:
@@ -257,10 +260,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return errors;
     }
 
-    private String getFinalJsonMessage(String pspId, String merchantGuid, String opcKey) {
+    private String getFinalJsonMessage(String pspId, String merchantGuid, String opcKey, String codePays) {
+        String lang = "";
+        Locale[] all = Locale.getAvailableLocales();
+        for (Locale locale : all) {
+            String country = locale.getCountry();
+            if (country.equalsIgnoreCase(codePays)) {
+                lang = locale.getLanguage();
+                break;
+            }
+        }
         return TEST_JSON_MSG.replace(PSP_GUID_TAG, pspId)
                 .replace(MERCHANT_GUID_TAG, merchantGuid)
-                .replace(OPC_KEY_TAG, opcKey);
+                .replace(OPC_KEY_TAG, opcKey)
+                .replace(COUNTRY_ADDRESS, (new Locale("", codePays)).getISO3Country())
+                .replace(LANGUAGE_CODE, lang);
     }
 
     @Override
