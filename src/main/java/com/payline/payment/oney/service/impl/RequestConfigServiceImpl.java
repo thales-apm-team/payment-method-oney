@@ -158,7 +158,7 @@ public enum RequestConfigServiceImpl implements RequestConfigService {
         } else if (PaylineParameterType.PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {
             return safeGetValue(request.getPartnerConfiguration(), key);
         } else if (PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {
-            String ext = safeGetValue(request.getContractConfiguration(), OneyConstants.COUNTRY_CODE_KEY);
+            String ext = safeGetValue(request.getAccountInfo(), OneyConstants.COUNTRY_CODE_KEY);
             return safeGetValue(request.getPartnerConfiguration(), key, ext);
         }
         return null;

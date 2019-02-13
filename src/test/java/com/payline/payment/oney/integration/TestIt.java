@@ -2,7 +2,10 @@ package com.payline.payment.oney.integration;
 
 import com.payline.payment.oney.service.impl.PaymentServiceImpl;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
+import com.payline.payment.oney.utils.TestCountry;
 import com.payline.payment.oney.utils.TestUtils;
+import com.payline.pmapi.bean.configuration.PartnerConfiguration;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.PaymentFormContext;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
@@ -19,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.payline.payment.oney.utils.OneyConstants.PSP_GUID_KEY;
+import static com.payline.payment.oney.utils.OneyConstants.PARTNER_API_URL;
+import static com.payline.payment.oney.utils.OneyConstants.SECRET_KEY;
 
 
 public abstract class TestIt extends AbstractPaymentIntegration {
@@ -27,10 +31,18 @@ public abstract class TestIt extends AbstractPaymentIntegration {
     protected PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
 
 
+    Map.Entry<String, String> getPspGuid() {
+        return null;
+    }
+
+    public Map.Entry<String, String> getPartnerAuthorizationKey() {
+        return null;
+    }
+
     @Override
     protected PaymentFormContext generatePaymentFormContext() {
         Map<String, String> paymentFormParameter = new HashMap<>();
-        paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        paymentFormParameter.put(getPspGuid().getKey(), getPspGuid().getValue());
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
 
 //
@@ -152,17 +164,31 @@ public abstract class TestIt extends AbstractPaymentIntegration {
         return null;
     }
 
-
-    public void fullPaymentTest() {
-        PaymentRequest request = createDefaultPaymentRequest();
-        this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
+    @Override
+    public PaymentRequest createDefaultPaymentRequest() {
+        return TestUtils.createCompletePaymentBuilder(getContry(), generateContractConfiguration(),
+                generatePaymentFormContext(), generatePartnerConfiguration()).build();
 
     }
 
+    public TestCountry getContry() {
+        return null;
+    }
 
-    @Override
-    public PaymentRequest createDefaultPaymentRequest() {
-        return TestUtils.createCompletePaymentBuilder().build();
+    public PartnerConfiguration generatePartnerConfiguration() {
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(getPspGuid().getKey(), getPspGuid().getValue());
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(getPartnerAuthorizationKey().getKey(), getPartnerAuthorizationKey().getValue());
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+
+
+        return new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration);
+    }
+
+    public ContractConfiguration generateContractConfiguration() {
+        return new ContractConfiguration("Oney", generateParameterContract());
     }
 }

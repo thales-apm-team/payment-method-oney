@@ -49,8 +49,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -82,8 +82,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("6fd0d7f8123b4a729cb74a89f32e6035"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("W4026"));
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("dqcoCKNBvHFIIvDlcsrqYg44Q2JhmjTmDJR6NwdBogU="));
 
         Map<String, String> partnerConfiguration = new HashMap<>();
@@ -114,8 +114,41 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("3c417290-e5a5-421e-a49e-a259f699cfe9"));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("IT")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("IT"));
+        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("2D2QL/qcmHL0e2ts7Q8vGQonlrsl33Po11JKVOXnfug="));
+
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(PSP_GUID_KEY + ".it", "31d8acd3-0c52-4bee-8ca1-36976c0b0317");
+        partnerConfiguration.put(SECRET_KEY, METHOD_BODY);
+        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY + ".it", "706ef0c03c71443295f1a7bbcff68bcb");
+        partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
+
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+
+        ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
+                .aCheckRequest()
+                .withAccountInfo(toAccountInfo(contractConfiguration))
+                .withLocale(Locale.ITALY)
+                .withContractConfiguration(contractConfiguration)
+                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+                .withEnvironment(environment)
+                .build();
+
+        Map<String, String> errors = service.check(contractParametersCheckRequest);
+        Assertions.assertEquals(0, errors.size());
+
+    }
+
+    @Test
+    public void checkOK_IT_PAYLAPMEXT_90() {
+
+        final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
+        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("3c417290-e5a5-421e-a49e-a259f699cfe9"));
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x001"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("3x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("IT"));
+        contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("it"));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("2D2QL/qcmHL0e2ts7Q8vGQonlrsl33Po11JKVOXnfug="));
 
         Map<String, String> partnerConfiguration = new HashMap<>();
@@ -147,8 +180,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -181,8 +214,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("badPartnerCountryCode")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("badPartnerCountryCode"));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -215,9 +248,9 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
         // code country correct, mais qui retourne une erreur bad request ...
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR"));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -251,9 +284,9 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
         // code country correct, mais qui retourne une erreur bad request ...
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("ZW")); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("ZW"));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -287,8 +320,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("zu"));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -321,8 +354,8 @@ public class CheckTestIt {
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("zu"));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
@@ -356,7 +389,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY,
                 new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kx8rhtRpXtY="));
@@ -391,7 +424,7 @@ public class CheckTestIt {
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty(MERCHANT_KEY));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3z002"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("x"));
-        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE)); // ouy 3 caractères
+        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty(COUNTRY_CODE));
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty(LANG_CODE));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, CHIFFREMENT_KEY);
 
