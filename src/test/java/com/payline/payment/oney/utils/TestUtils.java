@@ -166,7 +166,6 @@ public class TestUtils {
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withPaymentFormContext(paymentFormContext)
                 .withPartnerConfiguration(partnerConfiguration)
-                .withLocale(testLocale)
                 .withBuyer(createDefaultBuyer(testCountry));
     }
 
@@ -182,6 +181,7 @@ public class TestUtils {
         requestData.put(TEST_PSP_GUID_KEY, GUID_KEY);
         requestData.put(SECRET_KEY, "Method-body");
         requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
+        requestData.put(LANGUAGE_CODE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
 
         final RequestContext requestContext = RequestContext.RequestContextBuilder

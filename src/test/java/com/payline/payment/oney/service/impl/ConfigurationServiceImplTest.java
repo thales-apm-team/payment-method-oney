@@ -298,10 +298,11 @@ public class ConfigurationServiceImplTest {
                 .withEnvironment(environment)
                 .build();
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assertions.assertEquals(3, errors.size());
+
         Assertions.assertNotNull(errors.get(PARTNER_AUTHORIZATION_KEY));
         Assertions.assertNotNull(errors.get(PSP_GUID_KEY));
         Assertions.assertNotNull(errors.get(MERCHANT_GUID_KEY));
+        Assertions.assertEquals(3, errors.size());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.payline.payment.oney.integration;
 
 import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.bean.payment.ContractConfiguration;
@@ -26,7 +27,7 @@ public class CheckTestIt {
     public static final String PSP_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
     public static final String ONEY_API_URL = "https://oney-staging.azure-api.net";
     public static final ContractProperty CHIFFREMENT_KEY = new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
-    public static final String METHOD_BODY = "Method-body";
+    public static final String METHOD_BODY = "None";
     public static final String COUNTRY_CODE = "BE";
     public static final String LANG_CODE = "fr";
 
@@ -108,12 +109,46 @@ public class CheckTestIt {
 
     }
 
+    // Impossible à tester  : même réponse avec un OPC valide et avec un mauvais OPC
+//    @Test
+//    public void checkKO_FR() {
+//
+//        final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
+//        contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("6fd0d7f8123b4a729cb74a89f32e6035"));
+//        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("W4026z"));
+//        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
+//        contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("FR"));
+//        contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("dqcoCKNBvHFIIvDlcsrqYg44Q2JhmjTmDJR6NwdBogU="));
+//
+//        Map<String, String> partnerConfiguration = new HashMap<>();
+//        partnerConfiguration.put(PSP_GUID_KEY + ".fr", "34b7cd77fe6642a1acd9d91df5f1d1f0");
+//        partnerConfiguration.put(SECRET_KEY, METHOD_BODY);
+//        partnerConfiguration.put(PARTNER_AUTHORIZATION_KEY + ".fr", "06074f792da24b2e99cd9af3874aaf9f");
+//        partnerConfiguration.put(PARTNER_API_URL, ONEY_API_URL);
+//
+//        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+//
+//        ContractParametersCheckRequest contractParametersCheckRequest = ContractParametersCheckRequest.CheckRequestBuilder
+//                .aCheckRequest()
+//                .withAccountInfo(toAccountInfo(contractConfiguration))
+//                .withLocale(Locale.FRANCE)
+//                .withContractConfiguration(contractConfiguration)
+//                .withPartnerConfiguration(new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration))
+//                .withEnvironment(environment)
+//                .build();
+//
+//        Map<String, String> errors = service.check(contractParametersCheckRequest);
+//        Assertions.assertEquals(1, errors.size());
+//        Assertions.assertTrue(errors.keySet().contains(OPC_KEY));
+//
+//    }
+
     @Test
     public void checkOK_IT() {
 
         final ContractConfiguration contractConfiguration = new ContractConfiguration(IDENTIFIER, new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("3c417290-e5a5-421e-a49e-a259f699cfe9"));
-        contractConfiguration.getContractProperties().put(OPC_KEY, OPC_VALUE);
+        contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("zz"));
         contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("IT"));
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("2D2QL/qcmHL0e2ts7Q8vGQonlrsl33Po11JKVOXnfug="));
@@ -136,7 +171,9 @@ public class CheckTestIt {
                 .build();
 
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assertions.assertEquals(0, errors.size());
+        Assertions.assertEquals(1, errors.size());
+        Assertions.assertTrue(errors.keySet().contains(OPC_KEY));
+
 
     }
 
@@ -412,8 +449,12 @@ public class CheckTestIt {
                 .build();
 
         Map<String, String> errors = service.check(contractParametersCheckRequest);
-        Assertions.assertEquals(1, errors.size());
-        Assertions.assertTrue(errors.keySet().contains(PARTNER_CHIFFREMENT_KEY));
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            Assertions.assertEquals(1, errors.size());
+            Assertions.assertTrue(errors.keySet().contains(PARTNER_CHIFFREMENT_KEY));
+        } else {
+            Assertions.assertEquals(0, errors.size());
+        }
 
     }
 
