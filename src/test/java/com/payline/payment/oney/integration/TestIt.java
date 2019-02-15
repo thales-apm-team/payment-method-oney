@@ -2,12 +2,13 @@ package com.payline.payment.oney.integration;
 
 import com.payline.payment.oney.service.impl.PaymentServiceImpl;
 import com.payline.payment.oney.service.impl.PaymentWithRedirectionServiceImpl;
+import com.payline.payment.oney.utils.TestCountry;
 import com.payline.payment.oney.utils.TestUtils;
-import com.payline.pmapi.bean.payment.ContractProperty;
+import com.payline.pmapi.bean.configuration.PartnerConfiguration;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.payment.PaymentFormContext;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,30 +22,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.payment.oney.utils.OneyConstants.PARTNER_API_URL;
+import static com.payline.payment.oney.utils.OneyConstants.SECRET_KEY;
 
 
-public class TestIt extends AbstractPaymentIntegration {
-    private PaymentServiceImpl paymentService = new PaymentServiceImpl();
-    private PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
+public abstract class TestIt extends AbstractPaymentIntegration {
+    protected PaymentServiceImpl paymentService = new PaymentServiceImpl();
+    protected PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
 
-    @Override
-    protected Map<String, ContractProperty> generateParameterContract() {
-        HashMap<String, ContractProperty> contractConfiguration = new HashMap();
-        contractConfiguration.put(OPC_KEY, new ContractProperty("3x002"));
-        contractConfiguration.put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
-        contractConfiguration.put(NB_ECHEANCES_KEY, new ContractProperty("3"));
-        contractConfiguration.put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // caractères
-        contractConfiguration.put(LANGUAGE_CODE_KEY, new ContractProperty("FR"));
-        contractConfiguration.put(ID_INTERNATIONAL_KEY, new ContractProperty("BE"));
-        contractConfiguration.put(PARTNER_CHIFFREMENT_KEY, new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY="));
-        return contractConfiguration;
+
+    Map.Entry<String, String> getPspGuid() {
+        return null;
+    }
+
+    public Map.Entry<String, String> getPartnerAuthorizationKey() {
+        return null;
     }
 
     @Override
     protected PaymentFormContext generatePaymentFormContext() {
         Map<String, String> paymentFormParameter = new HashMap<>();
-        paymentFormParameter.put(PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
+        paymentFormParameter.put(getPspGuid().getKey(), getPspGuid().getValue());
         Map<String, String> sensitivePaymentFormParameter = new HashMap<>();
 
 //
@@ -166,17 +164,31 @@ public class TestIt extends AbstractPaymentIntegration {
         return null;
     }
 
-    @Test
-    public void fullPaymentTest() {
-        PaymentRequest request = createDefaultPaymentRequest();
-        this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
+    @Override
+    public PaymentRequest createDefaultPaymentRequest() {
+        return TestUtils.createCompletePaymentBuilder(getContry(), generateContractConfiguration(),
+                generatePaymentFormContext(), generatePartnerConfiguration()).build();
 
     }
 
+    public TestCountry getContry() {
+        return null;
+    }
 
-    @Override
-    public PaymentRequest createDefaultPaymentRequest() {
-        return TestUtils.createCompletePaymentBuilder().build();
+    public PartnerConfiguration generatePartnerConfiguration() {
+        Map<String, String> partnerConfiguration = new HashMap<>();
+        partnerConfiguration.put(getPspGuid().getKey(), getPspGuid().getValue());
+        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(getPartnerAuthorizationKey().getKey(), getPartnerAuthorizationKey().getValue());
+        partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
+        Map<String, String> sensitivePartnerConfiguration = new HashMap<>();
+
+
+        return new PartnerConfiguration(partnerConfiguration, sensitivePartnerConfiguration);
+    }
+
+    public ContractConfiguration generateContractConfiguration() {
+        return new ContractConfiguration("Oney", generateParameterContract());
     }
 }

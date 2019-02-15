@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.i18n.I18nService;
 import com.payline.payment.oney.utils.properties.constants.ConfigurationConstants;
 import com.payline.payment.oney.utils.properties.service.LogoPropertiesEnum;
@@ -20,8 +21,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Locale;
 
+import static com.payline.payment.oney.utils.OneyConstants.NB_ECHEANCES_KEY;
 import static com.payline.payment.oney.utils.properties.constants.LogoConstants.*;
 
 public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigurationService {
@@ -32,12 +35,21 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
     @Override
     public PaymentFormConfigurationResponse getPaymentFormConfiguration(PaymentFormConfigurationRequest paymentFormConfigurationRequest) {
 
+        Locale locale = paymentFormConfigurationRequest.getLocale();
+        String nbEcheances = null;
+        try {
+            nbEcheances = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentFormConfigurationRequest, NB_ECHEANCES_KEY);
+        } catch (InvalidDataException e) {
+            LOGGER.error("Failed to get the following contract property : nbEcheances");
+            return e.toPaymentFormConfigurationResponseFailure();
+        }
+
         final NoFieldForm noFieldForm = NoFieldForm
                 .NoFieldFormBuilder
                 .aNoFieldForm()
                 .withDisplayButton(true)
-                .withButtonText(this.i18n.getMessage("payment.form.config.button.text", paymentFormConfigurationRequest.getLocale()))
-                .withDescription(this.i18n.getMessage("payment.form.config.description", paymentFormConfigurationRequest.getLocale()))
+                .withButtonText(buildLabel(ConfigurationConstants.PAYMENT_BUTTON_TEXT, locale, nbEcheances))
+                .withDescription(buildLabel(ConfigurationConstants.PAYMENT_BUTTON_DESC, locale, nbEcheances))
                 .build();
 
         return PaymentFormConfigurationResponseSpecific
@@ -45,6 +57,12 @@ public class PaymentFormConfigurationServiceImpl implements PaymentFormConfigura
                 .aPaymentFormConfigurationResponseSpecific()
                 .withPaymentForm(noFieldForm)
                 .build();
+    }
+
+    private String buildLabel(String key, Locale locale, String nbEcheances) {
+
+        String base = this.i18n.getMessage(key, locale);
+        return MessageFormat.format(base, nbEcheances);
     }
 
     @Override
