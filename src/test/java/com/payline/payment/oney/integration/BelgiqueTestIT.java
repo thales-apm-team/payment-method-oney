@@ -3,7 +3,7 @@ package com.payline.payment.oney.integration;
 import com.payline.payment.oney.utils.TestCountry;
 import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
 
-public class BelgiqueTestIt extends TestIt {
+public class BelgiqueTestIT extends TestIT {
 
     public static final String TEST_PSP_GUID_KEY = PSP_GUID_KEY + ".be";
 

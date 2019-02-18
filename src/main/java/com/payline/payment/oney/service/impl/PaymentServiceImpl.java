@@ -96,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
 
                 return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                         .withFailureCause(handleOneyFailureResponse(failureResponse))
-                        .withErrorCode(failureResponse.getCode().toString())
+                        .withErrorCode(failureResponse.toPaylineErrorCode())
                         .build();
             } else {
                 //Response OK on recupere url envoyee par Oney

@@ -1,6 +1,8 @@
+import javax.swing.*
+
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
     maven {
         url "http://192.168.4.78:8081/repository/maven-releases"
     }
@@ -83,6 +85,20 @@ task generateMetaInf {
 
             }
 
+        }
+    }
+}
+
+
+tasks.build.dependsOn("checkJarSize")
+task checkJarSize {
+    doLast {
+
+        File file = new File("${projectDir}/build/libs/${jar.archiveName}")
+        if (file.length() > 2097152) {
+            JOptionPane.showMessageDialog(null, "Jar file size is too heavy : " + file.length(),
+                    "Titre : exception",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

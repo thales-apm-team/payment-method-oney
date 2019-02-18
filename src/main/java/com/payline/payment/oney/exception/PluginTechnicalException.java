@@ -13,7 +13,7 @@ public class PluginTechnicalException extends Exception {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginTechnicalException.class);
 
-    private static final Integer MAX_LENGHT = 50;
+    public static final Integer MAX_LENGHT = 50;
 
     private final String message;
 

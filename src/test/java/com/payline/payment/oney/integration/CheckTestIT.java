@@ -19,7 +19,7 @@ import java.util.Map;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CheckTestIt {
+public class CheckTestIT {
 
     public static final String IDENTIFIER = "Oney";
     public static final String MERCHANT_KEY = "9813e3ff-c365-43f2-8dca-94b850befbf9";
