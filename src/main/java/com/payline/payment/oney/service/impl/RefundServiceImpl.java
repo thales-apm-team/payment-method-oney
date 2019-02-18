@@ -64,7 +64,7 @@ public class RefundServiceImpl implements RefundService {
 
                 return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                         .withFailureCause(handleOneyFailureResponse(failureResponse))
-                        .withErrorCode(failureResponse.getCode().toString())
+                        .withErrorCode(failureResponse.toPaylineErrorCode())
                         .build();
             } else {
                 //On dechiffre la response

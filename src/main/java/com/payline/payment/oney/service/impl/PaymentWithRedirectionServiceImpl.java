@@ -166,7 +166,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(handleOneyFailureResponse(failureResponse))
-                    .withErrorCode(failureResponse.getCode().toString())
+                    .withErrorCode(failureResponse.toPaylineErrorCode())
                     .build();
         }
         //Confirmation OK, on traite la reponse

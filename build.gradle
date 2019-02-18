@@ -54,12 +54,11 @@ dependencies {
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0-RC.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.7.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-rule', version: '1.7.4'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
 
     testImplementation "com.payline:payment-method-api:${paymentMethodApiVersion}"
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
+
 //    testImplementation "com.payline:payment-method-integration:${paymentMethodIntegrationVersion}"
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.3'
     testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
@@ -67,10 +66,7 @@ dependencies {
 
     // fatJarTest include testImplementation dependencies (not for IT)
     fatJarTest group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
-    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0-RC.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.7.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4-rule', version: '1.7.4'
+    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
     fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.3'
     fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
     fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
@@ -148,5 +144,5 @@ task testJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 
 test {
     useJUnitPlatform()
+    exclude('**/*IT.class')
 }
-test.exclude '**/*It.class'

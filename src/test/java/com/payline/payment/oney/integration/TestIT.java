@@ -26,7 +26,7 @@ import static com.payline.payment.oney.utils.OneyConstants.PARTNER_API_URL;
 import static com.payline.payment.oney.utils.OneyConstants.SECRET_KEY;
 
 
-public abstract class TestIt extends AbstractPaymentIntegration {
+public abstract class TestIT extends AbstractPaymentIntegration {
     protected PaymentServiceImpl paymentService = new PaymentServiceImpl();
     protected PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
 

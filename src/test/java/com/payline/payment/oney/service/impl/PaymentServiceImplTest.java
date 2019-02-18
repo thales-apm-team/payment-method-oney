@@ -55,7 +55,7 @@ public class PaymentServiceImplTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals("400 - ERR_02 - purchase.delivery.delivery_address.", response.getErrorCode());
         Assertions.assertEquals(FailureCause.INVALID_FIELD_FORMAT, response.getFailureCause());
 
     }
@@ -80,7 +80,7 @@ public class PaymentServiceImplTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals("400 - ERR_04 - customer.identity.person_type", response.getErrorCode());
         Assertions.assertEquals(FailureCause.INVALID_DATA, response.getFailureCause());
 
         // test du format décrit sous confluence (sans objet 'error'
@@ -99,7 +99,7 @@ public class PaymentServiceImplTest {
         Mockito.doReturn(responseMocked2).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
         response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("400", response.getErrorCode());
+        Assertions.assertEquals("400 - ERR_04 - customer.identity.person_type", response.getErrorCode());
         Assertions.assertEquals(FailureCause.INVALID_DATA, response.getFailureCause());
 
     }
@@ -111,7 +111,7 @@ public class PaymentServiceImplTest {
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("404", response.getErrorCode());
+        Assertions.assertEquals("404 - ERR_02 - purchase.delivery.delivery_address.", response.getErrorCode());
         Assertions.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
 
     }
