@@ -81,7 +81,7 @@ public class OneyConfirmRequest extends OneyRequest {
         public Builder(RedirectionPaymentRequest paymentRequest) throws InvalidDataException {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
-            this.languageCode = paymentRequest.getLocale().getLanguage();
+            this.languageCode = paymentRequest.getRequestContext().getRequestData().get(LANGUAGE_CODE_KEY);
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
@@ -146,7 +146,6 @@ public class OneyConfirmRequest extends OneyRequest {
             }
 
         }
-
 
     }
 

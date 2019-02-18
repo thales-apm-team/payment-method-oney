@@ -50,6 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
         try {
             final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
+            final String merchLanguage = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, LANGUAGE_CODE_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
             final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
@@ -69,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withPaymentdata(paymentData)
                     .withCustomer(customer)
                     .withPurchase(purchase)
-                    .withMerchantLanguageCode(language)
+                    .withMerchantLanguageCode(merchLanguage)
                     .withEncryptKey(chiffrementKey)
                     .withMerchantContext(paymentRequest.getSoftDescriptor())
                     .withPspContext(paymentRequest.getTransactionId())
@@ -95,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
 
                 return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                         .withFailureCause(handleOneyFailureResponse(failureResponse))
-                        .withErrorCode(failureResponse.getCode().toString())
+                        .withErrorCode(failureResponse.toPaylineErrorCode())
                         .build();
             } else {
                 //Response OK on recupere url envoyee par Oney
@@ -108,12 +109,11 @@ public class PaymentServiceImpl implements PaymentService {
                 PaymentResponseRedirect.RedirectionRequest redirectionRequest = new PaymentResponseRedirect.RedirectionRequest(responseRedirectURL);
                 Map<String, String> oneyContext = new HashMap<>();
                 //RequestData
-                oneyContext.put(OneyConstants.PSP_GUID_KEY, oneyRequest.getPspGuid());
-                oneyContext.put(OneyConstants.MERCHANT_GUID_KEY, oneyRequest.getMerchantGuid());
-                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, generateReference(oneyRequest.getPurchase()));
-                oneyContext.put(OneyConstants.PAYMENT_AMOUNT_KEY, oneyRequest.getPaymentData().getAmount().toString());
-                //Ajout language code ??
-                oneyContext.put(OneyConstants.LANGUAGE_CODE_KEY, paymentRequest.getLocale().getLanguage());
+                oneyContext.put(OneyConstants.PSP_GUID_KEY, pspGuid);
+                oneyContext.put(OneyConstants.MERCHANT_GUID_KEY, merchGuid);
+                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, generateReference(purchase));
+                oneyContext.put(OneyConstants.PAYMENT_AMOUNT_KEY, paymentData.getAmount().toString());
+                oneyContext.put(OneyConstants.LANGUAGE_CODE_KEY, language);
 
                 RequestContext requestContext = RequestContext.RequestContextBuilder.aRequestContext()
                         .withRequestData(oneyContext)

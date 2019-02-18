@@ -94,7 +94,7 @@ public class OneyErrorHandlerTest {
     }
 
     @Test
-    public void tesHandleOneyFailureResponseFromCause() {
+    public void handleOneyFailureResponseFromCause() {
         String json = "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"payment.business_transaction.code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be less than or equal to [5] characters\"}]}}";
 
         StringResponse stringResponse = createStringResponse(400, "Bad request", json);

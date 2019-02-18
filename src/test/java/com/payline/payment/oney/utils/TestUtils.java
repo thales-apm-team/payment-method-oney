@@ -54,9 +54,9 @@ public class TestUtils {
 
     private static String testPhonenumber = null;
 
-    private static String getTestphoneNumber() {
+    private static String getTestphoneNumber(TestCountry testCountry) {
         if (testPhonenumber == null) {
-            testPhonenumber = "+32" + RandomStringUtils.random(9, false, true);
+            testPhonenumber = testCountry.getIndicatifTel() + RandomStringUtils.random(9, false, true);
         }
         return testPhonenumber;
     }
@@ -92,7 +92,7 @@ public class TestUtils {
      *
      * @return PaymentFormContext which contain a mobile phone number and a iban
      */
-    public static PaymentFormContext createDefaultPaymentFormContext(String phoneNumber) {
+    public static PaymentFormContext createDefaultPaymentFormContext() {
         Map<String, String> paymentFormParameter = new HashMap<>();
         paymentFormParameter.put(TEST_PSP_GUID_KEY, GUID_KEY);
 
@@ -133,25 +133,40 @@ public class TestUtils {
      * @return PaymentRequest.Builder
      */
 
+
     public static PaymentRequest.Builder createCompletePaymentBuilder() {
+        return createCompletePaymentBuilder(TestCountry.BE, createContractConfiguration(),
+                createDefaultPaymentFormContext(), createDefaultPartnerConfiguration());
+    }
+
+    public static PaymentRequest.Builder createCompletePaymentBuilder(
+            TestCountry testCountry, ContractConfiguration contractConfiguration,
+            PaymentFormContext paymentFormContext, PartnerConfiguration partnerConfiguration) {
         final Amount amount = createAmount(CONFIRM_AMOUNT, CURRENCY_EUR);
-        final ContractConfiguration contractConfiguration = createContractConfiguration();
 
         final String transactionID = createTransactionId();
+        Locale testLocale = null;
+        Locale[] all = Locale.getAvailableLocales();
+        for (Locale locale : all) {
+            String country = locale.getCountry();
+            if (country.equalsIgnoreCase(testCountry.name())) {
+                testLocale = locale;
+                break;
+            }
+        }
         final Order order = createOrder(transactionID);
         return PaymentRequest.builder()
                 .withAmount(amount)
-                .withBrowser(new Browser("", LOCALE_FR))
+                .withBrowser(new Browser("", testLocale))
                 .withContractConfiguration(contractConfiguration)
                 .withEnvironment(TEST_ENVIRONMENT)
                 .withOrder(order)
-                .withLocale(LOCALE_FR)
+                .withLocale(testLocale)
                 .withTransactionId(transactionID)
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
-                .withPaymentFormContext(createDefaultPaymentFormContext(getTestphoneNumber()))
-                .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withLocale(LOCALE_FR)
-                .withBuyer(createDefaultBuyer());
+                .withPaymentFormContext(paymentFormContext)
+                .withPartnerConfiguration(partnerConfiguration)
+                .withBuyer(createDefaultBuyer(testCountry));
     }
 
     //Cree une redirection payment par defaut
@@ -166,6 +181,7 @@ public class TestUtils {
         requestData.put(TEST_PSP_GUID_KEY, GUID_KEY);
         requestData.put(SECRET_KEY, "Method-body");
         requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
+        requestData.put(LANGUAGE_CODE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
 
         final RequestContext requestContext = RequestContext.RequestContextBuilder
@@ -181,7 +197,7 @@ public class TestUtils {
                 .withLocale(LOCALE_FR)
                 .withTransactionId(transactionID)
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
-                .withPaymentFormContext(createDefaultPaymentFormContext(getTestphoneNumber()))
+                .withPaymentFormContext(createDefaultPaymentFormContext())
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .withBuyer(createDefaultBuyer())
                 //propre a la redirectionPayment
@@ -210,8 +226,8 @@ public class TestUtils {
         return addresses;
     }
 
-    public static Map<Buyer.AddressType, Address> createDefaultAddresses() {
-        Address address = createDefaultCompleteAddress();
+    public static Map<Buyer.AddressType, Address> createDefaultAddresses(TestCountry testCountry) {
+        Address address = createDefaultCompleteAddress(testCountry);
         return createAddresses(address);
     }
 
@@ -257,16 +273,19 @@ public class TestUtils {
 
 
     public static Buyer.FullName createFullName() {
-        return new Buyer.FullName(RandomStringUtils.random(7, true, false), RandomStringUtils.random(10, true, false), "4");
+        return new Buyer.FullName(
+                RandomStringUtils.random(7, true, false),
+                RandomStringUtils.random(10, true, false),
+                "4");
     }
 
-    public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers() {
+    public static Map<Buyer.PhoneNumberType, String> createDefaultPhoneNumbers(TestCountry testCountry) {
         Map<Buyer.PhoneNumberType, String> phoneNumbers = new HashMap<>();
-        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, "+32" + RandomStringUtils.random(10, false, true));
-        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, getTestphoneNumber());
-        phoneNumbers.put(Buyer.PhoneNumberType.HOME, "+32" + RandomStringUtils.random(10, false, true));
-        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, "+32" + RandomStringUtils.random(10, false, true));
-        phoneNumbers.put(Buyer.PhoneNumberType.WORK, "+32" + RandomStringUtils.random(10, false, true));
+        phoneNumbers.put(Buyer.PhoneNumberType.BILLING, getTestphoneNumber(testCountry));
+        phoneNumbers.put(Buyer.PhoneNumberType.CELLULAR, getTestphoneNumber(testCountry));
+        phoneNumbers.put(Buyer.PhoneNumberType.HOME, getTestphoneNumber(testCountry));
+        phoneNumbers.put(Buyer.PhoneNumberType.UNDEFINED, getTestphoneNumber(testCountry));
+        phoneNumbers.put(Buyer.PhoneNumberType.WORK, getTestphoneNumber(testCountry));
 
         return phoneNumbers;
     }
@@ -275,7 +294,7 @@ public class TestUtils {
         final ContractConfiguration contractConfiguration = new ContractConfiguration("Oney", new HashMap<>());
         contractConfiguration.getContractProperties().put(MERCHANT_GUID_KEY, new ContractProperty("9813e3ff-c365-43f2-8dca-94b850befbf9"));
         contractConfiguration.getContractProperties().put(OPC_KEY, new ContractProperty("3x002"));
-        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2"));
+        contractConfiguration.getContractProperties().put(NB_ECHEANCES_KEY, new ContractProperty("2x"));
         contractConfiguration.getContractProperties().put(COUNTRY_CODE_KEY, new ContractProperty("BE")); // ouy 3 caractères
         contractConfiguration.getContractProperties().put(LANGUAGE_CODE_KEY, new ContractProperty("fr"));
         contractConfiguration.getContractProperties().put(ID_INTERNATIONAL_KEY, new ContractProperty("FR"));
@@ -307,16 +326,6 @@ public class TestUtils {
     }
 
 
-    public static Address createAddress(String street, String city, String zip) {
-        return Address.AddressBuilder.anAddress()
-                .withStreet1(street)
-                .withCity(city)
-                .withZipCode(zip)
-                .withCountry("BE")
-                .build();
-    }
-
-
     public static Address createCompleteAddress(String street, String street2, String city, String zip, String country) {
         return Address.AddressBuilder.anAddress()
                 .withStreet1(street)
@@ -329,11 +338,11 @@ public class TestUtils {
     }
 
 
-    public static Address createDefaultCompleteAddress() {
+    public static Address createDefaultCompleteAddress(TestCountry testCountry) {
         return createCompleteAddress(RandomStringUtils.random(3, false, true)
                         + " rue " + RandomStringUtils.random(5, true, false),
                 "residence " + RandomStringUtils.random(9
-                        , true, false), "Bruxelles", "1000", "BE");
+                        , true, false), "Bruxelles", "1000", testCountry.name());
     }
 
     public static Buyer createBuyer(Map<Buyer.PhoneNumberType, String> phoneNumbers, Map<Buyer.AddressType, Address> addresses, Buyer.FullName fullName) {
@@ -371,7 +380,11 @@ public class TestUtils {
     }
 
     public static Buyer createDefaultBuyer() {
-        return createBuyer(createDefaultPhoneNumbers(), createDefaultAddresses(), createFullName());
+        return createDefaultBuyer(TestCountry.BE);
+    }
+
+    public static Buyer createDefaultBuyer(TestCountry testCountry) {
+        return createBuyer(createDefaultPhoneNumbers(testCountry), createDefaultAddresses(testCountry), createFullName());
     }
 
     public static PartnerConfiguration createDefaultPartnerConfiguration() {

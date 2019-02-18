@@ -66,7 +66,7 @@ public class PaymentWithRedirectionServiceTest {
 
         PaymentResponse response = service.validatePayment(paymentRequest);
         PaymentResponseFailure fail = (PaymentResponseFailure) response;
-        Assertions.assertEquals("400", fail.getErrorCode());
+        Assertions.assertEquals("400 - ERR_04 - Merchant_request_id", fail.getErrorCode());
         Assertions.assertEquals(FailureCause.INVALID_DATA, fail.getFailureCause());
     }
 

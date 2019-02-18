@@ -279,10 +279,11 @@ public class PluginUtilsTest {
         Map<String, String> result = getParametersMap(paymentRequest);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(3, result.size());
         Assertions.assertTrue(result.containsKey(PARTNER_AUTHORIZATION_KEY));
         Assertions.assertTrue(result.containsKey(PARTNER_API_URL));
         Assertions.assertTrue(result.containsKey(HEADER_COUNTRY_CODE));
+        Assertions.assertTrue(result.containsKey(SECRET_KEY));
+        Assertions.assertEquals(4, result.size());
 
     }
 

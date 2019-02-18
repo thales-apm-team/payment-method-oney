@@ -6,6 +6,7 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -402,6 +403,11 @@ public class PluginUtils {
         parametersMap.put(PARTNER_AUTHORIZATION_KEY, authorization);
         parametersMap.put(PARTNER_API_URL, url);
         parametersMap.put(HEADER_COUNTRY_CODE, coutryCode.toUpperCase());
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            parametersMap.put(SECRET_KEY, SECRET_VALUE_ON);
+        } else {
+            parametersMap.put(SECRET_KEY, SECRET_VALUE_OFF);
+        }
 
         return parametersMap;
     }

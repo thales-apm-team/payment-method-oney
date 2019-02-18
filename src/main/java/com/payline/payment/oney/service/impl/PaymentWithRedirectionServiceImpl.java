@@ -166,7 +166,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withFailureCause(handleOneyFailureResponse(failureResponse))
-                    .withErrorCode(failureResponse.getCode().toString())
+                    .withErrorCode(failureResponse.toPaylineErrorCode())
                     .build();
         }
         //Confirmation OK, on traite la reponse
@@ -174,7 +174,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             //On dechiffre la response
             TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), confirmRequest.getEncryptKey());
             //Si Oney renvoie une message vide, on renvoi un Payment Failure response
-            if (responseDecrypted.getStatusPurchase() == null) {
+            if (responseDecrypted == null || responseDecrypted.getStatusPurchase() == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
                 LOGGER.error("Payment is null");
                 return OneyErrorHandler.getPaymentResponseFailure(

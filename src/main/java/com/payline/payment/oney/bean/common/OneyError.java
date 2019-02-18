@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class OneyError extends OneyBean {
 
+    private static final String SEP = " - ";
+
     @SerializedName("field")
     private String field;
     @SerializedName("error_code")
@@ -30,11 +32,11 @@ public class OneyError extends OneyBean {
         return error;
     }
 
-    public String getErrorMessge() {
+    public String getPaylineErrorMessge() {
         if (error != null) {
-            return error.getErrorLabel();
+            return SEP + error.getErrorCode() + SEP + error.getField();
         }
-        return errorLabel;
+        return SEP + errorCode + SEP + field;
     }
 
 

@@ -3,9 +3,11 @@ package com.payline.payment.oney.bean.response;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.bean.common.OneyError;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.PluginUtils;
 
 public class OneyFailureResponse extends OneyBean {
-
 
     @SerializedName("code")
     private Integer code;
@@ -29,6 +31,18 @@ public class OneyFailureResponse extends OneyBean {
 
     public String getContent() {
         return content;
+    }
+
+    public String toPaylineErrorCode() {
+        return PluginUtils.truncate(code + getErrorField(), PluginTechnicalException.MAX_LENGHT);
+    }
+
+    private String getErrorField() {
+        if (paymentErrorContent == null || paymentErrorContent.getErrorList() == null || paymentErrorContent.getErrorList().isEmpty()) {
+            return "";
+        }
+        OneyError firstError = paymentErrorContent.getErrorList().get(0);
+        return firstError.getPaylineErrorMessge();
     }
 
     public PaymentErrorResponse getPaymentErrorContent() {
