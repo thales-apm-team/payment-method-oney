@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.utils.TestUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
@@ -155,7 +156,7 @@ public class ConfigurationServiceImplTest {
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(TEST_PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
@@ -187,7 +188,7 @@ public class ConfigurationServiceImplTest {
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(TEST_PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
@@ -220,7 +221,7 @@ public class ConfigurationServiceImplTest {
 
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(TEST_PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
@@ -252,7 +253,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, "psp_id_test");
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(TEST_PARTNER_AUTHORIZATION_KEY, "mykey");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
@@ -283,7 +284,7 @@ public class ConfigurationServiceImplTest {
         contractConfiguration.getContractProperties().put(PARTNER_CHIFFREMENT_KEY, secretKey);
 
         Map<String, String> partnerConfiguration = new HashMap<>();
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
         Map<String, String> sensitivePartnerConfiguration = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.payline.payment.oney.integration;
 
 import com.payline.payment.oney.service.impl.ConfigurationServiceImpl;
+import com.payline.payment.oney.utils.TestUtils;
 import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
@@ -27,7 +28,7 @@ public class CheckTestIT {
     public static final String PSP_KEY = "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a";
     public static final String ONEY_API_URL = "https://oney-staging.azure-api.net";
     public static final ContractProperty CHIFFREMENT_KEY = new ContractProperty("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
-    public static final String METHOD_BODY = "None";
+    public static final String METHOD_BODY = TestUtils.getSecretKey();
     public static final String COUNTRY_CODE = "BE";
     public static final String LANG_CODE = "fr";
 
