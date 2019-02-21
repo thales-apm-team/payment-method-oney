@@ -1,6 +1,5 @@
 package com.payline.payment.oney.utils.properties.service;
 
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.payment.oney.utils.properties.constants.LogoConstants;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +37,4 @@ public enum LogoPropertiesEnum implements PropertiesService {
         return getProperty(properties, key);
     }
 
-    @Override
-    public String get(String key, ConfigEnvironment environment) {
-        return getProperty(properties, key, environment);
-    }
 }
