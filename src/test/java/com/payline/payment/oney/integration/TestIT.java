@@ -178,7 +178,7 @@ public abstract class TestIT extends AbstractPaymentIntegration {
     public PartnerConfiguration generatePartnerConfiguration() {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(getPspGuid().getKey(), getPspGuid().getValue());
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(getPartnerAuthorizationKey().getKey(), getPartnerAuthorizationKey().getValue());
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 

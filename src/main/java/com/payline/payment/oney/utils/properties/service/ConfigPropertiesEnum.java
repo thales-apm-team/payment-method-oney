@@ -1,6 +1,5 @@
 package com.payline.payment.oney.utils.properties.service;
 
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +16,7 @@ public enum ConfigPropertiesEnum implements PropertiesService {
 
     private static final String FILENAME = "config.properties";
 
-    private final Properties properties;
+    protected final Properties properties;
 
     /* This class has only static methods: no need to instantiate it */
     ConfigPropertiesEnum() {
@@ -37,8 +36,4 @@ public enum ConfigPropertiesEnum implements PropertiesService {
         return getProperty(properties, key);
     }
 
-    @Override
-    public String get(String key, ConfigEnvironment environment) {
-        return getProperty(properties, key, environment);
-    }
 }

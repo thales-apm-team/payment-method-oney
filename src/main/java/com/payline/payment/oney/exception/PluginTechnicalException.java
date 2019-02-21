@@ -33,7 +33,7 @@ public class PluginTechnicalException extends Exception {
      */
     public PluginTechnicalException(Exception e, String errorCodeOrLabel) {
         super(e);
-        this.message = e.getMessage();
+        this.message = e == null ? "" : e.getMessage();
         this.errorCodeOrLabel = errorCodeOrLabel;
         LOGGER.error(errorCodeOrLabel, e);
 

@@ -1,33 +1,15 @@
 package com.payline.payment.oney.integration;
 
-import com.payline.payment.oney.utils.TestCountry;
 import com.payline.pmapi.bean.payment.ContractProperty;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.junit.jupiter.api.Test;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class FranceTestIT extends TestIT {
-
-    public static final String TEST_PSP_GUID_KEY = PSP_GUID_KEY + ".fr";
-
-    public static final String TEST_PARTNER_AUTHORIZATION_KEY = PARTNER_AUTHORIZATION_KEY + ".fr";
-
-    private HashMap<String, ContractProperty> contractConfiguration;
-
-    @Override
-    public Map.Entry<String, String> getPspGuid() {
-        return new AbstractMap.SimpleEntry<String, String>(TEST_PSP_GUID_KEY, "34b7cd77fe6642a1acd9d91df5f1d1f0");
-    }
-
-    @Override
-    public Map.Entry<String, String> getPartnerAuthorizationKey() {
-        return new AbstractMap.SimpleEntry<String, String>(TEST_PARTNER_AUTHORIZATION_KEY, "06074f792da24b2e99cd9af3874aaf9f");
-    }
 
     @Override
     protected Map<String, ContractProperty> generateParameterContract() {
@@ -46,10 +28,5 @@ public class FranceTestIT extends TestIT {
         PaymentRequest request = createDefaultPaymentRequest();
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
 
-    }
-
-    @Override
-    public TestCountry getContry() {
-        return TestCountry.FR;
     }
 }

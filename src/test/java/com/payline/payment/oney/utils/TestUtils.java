@@ -1,6 +1,7 @@
 package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.utils.http.StringResponse;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.common.Buyer.Address;
@@ -54,7 +55,7 @@ public class TestUtils {
 
     private static String testPhonenumber = null;
 
-    private static String getTestphoneNumber(TestCountry testCountry) {
+    public static String getTestphoneNumber(TestCountry testCountry) {
         if (testPhonenumber == null) {
             testPhonenumber = testCountry.getIndicatifTel() + RandomStringUtils.random(9, false, true);
         }
@@ -179,7 +180,7 @@ public class TestUtils {
 
         Map<String, String> requestData = new HashMap<>();
         requestData.put(TEST_PSP_GUID_KEY, GUID_KEY);
-        requestData.put(SECRET_KEY, "Method-body");
+        requestData.put(SECRET_KEY, TestUtils.getSecretKey());
         requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
         requestData.put(LANGUAGE_CODE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
@@ -390,7 +391,7 @@ public class TestUtils {
     public static PartnerConfiguration createDefaultPartnerConfiguration() {
         Map<String, String> partnerConfiguration = new HashMap<>();
         partnerConfiguration.put(TEST_PSP_GUID_KEY, GUID_KEY);
-        partnerConfiguration.put(SECRET_KEY, "Method-body");
+        partnerConfiguration.put(SECRET_KEY, TestUtils.getSecretKey());
         partnerConfiguration.put(TEST_PARTNER_AUTHORIZATION_KEY, "7fd3f1c53b9a47f7b85c801a32971895");
         partnerConfiguration.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
 
@@ -452,5 +453,14 @@ public class TestUtils {
                 .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
                 .withTransactionId(createTransactionId())
                 .build();
+    }
+
+    public static String getSecretKey() {
+
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            return SECRET_VALUE_ON;
+        } else {
+            return SECRET_VALUE_OFF;
+        }
     }
 }
