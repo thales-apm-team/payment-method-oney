@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.utils.OneyConfigBean;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -20,7 +21,7 @@ import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundReques
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RefundServiceImplTest {
+public class RefundServiceImplTest extends OneyConfigBean {
 
     @InjectMocks
     public RefundServiceImpl service;
@@ -72,10 +73,22 @@ public class RefundServiceImplTest {
     }
 
     @Test
-    public void handleStatusRequest() throws Exception {
+    public void handleStatusRequestEncrypted() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
+        mockCorrectlyConfigPropertiesEnum(true);
+        String status = service.handleStatusRequest(refundReq);
+
+        Assertions.assertEquals("FUNDED", status);
+    }
+
+    @Test
+    public void handleStatusRequestNotEncrypted() throws Exception {
+        StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
+        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        RefundRequest refundReq = createDefaultRefundRequest();
+        mockCorrectlyConfigPropertiesEnum(false);
         String status = service.handleStatusRequest(refundReq);
 
         Assertions.assertEquals("FUNDED", status);

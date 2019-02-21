@@ -4,11 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_IS_ACTIVE;
 
 public class OneySuccessPaymentResponse extends OneyResponse {
 
@@ -42,7 +45,7 @@ public class OneySuccessPaymentResponse extends OneyResponse {
         OneySuccessPaymentResponse paymentSuccessResponse = parser.fromJson(json, OneySuccessPaymentResponse.class);
 
         //Cas reponse est chiffree : on dechiffre la reponse afin de recuperer l'url a renvoyer
-        if (paymentSuccessResponse.getReturnedUrl() == null) {
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
             String decryptedMessage = OneyResponse.decryptMessage(paymentSuccessResponse.getEncryptedMessage(), encryptKey);
             paymentSuccessResponse.setReturnedUrl(parser.fromJson(decryptedMessage, OneySuccessPaymentResponse.class).getReturnedUrl());
         }

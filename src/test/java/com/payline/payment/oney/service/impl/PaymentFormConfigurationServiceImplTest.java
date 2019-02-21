@@ -12,9 +12,12 @@ import com.payline.pmapi.bean.paymentform.response.logo.PaymentFormLogoResponse;
 import com.payline.pmapi.bean.paymentform.response.logo.impl.PaymentFormLogoResponseFile;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -24,11 +27,18 @@ import static com.payline.payment.oney.utils.TestUtils.*;
 import static org.mockito.Mockito.when;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentFormConfigurationServiceImplTest {
 
 
     @InjectMocks
-    private PaymentFormConfigurationServiceImpl service = new PaymentFormConfigurationServiceImpl();
+    private PaymentFormConfigurationServiceImpl service;
+
+    @BeforeAll
+    public void setup() {
+        service = new PaymentFormConfigurationServiceImpl();
+        MockitoAnnotations.initMocks(this);
+    }
 
 
     @Test
