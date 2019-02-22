@@ -150,62 +150,56 @@ public class PluginUtils {
     public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
         Map<String, String> textTruncated = new HashMap();
 
-        String line1;
-        String line2;
-        String line3;
-        String line4;
-        String line5;
+        StringBuffer sb = new StringBuffer();
 
-        int fromIndex = size;
-        int fromIndex2 = size;
-        int firstCharPosition = 0;
-        int firstCharPosition2 = 0;
 
-        if (longText == null) {
-            textTruncated.put(LINE_1, "");
+        if (longText != null) {
+            sb.append(longText.trim());
         }
-        //-------------------- address 1
-        else if (longText.length() < size) {
-            textTruncated.put(LINE_1, longText);
-
-        } else {
-            int end1 = longText.lastIndexOf(' ', fromIndex);
-            line1 = longText.substring(firstCharPosition, end1);
-            fromIndex += line1.length();
-            firstCharPosition += line1.length();
-            textTruncated.put(LINE_1, line1);
-
-            int end2 = longText.lastIndexOf(' ', fromIndex);
-            line2 = longText.substring(firstCharPosition, end2);
-            fromIndex += line2.length();
-            firstCharPosition += line2.length();
-            textTruncated.put("line2", line2);
-
-            int end3 = longText.lastIndexOf(' ', fromIndex);
-            line3 = longText.substring(firstCharPosition, end3);
-            textTruncated.put("line3", line3);
+        if (longText2 != null) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(longText2.trim());
         }
-        //-------------------- address 2
-        if (longText2 == null) {
-            textTruncated.put(LINE_4, "");
 
-        } else if (longText2.length() < size) {
-            textTruncated.put(LINE_4, longText2);
+        splitInLines(textTruncated, sb, size);
 
-        } else {
-            int end4 = longText2.lastIndexOf(' ', fromIndex2);
-            line4 = longText2.substring(firstCharPosition2, end4);
-            fromIndex2 += line4.length();
-            firstCharPosition2 += line4.length();
-            textTruncated.put(LINE_4, line4);
-
-            int end5 = longText2.lastIndexOf(' ', fromIndex2);
-            line5 = longText2.substring(firstCharPosition2, end5);
-            textTruncated.put("line5", line5);
-        }
         return textTruncated;
 
     }
+
+    private static void splitInLines(Map<String, String> textTruncated, StringBuffer sb, int max) {
+        int i = 1;
+        String keyBase = "line";
+
+        // pour être sûr de tjs avoir un " " en fin de buffer.
+        sb.append(" ");
+        while (sb.length() > 0 && i < 6) {
+            int limite = getMaxValue(max, sb.length());
+            int end = sb.substring(0, limite).lastIndexOf(" ");
+            end = end > 0 ? end : limite;
+            String line = sb.substring(0, end);
+            textTruncated.put(keyBase + i, line.trim());
+            // sprrime les caractères déjà lus.
+            sb.delete(0, end);
+            int start = 0;
+            while (start != sb.length() && Character.isWhitespace(sb.charAt(start))) {
+                start++;
+            }
+            sb.delete(0, start);
+            i++;
+
+        }
+    }
+
+    private static int getMaxValue(int limit, int size) {
+        if (size >= limit) {
+            return limit;
+        }
+        return size;
+    }
+
 // --------------------------- FIN methode de mapping -----------------------
 
     /**

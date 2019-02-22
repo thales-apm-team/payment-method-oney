@@ -55,7 +55,7 @@ public class TestUtils {
 
     private static String testPhonenumber = null;
 
-    private static String getTestphoneNumber(TestCountry testCountry) {
+    public static String getTestphoneNumber(TestCountry testCountry) {
         if (testPhonenumber == null) {
             testPhonenumber = testCountry.getIndicatifTel() + RandomStringUtils.random(9, false, true);
         }
