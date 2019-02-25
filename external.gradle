@@ -113,14 +113,13 @@ task checkJarSize {
 
 def THALES_TASK_GROUP = 'thales taks'
 
-def byte[] decodedKey = DatatypeConverter.parseBase64Binary("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=");
 
 task encryt {
     group = THALES_TASK_GROUP
 
     gradle.taskGraph.whenReady { taskGraph ->
-
         def toEncrypt = '';
+        def encryptKey = '';
 
         doLast {
             new SwingBuilder().edt {
@@ -144,6 +143,14 @@ task encryt {
                                 tableLayout(cellpadding: 5) {
                                     tr {
                                         td {
+                                            label(text: "Clé de chiffrement:")
+                                        }
+                                        td {
+                                            cle = textField(columns: 60)
+                                        }
+                                    }
+                                    tr {
+                                        td {
                                             label(text: "Json à chiffrer:")
                                         }
                                         td {
@@ -157,6 +164,7 @@ task encryt {
 
                         button(defaultButton: true, text: 'OK', actionPerformed: {
                             toEncrypt = input.text; // Set pass variable to value o
+                            encryptKey = cle.text;
                             dispose(); // Close dialog
                         })
 
@@ -165,6 +173,7 @@ task encryt {
             }
 
 
+            byte[] decodedKey = DatatypeConverter.parseBase64Binary(encryptKey);
             SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
 
 
@@ -185,6 +194,7 @@ task decryt {
     gradle.taskGraph.whenReady { taskGraph ->
 
         def toDecrypt = '';
+        def decryptKey = '';
 
         doLast {
             new SwingBuilder().edt {
@@ -208,6 +218,14 @@ task decryt {
                                 tableLayout(cellpadding: 5) {
                                     tr {
                                         td {
+                                            label(text: "Clé de déchiffrement:")
+                                        }
+                                        td {
+                                            cle = textField(columns: 60)
+                                        }
+                                    }
+                                    tr {
+                                        td {
                                             label(text: "Json à déchiffrer:")
                                         }
                                         td {
@@ -221,6 +239,7 @@ task decryt {
 
                         button(defaultButton: true, text: 'OK', actionPerformed: {
                             toDecrypt = input.text; // Set pass variable to value o
+                            decryptKey = cle.text;
                             dispose(); // Close dialog
                         })
 
@@ -228,6 +247,7 @@ task decryt {
                 } // dialog end
             }
 
+            byte[] decodedKey = DatatypeConverter.parseBase64Binary(decryptKey);
             SecretKeySpec oneySecret = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
 
             // Define variables
