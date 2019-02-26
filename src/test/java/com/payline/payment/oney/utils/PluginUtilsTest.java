@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
-import static com.payline.payment.oney.utils.BeanUtils.*;
+import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
+import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
 
@@ -291,7 +292,6 @@ public class PluginUtilsTest {
     public void testGenerateReference() throws Exception {
         String expected = "external_reference_type%7Cexternal_reference";
         Purchase purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
                 .withCurrencyCode("EUR")
                 .withPurchaseAmount(150f)
                 .withDelivery(createDelivery())

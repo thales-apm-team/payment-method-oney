@@ -33,9 +33,6 @@ public class Purchase extends OneyBean {
     @SerializedName("currency_code")
     private String currencyCode; //ISO 4217
 
-    @SerializedName("purchase_merchant")
-    private PurchaseMerchant purchaseMerchant;
-
     @Required
     @SerializedName("delivery")
     private Delivery delivery;
@@ -65,9 +62,6 @@ public class Purchase extends OneyBean {
         return currencyCode;
     }
 
-    public PurchaseMerchant getPurchaseMerchant() {
-        return purchaseMerchant;
-    }
 
     public Delivery getDelivery() {
         return delivery;
@@ -88,7 +82,6 @@ public class Purchase extends OneyBean {
         this.externalReference = builder.externalReference;
         this.purchaseAmount = builder.purchaseAmount;
         this.currencyCode = builder.currencyCode;
-        this.purchaseMerchant = builder.purchaseMerchant;
         this.delivery = builder.delivery;
         this.listItem = builder.listItem;
         this.numberOfItems = builder.numberOfItems;
@@ -104,7 +97,6 @@ public class Purchase extends OneyBean {
         private String externalReference;
         private Float purchaseAmount;
         private String currencyCode; //ISO 4217
-        private PurchaseMerchant purchaseMerchant;
         private Delivery delivery;
         private List<Item> listItem;
         private Integer numberOfItems;
@@ -130,11 +122,6 @@ public class Purchase extends OneyBean {
 
         public Purchase.Builder withCurrencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
-            return this;
-        }
-
-        public Purchase.Builder withPurchaseMerchant(PurchaseMerchant purchaseMerchant) {
-            this.purchaseMerchant = purchaseMerchant;
             return this;
         }
 
@@ -169,10 +156,6 @@ public class Purchase extends OneyBean {
 
                 }
 
-
-                this.purchaseMerchant = PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                        .fromPayline(request)
-                        .build();
                 this.delivery = Delivery.Builder.aDeliveryBuilder()
                         .fromPayline(request)
                         .build();
