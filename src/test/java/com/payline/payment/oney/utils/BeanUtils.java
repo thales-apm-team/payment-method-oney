@@ -7,7 +7,6 @@ import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.payment.oney.bean.common.purchase.Item;
-import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.ArrayList;
@@ -70,14 +69,6 @@ public class BeanUtils {
                 .build();
     }
 
-    public static PurchaseMerchant createPurchaseMerchant() throws Exception {
-        return PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                .withCompanyName("cie")
-                .withExternalReference("ref")
-                .withMerchantGuid("guid")
-                .withMunicipality("city")
-                .build();
-    }
 
     public static Delivery createDelivery() throws Exception {
 

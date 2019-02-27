@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.util.Currency;
 
-import static com.payline.payment.oney.utils.BeanUtils.*;
+import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
+import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.TestUtils.CONFIRM_AMOUNT;
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 
@@ -19,7 +20,6 @@ public class PurchaseTest {
     @Test
     public void purchase() throws Exception {
         purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
                 .withCurrencyCode("EUR")
                 .withPurchaseAmount(150f)
                 .withDelivery(createDelivery())
@@ -55,7 +55,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
                     .withPurchaseAmount(150f)
                     .withDelivery(createDelivery())
@@ -74,7 +73,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
                     .withPurchaseAmount(150f)
                     .withExternalReference("externalRef")
@@ -93,7 +91,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
                     .withPurchaseAmount(150f)
                     .withDelivery(createDelivery())
@@ -112,7 +109,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
                     .withPurchaseAmount(150f)
                     .withDelivery(createDelivery())
@@ -131,7 +127,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withCurrencyCode("EUR")
                     .withDelivery(createDelivery())
                     .withExternalReference("externalRef")
@@ -150,7 +145,6 @@ public class PurchaseTest {
 
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             purchase = Purchase.Builder.aPurchaseBuilder()
-                    .withPurchaseMerchant(createPurchaseMerchant())
                     .withPurchaseAmount(150f)
                     .withDelivery(createDelivery())
                     .withExternalReference("externalRef")
