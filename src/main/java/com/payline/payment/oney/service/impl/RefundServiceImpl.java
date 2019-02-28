@@ -129,7 +129,7 @@ public class RefundServiceImpl implements RefundService {
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
-                transactionStatusCode = response.getStatusPurchase().getStatusCode();
+                transactionStatusCode = response.getStatusPurchase() == null ? null : response.getStatusPurchase().getStatusCode();
             }
 
         } catch (PluginTechnicalException e) {

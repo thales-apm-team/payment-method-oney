@@ -185,7 +185,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
             //definir les additionals data a renvoyer
             //Additional data  : ajouter purchaseReference ? amount ? transaction status ??
-            String message = (responseDecrypted.getStatusPurchase() == null) ? "" : responseDecrypted.getStatusPurchase().getStatusLabel();
+            String message = responseDecrypted.getStatusPurchase().getStatusLabel();
 
 
             return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()

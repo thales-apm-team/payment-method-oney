@@ -149,6 +149,7 @@ public class OneyConfirmRequest extends OneyRequest {
 
     }
 
+    @Override
     public String toString() {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         return gson.toJson(this);

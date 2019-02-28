@@ -18,9 +18,11 @@ import java.math.BigInteger;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
-import static com.payline.payment.oney.utils.BeanUtils.*;
+import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
+import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
 
@@ -38,7 +40,6 @@ public class PluginUtilsTest {
 
     @BeforeAll
     public void setUp() {
-        merchantId1 = generateMerchantRequestId("merchantId");
         paymentRequest = TestUtils.createCompletePaymentBuilder().build();
         partnerConfiguration = paymentRequest.getPartnerConfiguration();
         contractConfiguration = paymentRequest.getContractConfiguration();
@@ -291,7 +292,6 @@ public class PluginUtilsTest {
     public void testGenerateReference() throws Exception {
         String expected = "external_reference_type%7Cexternal_reference";
         Purchase purchase = Purchase.Builder.aPurchaseBuilder()
-                .withPurchaseMerchant(createPurchaseMerchant())
                 .withCurrencyCode("EUR")
                 .withPurchaseAmount(150f)
                 .withDelivery(createDelivery())
@@ -347,8 +347,10 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testGenerateMerchantRequestId() {
+    public void testGenerateMerchantRequestId() throws Exception {
 
+        merchantId1 = generateMerchantRequestId("merchantId");
+        TimeUnit.SECONDS.sleep(1);
         String merchantId2 = generateMerchantRequestId("merchantId");
         Assertions.assertNotEquals(merchantId1, merchantId2);
     }

@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.utils.OneyConfigBean;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -20,7 +21,7 @@ import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuil
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PaymentServiceImplTest {
+public class PaymentServiceImplTest extends OneyConfigBean {
 
 
     @Spy
@@ -38,10 +39,11 @@ public class PaymentServiceImplTest {
 
 
     @Test
-    public void paymentRequestOK() throws HttpCallException {
+    public void paymentRequestOKEncrypted() throws HttpCallException {
 
         StringResponse responseEncryptedMocked = createStringResponse(200, "", "{\"encrypted_message\": \"FhzjXBU2Ek+/dmCMVB4wWn6ytL2+dh5mIx+gxDtcp4rTSzO/LA1Q72aClEvNoeXVdc3wg8L8PpMvAhRkWkLc1DyuX14icAZP8C7uA5COgRIzklUPJq/d9tiDWXxszS9o4ALbCfpGYqSgUN38fBnJhC9Y7RBqY4eq+H0iTRtvfYSLmKumsYvQFJY/21j+Xou/ZLppruwA6/MNC0nDGXw2o2PJeMGm+e5i4lUlqowvecmZ+GWQM91pOrb95B/pqriDYwZnnRQrewuhAyvIkR8LVQ==\"}");
         Mockito.doReturn(responseEncryptedMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        mockCorrectlyConfigPropertiesEnum(true);
         PaymentResponseRedirect response = (PaymentResponseRedirect) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response.getRedirectionRequest().getUrl());
         Assertions.assertNotNull(response.getRequestContext().getRequestData().get(OneyConstants.MERCHANT_GUID_KEY));
@@ -49,10 +51,36 @@ public class PaymentServiceImplTest {
     }
 
     @Test
-    public void paymentRequestKO() throws HttpCallException {
+    public void paymentRequestOKNotEncrypted() throws HttpCallException {
+
+        StringResponse responseEncryptedMocked = createStringResponse(200, "", "{\"returned_url\": \"https://pplogin.oney.be/Subscription/PaymentPage_Entry.aspx?Token=PlzTT7EsMCuFilPzV6XS2HUmLiJ7R25hibsGy4BBJ7YXWprwJoNO4hRmttwx5x8%2fOttm5IcgMOUlZ6OUCV8mxIQyjjGSM0a88BqhGfoo6oc%3d\"}");
+        Mockito.doReturn(responseEncryptedMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        mockCorrectlyConfigPropertiesEnum(false);
+        PaymentResponseRedirect response = (PaymentResponseRedirect) service.paymentRequest(createCompletePaymentBuilder().build());
+        Assertions.assertNotNull(response.getRedirectionRequest().getUrl());
+        Assertions.assertNotNull(response.getRequestContext().getRequestData().get(OneyConstants.MERCHANT_GUID_KEY));
+
+    }
+
+    @Test
+    public void paymentRequestKOEncrypted() throws HttpCallException {
         StringResponse responseMocked = createStringResponse(400, "Bad request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"purchase.delivery.delivery_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"customer.customer_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"payment.payment_type\",\"error_code\":\"ERR_03\",\"error_label\":\"Format of the field is invalid [{Integer}]\"}]}}");
 
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        mockCorrectlyConfigPropertiesEnum(true);
+        PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("400 - ERR_02 - purchase.delivery.delivery_address.", response.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_FIELD_FORMAT, response.getFailureCause());
+
+    }
+
+    @Test
+    public void paymentRequestKONotEncrypted() throws HttpCallException {
+        StringResponse responseMocked = createStringResponse(400, "Bad request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"purchase.delivery.delivery_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"purchase.item_list.category_code\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{Integer}]\"},{\"field\":\"customer.customer_address.country_code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be equal to [3] characters\"},{\"field\":\"payment.payment_type\",\"error_code\":\"ERR_03\",\"error_label\":\"Format of the field is invalid [{Integer}]\"}]}}");
+
+        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        mockCorrectlyConfigPropertiesEnum(false);
         PaymentResponseFailure response = (PaymentResponseFailure) service.paymentRequest(createCompletePaymentBuilder().build());
         Assertions.assertNotNull(response);
         Assertions.assertEquals("400 - ERR_02 - purchase.delivery.delivery_address.", response.getErrorCode());
