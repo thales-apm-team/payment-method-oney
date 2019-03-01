@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class PurchaseTest {
                 .withExternalReference("externalRef")
                 .withListItem(createItemList())
                 .withNumberOfItems(2)
-                .withExternalReferenceType("CMDE")
+                .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                 .build();
 
         Assertions.assertNotNull(purchase);
@@ -60,7 +61,7 @@ public class PurchaseTest {
                     .withDelivery(createDelivery())
                     .withExternalReference("externalRef")
                     .withNumberOfItems(2)
-                    .withExternalReferenceType("CMDE")
+                    .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                     .build();
         });
         Assertions.assertEquals("Purchase must have a listItem when built", exception.getMessage());
@@ -78,7 +79,7 @@ public class PurchaseTest {
                     .withExternalReference("externalRef")
                     .withListItem(createItemList())
                     .withNumberOfItems(2)
-                    .withExternalReferenceType("CMDE")
+                    .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                     .build();
         });
         Assertions.assertEquals("Purchase must have a delivery when built", exception.getMessage());
@@ -112,7 +113,7 @@ public class PurchaseTest {
                     .withCurrencyCode("EUR")
                     .withPurchaseAmount(150f)
                     .withDelivery(createDelivery())
-                    .withExternalReferenceType("CMDE")
+                    .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                     .withListItem(createItemList())
                     .withNumberOfItems(2)
                     .build();
@@ -132,7 +133,7 @@ public class PurchaseTest {
                     .withExternalReference("externalRef")
                     .withListItem(createItemList())
                     .withNumberOfItems(2)
-                    .withExternalReferenceType("CMDE")
+                    .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                     .build();
         });
         Assertions.assertEquals("Purchase must have a purchaseAmount when built", exception.getMessage());
@@ -150,7 +151,7 @@ public class PurchaseTest {
                     .withExternalReference("externalRef")
                     .withListItem(createItemList())
                     .withNumberOfItems(2)
-                    .withExternalReferenceType("CMDE")
+                    .withExternalReferenceType(OneyConstants.EXTERNAL_REFERENCE_TYPE)
                     .build();
         });
         Assertions.assertEquals("Purchase must have a currencyCode when built", exception.getMessage());
