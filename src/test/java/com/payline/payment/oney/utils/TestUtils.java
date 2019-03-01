@@ -43,7 +43,7 @@ public class TestUtils {
     public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String CONFIRM_EXTERNAL_REFERENCE = OneyConstants.EXTERNAL_REFERENCE_TYPE + PIPE + TRANSACTION_ID;
-    // TODO: Corriger ça, c'est faux ! C'est external_reference qu'il faut mettre, et pas le transaction ID.
+    // TODO PAYLAPMEXT-114: Corriger ça, c'est faux ! C'est external_reference qu'il faut mettre, et pas le transaction ID.
 
     private static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
     private static final Locale LOCALE_FR = Locale.FRANCE;

@@ -86,6 +86,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PSP_GUID_KEY))
+                    // TODO PAYLAPMEXT-114 : Faux ! à corriger.
                     .withPurchaseReference(transactionStatusRequest.getTransactionId())
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(transactionStatusRequest));
@@ -99,6 +100,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PSP_GUID_KEY))
+                    // TODO PAYLAPMEXT-114 : Faux ! à corriger.
                     .withPurchaseReference(refundRequest.getTransactionId())
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(refundRequest));

@@ -97,7 +97,7 @@ public class OneyConfirmRequest extends OneyRequest {
         public Builder(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, MERCHANT_GUID_KEY);
 
-            this.purchaseReference = transactionStatusRequest.getTransactionId();
+            this.purchaseReference = transactionStatusRequest.getTransactionId(); // TODO PAYLAPMEXT-114 : Faux ! à corriger.
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PSP_GUID_KEY);

@@ -248,8 +248,8 @@ public class PluginUtils {
         return locale.getDisplayCountry();
     }
 
+    // TODO PAYLAPMEXT-114 : utiliser cette fonction partout où c'est nécessaire ! C'est la bonne façon de construire la référence à passer dans l'URL
     public static String generateReference(Purchase purchase) {
-
         return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
     }
 
