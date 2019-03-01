@@ -142,8 +142,8 @@ public class OneyAddressTest {
                 .fromPayline(getBuyer(street1, street2), Buyer.AddressType.BILLING)
                 .build();
 
-        Assertions.assertEquals("Viale BARBARO DI SAN GIORGIO RAMIRO", oneyAddress.getLine1());
-        Assertions.assertEquals("10", oneyAddress.getLine2());
+        Assertions.assertEquals("Viale BARBARO DI SAN GIORGIO RAMIRO 10", oneyAddress.getLine1());
+        Assertions.assertNull(oneyAddress.getLine2());
         Assertions.assertNull(oneyAddress.getLine3());
         Assertions.assertNull(oneyAddress.getLine4());
         Assertions.assertNull(oneyAddress.getLine5());
