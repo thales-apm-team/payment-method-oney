@@ -1,32 +1,26 @@
 package com.payline.payment.oney.bean.request;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.util.Map;
 
-public class OneyTransactionStatusRequest extends OneyRequest {
-
-    @SerializedName("reference")
-    private String purchaseReference;
+public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
 
     @SerializedName("language_code")
     private String languageCode;
-
-
-    public String getPurchaseReference() {
-        return purchaseReference;
-    }
-
+    
     public String getLanguageCode() {
         return languageCode;
     }
-
 
     private OneyTransactionStatusRequest(OneyTransactionStatusRequest.Builder builder) {
         this.purchaseReference = builder.purchaseReference;
@@ -38,8 +32,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
     }
 
-    public static class Builder {
-        private String purchaseReference;
+    public static class Builder extends ParameterizedUrlOneyRequest.Builder {
         private String languageCode;
         private String merchantGuid;
         private String pspGuid;
@@ -48,12 +41,6 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
         public static OneyTransactionStatusRequest.Builder aOneyGetStatusRequest() {
             return new OneyTransactionStatusRequest.Builder();
-        }
-
-
-        public Builder withPurchaseReference(String purchaseReference) {
-            this.purchaseReference = purchaseReference;
-            return this;
         }
 
         public Builder withLanguageCode(String languageCode) {
@@ -68,6 +55,16 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
         public Builder withPspGuid(String pspGuid) {
             this.pspGuid = pspGuid;
+            return this;
+        }
+
+        public Builder withPurchaseReference(String purchaseReference ){
+            this.purchaseReference = purchaseReference;
+            return this;
+        }
+
+        public Builder withPurchaseReferenceFromOrder( Order order ){
+            super.withPurchaseReferenceFromOrder( order );
             return this;
         }
 
@@ -86,7 +83,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PSP_GUID_KEY))
-                    .withPurchaseReference(transactionStatusRequest.getTransactionId())
+                    .withPurchaseReferenceFromOrder( transactionStatusRequest.getOrder() )
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(transactionStatusRequest));
 
@@ -99,11 +96,9 @@ public class OneyTransactionStatusRequest extends OneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PSP_GUID_KEY))
-                    .withPurchaseReference(refundRequest.getTransactionId())
+                    .withPurchaseReferenceFromOrder( refundRequest.getOrder() )
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(refundRequest));
-
-
         }
 
         private OneyTransactionStatusRequest.Builder verifyIntegrity() throws InvalidDataException {
@@ -128,7 +123,6 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             }
 
             return this;
-
         }
 
         public OneyTransactionStatusRequest build() throws InvalidDataException {
@@ -136,6 +130,5 @@ public class OneyTransactionStatusRequest extends OneyRequest {
         }
 
     }
-
 
 }

@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.utils.OneyConfigBean;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -38,7 +39,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     @Test
     public void refundRequestTestOK() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
@@ -57,7 +58,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     @Test
     public void refundRequestTestKO() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
@@ -68,14 +69,13 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Assertions.assertSame(response.getClass(), RefundResponseFailure.class);
         RefundResponseFailure fail = (RefundResponseFailure) response;
         Assertions.assertEquals(FailureCause.REFUSED, fail.getFailureCause());
-        Assertions.assertEquals(refundReq.getTransactionId(), fail.getPartnerTransactionId());
-
+        Assertions.assertEquals(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + refundReq.getOrder().getReference(), fail.getPartnerTransactionId());
     }
 
     @Test
     public void handleStatusRequestEncrypted() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
         mockCorrectlyConfigPropertiesEnum(true);
         String status = service.handleStatusRequest(refundReq);
@@ -86,7 +86,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     @Test
     public void handleStatusRequestNotEncrypted() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
-        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
         mockCorrectlyConfigPropertiesEnum(false);
         String status = service.handleStatusRequest(refundReq);
