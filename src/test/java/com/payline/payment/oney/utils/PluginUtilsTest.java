@@ -26,7 +26,8 @@ import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
 import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PluginUtilsTest {
@@ -53,38 +54,38 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void spaceConcat_nominal(){
+    public void spaceConcat_nominal() {
         // given 2 strings
         String text1 = "This is the first part";
         String text2 = "This is the second part";
 
         // when: concatenating
-        String result = PluginUtils.spaceConcat( text1, text2 );
+        String result = PluginUtils.spaceConcat(text1, text2);
 
         // expected
-        assertEquals( text1 + " " + text2, result );
+        assertEquals(text1 + " " + text2, result);
     }
 
     @Test
-    public void spaceConcat_trailingSpace(){
+    public void spaceConcat_trailingSpace() {
         // given 2 strings
         String text1 = "The first part with a space at the end ";
         String text2 = "the second part";
 
         // when: concatenating
-        String result = PluginUtils.spaceConcat( text1, text2 );
+        String result = PluginUtils.spaceConcat(text1, text2);
 
         // expected
-        assertEquals( text1 + text2, result );
+        assertEquals(text1 + text2, result);
     }
 
     @Test
-    public void splitLongText_nothingToSplit(){
+    public void splitLongText_nothingToSplit() {
         // given:
         String toSplit = "This string's length is just the maxLength";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, toSplit.length() );
+        List<String> result = PluginUtils.splitLongText(toSplit, toSplit.length());
 
         // then: there is only one line, equal to the original string
         assertEquals(1, result.size());
@@ -92,70 +93,70 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_splitAfterSpace(){
+    public void splitLongText_splitAfterSpace() {
         // given:
         String toSplit = "This string will be split in two";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, 17 );
+        List<String> result = PluginUtils.splitLongText(toSplit, 17);
 
         // then: two lines, the first does not end with a space
-        assertEquals( 2, result.size() );
-        assertFalse( result.get(0).endsWith(" ") );
+        assertEquals(2, result.size());
+        assertFalse(result.get(0).endsWith(" "));
     }
 
     @Test
-    public void splitLongText_splitBeforeSpace(){
+    public void splitLongText_splitBeforeSpace() {
         // given:
         String toSplit = "This string will be split in two";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, 16 );
+        List<String> result = PluginUtils.splitLongText(toSplit, 16);
 
         // then: two lines, the second does not start with a space
-        assertEquals( 2, result.size() );
-        assertFalse( result.get(1).startsWith(" ") );
+        assertEquals(2, result.size());
+        assertFalse(result.get(1).startsWith(" "));
     }
 
     @Test
-    public void splitLongText_splitMiddleWord(){
+    public void splitLongText_splitMiddleWord() {
         // given:
         String toSplit = "This string should not be split in the middle of a word";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, 28 );
+        List<String> result = PluginUtils.splitLongText(toSplit, 28);
 
         // then: expect 3 lines "This string should not be", "split in the middle of a" and "word"
-        assertEquals( 3, result.size() );
-        assertEquals( "This string should not be", result.get(0) );
-        assertEquals( "split in the middle of a", result.get(1) );
-        assertEquals( "word", result.get(2) );
+        assertEquals(3, result.size());
+        assertEquals("This string should not be", result.get(0));
+        assertEquals("split in the middle of a", result.get(1));
+        assertEquals("word", result.get(2));
     }
 
     @Test
-    public void splitLongText_multipleSplitSpaces(){
+    public void splitLongText_multipleSplitSpaces() {
         // given:
         String toSplit = "This string has a very      long space in the middle";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, 25 );
+        List<String> result = PluginUtils.splitLongText(toSplit, 25);
 
         // then: expect 2 lines, none with a trailing space
-        assertEquals( 2, result.size() );
-        assertEquals( "This string has a very", result.get(0) );
-        assertEquals( "long space in the middle", result.get(1) );
+        assertEquals(2, result.size());
+        assertEquals("This string has a very", result.get(0));
+        assertEquals("long space in the middle", result.get(1));
     }
 
     @Test
-    public void splitLongText_tooLongWithoutSpace(){
+    public void splitLongText_tooLongWithoutSpace() {
         // given:
         String toSplit = "ThisStringIsTooLongButThereIsNoSpaceBetweenWordsToSplitCleanly";
 
         // when: splitting
-        List<String> result = PluginUtils.splitLongText( toSplit, 20 );
+        List<String> result = PluginUtils.splitLongText(toSplit, 20);
 
         // then: expect 4 lines
-        assertEquals( 4, result.size() );
+        assertEquals(4, result.size());
     }
 
     @Test
@@ -241,16 +242,32 @@ public class PluginUtilsTest {
 
     @Test
     public void testHonorificName() {
-        String mr = "4";
-        String mme = "1";
-        String miss = "3";
-        int hCodeOney = getHonorificCode(mr);
-        int hCodeOney2 = getHonorificCode(mme);
-        int hCodeOney3 = getHonorificCode(miss);
 
-        Assertions.assertEquals(1, hCodeOney);
+        // Madame → PAYLINE: 1 → ONEY: 2
+        String mme = "1";
+        int hCodeOney2 = getHonorificCode(mme);
         Assertions.assertEquals(2, hCodeOney2);
+
+        // Mademoiselle → PAYLINE: 3 → ONEY: 3
+        String miss = "3";
+        int hCodeOney3 = getHonorificCode(miss);
         Assertions.assertEquals(3, hCodeOney3);
+
+        // Monsieur → PAYLINE: 4 → ONEY: 1
+        String mr = "4";
+        int hCodeOney1 = getHonorificCode(mr);
+        Assertions.assertEquals(1, hCodeOney1);
+
+        // Toutes les autres valeurs PAYLINE → ONEY 0
+        String others;
+        for (int i = 0; i < 11; i++) {
+            if (i == 1 || i == 3 || i == 4) {
+                continue;
+            }
+            others = ((Integer) i).toString();
+            int hCodeOney0 = getHonorificCode(others);
+            Assertions.assertEquals(0, hCodeOney0);
+        }
 
     }
 
