@@ -115,7 +115,6 @@ public class OneyRefundRequest extends ParameterizedUrlOneyRequest {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, MERCHANT_GUID_KEY);
 
             this.withPurchaseReferenceFromOrder( refundRequest.getOrder() );
-            // TODO PAYLAPMEXT-114 (ci-dessous) : modifier pour mettre le transaction ID Payline
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PSP_GUID_KEY);

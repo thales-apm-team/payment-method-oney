@@ -51,7 +51,6 @@ public class PaymentServiceImpl implements PaymentService {
             final String merchGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
             final String merchLanguage = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, LANGUAGE_CODE_KEY);
             final String language = paymentRequest.getLocale().getLanguage();
-            // TODO PAYLAPMEXT-114 (ci-dessous) : modifier pour mettre le transaction ID Payline
             final String merchantRequestId = PluginUtils.generateMerchantRequestId(merchGuid);
             final String pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PSP_GUID_KEY);
             final String chiffrementKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_CHIFFREMENT_KEY);

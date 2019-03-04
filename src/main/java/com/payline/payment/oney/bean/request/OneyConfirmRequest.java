@@ -88,7 +88,6 @@ public class OneyConfirmRequest extends ParameterizedUrlOneyRequest {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, MERCHANT_GUID_KEY);
 
             this.withPurchaseReferenceFromOrder( transactionStatusRequest.getOrder() );
-            // TODO PAYLAPMEXT-114 (ci-dessous) : modifier pour mettre le transaction ID Payline ?
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PSP_GUID_KEY);
