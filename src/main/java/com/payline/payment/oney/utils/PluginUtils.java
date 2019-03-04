@@ -60,32 +60,33 @@ public class PluginUtils {
         return null;
     }
 
+    /**
+     * Mapping Payline Civility vers Oney HonorificCode
+     *
+     * @param civility Payline Civility
+     * @return Oney HonorificCode
+     */
     public static Integer getHonorificCode(String civility) {
 
         if (civility == null) {
             return null;
         }
+
         switch (civility.toLowerCase()) {
-            //Inconnu ex : professeu, Maitre, docteur
-            case "7":
-            case "9":
-            case "10":
-            case "11":
-                return 0;
-            //MR
-            case "4":
-            case "5":
-                return 1;
-            //MME
+
+            // Madame → PAYLINE: 1 → ONEY: 2
             case "1":
-            case "2":
-            case "6":
                 return 2;
-            //MLLE
+            // Mademoiselle → PAYLINE: 3 → ONEY: 3
             case "3":
                 return 3;
-            default:
+            // Monsieur → PAYLINE: 4 → ONEY: 1
+            case "4":
                 return 1;
+
+            default:
+                //Inconnu ex : Professeur, Maitre, Docteur
+                return 0;
         }
     }
 
@@ -146,7 +147,7 @@ public class PluginUtils {
      * @param text2 the second string to concatenate.
      * @return The resulting string.
      */
-    public static String spaceConcat( String text1, String text2 ){
+    public static String spaceConcat(String text1, String text2) {
         StringBuffer sb = new StringBuffer();
 
 
@@ -167,29 +168,28 @@ public class PluginUtils {
      * Splits the given string into chunks of the given size, without truncating any word if possible.
      * If the given string does not contain
      *
-     * @param toSplit The long string to split.
+     * @param toSplit   The long string to split.
      * @param maxLength The maximum length of a final text chunk.
      * @return A map containing as many lines as necessary
      * (key = "lineX" where X is the number of the line).
      */
     public static List<String> splitLongText(String toSplit, int maxLength) {
         List<String> chunks = new ArrayList<>();
-        StringBuffer sb = new StringBuffer( toSplit );
+        StringBuffer sb = new StringBuffer(toSplit);
 
-        while (sb.length() > 0){
+        while (sb.length() > 0) {
             // remove whitespaces at the beginning
-            if( Character.isWhitespace(sb.charAt(0)) ){
+            if (Character.isWhitespace(sb.charAt(0))) {
                 sb.delete(0, 1);
                 continue;
             }
 
             // identify the next chunk
             String chunk;
-            if( sb.length() <= maxLength ){
+            if (sb.length() <= maxLength) {
                 chunk = sb.toString().trim();
-            }
-            else {
-                int splitSpace = sb.substring(0, maxLength+1).lastIndexOf(" ");
+            } else {
+                int splitSpace = sb.substring(0, maxLength + 1).lastIndexOf(" ");
                 int end = splitSpace >= 0 ? splitSpace : maxLength;
                 chunk = sb.substring(0, end).trim();
             }
