@@ -125,6 +125,7 @@ public class OneyRefundRequest extends ParameterizedUrlOneyRequest {
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();
+            this.languageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, LANGUAGE_CODE_KEY);
             this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(refundRequest);
 
