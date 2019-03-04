@@ -401,23 +401,6 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testGenerateReference() throws Exception {
-        String expected = "external_reference_type%7Cexternal_reference";
-        Purchase purchase = Purchase.Builder.aPurchaseBuilder()
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReference("external_reference")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .withExternalReferenceType("external_reference_type")
-                .build();
-        String result = generateReference(purchase);
-        Assertions.assertEquals(expected, result);
-    }
-
-
-    @Test
     public void parseReference_noPipe() {
         Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
 

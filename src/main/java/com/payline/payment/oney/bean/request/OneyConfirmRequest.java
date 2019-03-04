@@ -18,10 +18,7 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
-public class OneyConfirmRequest extends OneyRequest {
-
-    @SerializedName("reference")
-    private String purchaseReference;
+public class OneyConfirmRequest extends ParameterizedUrlOneyRequest {
 
     //RequestBody
     @Expose
@@ -37,10 +34,6 @@ public class OneyConfirmRequest extends OneyRequest {
     @Expose
     @SerializedName("payment")
     private PaymentData paymentData;
-
-    public String getPurchaseReference() {
-        return purchaseReference;
-    }
 
     public String getLanguageCode() {
         return languageCode;
@@ -64,12 +57,9 @@ public class OneyConfirmRequest extends OneyRequest {
         this.merchantGuid = builder.merchantGuid;
         this.encryptKey = builder.encryptKey;
         this.callParameters = builder.callParameters;
-
-
     }
 
-    public static class Builder {
-        private String purchaseReference;
+    public static class Builder extends ParameterizedUrlOneyRequest.Builder {
         private String languageCode;
         private String merchantRequestId;
         private PaymentData paymentData;
@@ -97,7 +87,8 @@ public class OneyConfirmRequest extends OneyRequest {
         public Builder(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, MERCHANT_GUID_KEY);
 
-            this.purchaseReference = transactionStatusRequest.getTransactionId(); // TODO PAYLAPMEXT-114 : Faux ! à corriger.
+            this.withPurchaseReferenceFromOrder( transactionStatusRequest.getOrder() );
+            // TODO PAYLAPMEXT-114 (ci-dessous) : modifier pour mettre le transaction ID Payline ?
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PSP_GUID_KEY);

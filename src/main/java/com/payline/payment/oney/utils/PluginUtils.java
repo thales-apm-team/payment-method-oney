@@ -1,7 +1,6 @@
 package com.payline.payment.oney.utils;
 
 
-import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
@@ -246,11 +245,6 @@ public class PluginUtils {
 
         Locale locale = new Locale("", code);
         return locale.getDisplayCountry();
-    }
-
-    // TODO PAYLAPMEXT-114 : utiliser cette fonction partout où c'est nécessaire ! C'est la bonne façon de construire la référence à passer dans l'URL
-    public static String generateReference(Purchase purchase) {
-        return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
     }
 
     public static String parseReference(String reference) throws InvalidFieldFormatException {
