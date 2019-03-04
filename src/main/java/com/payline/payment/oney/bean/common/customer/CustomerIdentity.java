@@ -254,10 +254,6 @@ public class CustomerIdentity extends OneyBean {
                 throw new InvalidDataException("CustomerIdentity must have a personType when built", "CustomerIdentity.personType");
             }
 
-            if (this.personType == 1 && this.companyName == null) {
-                throw new InvalidDataException("CustomerIdentity must have a companyName when built", "CustomerIdentity.companyName");
-            }
-
             if (this.honorificCode == null) {
                 throw new InvalidDataException("CustomerIdentity must have a honorificCode when built", "CustomerIdentity.honorificCode");
             }
