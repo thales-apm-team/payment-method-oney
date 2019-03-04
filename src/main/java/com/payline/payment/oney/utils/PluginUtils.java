@@ -140,64 +140,67 @@ public class PluginUtils {
     }
 
     /**
-     * Decoupe le texte en 5 renvoi un tableau
+     * Concatenates and trims two pieces of text, joining them by a space.
      *
-     * @param longText
-     * @param longText2
-     * @param size
-     * @return
+     * @param text1 the first string to concatenate.
+     * @param text2 the second string to concatenate.
+     * @return The resulting string.
      */
-    public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
-        Map<String, String> textTruncated = new HashMap();
-
+    public static String spaceConcat( String text1, String text2 ){
         StringBuffer sb = new StringBuffer();
 
 
-        if (longText != null) {
-            sb.append(longText.trim());
+        if (text1 != null) {
+            sb.append(text1.trim());
         }
-        if (longText2 != null) {
+        if (text2 != null) {
             if (sb.length() > 0) {
                 sb.append(" ");
             }
-            sb.append(longText2.trim());
+            sb.append(text2.trim());
         }
 
-        splitInLines(textTruncated, sb, size);
-
-        return textTruncated;
-
+        return sb.toString();
     }
 
-    private static void splitInLines(Map<String, String> textTruncated, StringBuffer sb, int max) {
-        int i = 1;
-        String keyBase = "line";
+    /**
+     * Splits the given string into chunks of the given size, without truncating any word if possible.
+     * If the given string does not contain
+     *
+     * @param toSplit The long string to split.
+     * @param maxLength The maximum length of a final text chunk.
+     * @return A map containing as many lines as necessary
+     * (key = "lineX" where X is the number of the line).
+     */
+    public static List<String> splitLongText(String toSplit, int maxLength) {
+        List<String> chunks = new ArrayList<>();
+        StringBuffer sb = new StringBuffer( toSplit );
 
-        // pour être sûr de tjs avoir un " " en fin de buffer.
-        sb.append(" ");
-        while (sb.length() > 0 && i < 6) {
-            int limite = getMaxValue(max, sb.length());
-            int end = sb.substring(0, limite).lastIndexOf(" ");
-            end = end > 0 ? end : limite;
-            String line = sb.substring(0, end);
-            textTruncated.put(keyBase + i, line.trim());
-            // sprrime les caractères déjà lus.
-            sb.delete(0, end);
-            int start = 0;
-            while (start != sb.length() && Character.isWhitespace(sb.charAt(start))) {
-                start++;
+        while (sb.length() > 0){
+            // remove whitespaces at the beginning
+            if( Character.isWhitespace(sb.charAt(0)) ){
+                sb.delete(0, 1);
+                continue;
             }
-            sb.delete(0, start);
-            i++;
 
-        }
-    }
+            // identify the next chunk
+            String chunk;
+            if( sb.length() <= maxLength ){
+                chunk = sb.toString().trim();
+            }
+            else {
+                int splitSpace = sb.substring(0, maxLength+1).lastIndexOf(" ");
+                int end = splitSpace >= 0 ? splitSpace : maxLength;
+                chunk = sb.substring(0, end).trim();
+            }
 
-    private static int getMaxValue(int limit, int size) {
-        if (size >= limit) {
-            return limit;
+            chunks.add(chunk);
+
+            // remove processed chunk
+            sb.delete(0, chunk.length());
         }
-        return size;
+
+        return chunks;
     }
 
 // --------------------------- FIN methode de mapping -----------------------
