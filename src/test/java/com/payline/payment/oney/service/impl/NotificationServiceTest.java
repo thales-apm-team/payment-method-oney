@@ -46,7 +46,7 @@ public class NotificationServiceTest extends OneyConfigBean {
             StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
             StringResponse responseMockedFavorable = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
 
-            Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+            Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
 
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -67,7 +67,7 @@ public class NotificationServiceTest extends OneyConfigBean {
             StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
             StringResponse responseMockedFavorable = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
 
-            Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+            Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
 
             OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -89,7 +89,7 @@ public class NotificationServiceTest extends OneyConfigBean {
         map.put("test", "test");
         StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
 
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -119,7 +119,7 @@ public class NotificationServiceTest extends OneyConfigBean {
         map.put("test", "test");
         StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"PENDING\",\"status_label\":\"Waiting for customer validation\"}}");
 
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()

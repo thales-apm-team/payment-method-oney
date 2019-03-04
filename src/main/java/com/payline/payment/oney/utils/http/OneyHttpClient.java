@@ -23,6 +23,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     public static final String PSP_GUID = "psp_guid";
     public static final String MERCHANT_GUID = "merchant_guid";
     public static final String REFERENCE = "reference";
+    public static final String LANGUAGE_CODE = "language_code";
     public static final String PSP_GUID_TAG = "/psp_guid/";
     public static final String MERCHANT_GUID_TAG = "/merchant_guid/";
     public static final String REFERENCE_TAG = "/reference/";
@@ -80,13 +81,18 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @return The response returned from the HTTP call
      * @throws HttpCallException COMMUNICATION_ERROR
      */
-    public StringResponse doGet(String path, Map<String, String> params)
+    public StringResponse doGet(String path, Map<String, String> params, Map<String, String> urlParameters)
             throws HttpCallException {
 
         String url = params.get(PARTNER_API_URL);
 
         //build Request
         String finalPath = this.buildGetOrderPath(path, params);
+
+        // add url parameters
+        if( urlParameters.size() > 0 && urlParameters.get(LANGUAGE_CODE) != null ){
+            finalPath += "?" + LANGUAGE_CODE + "=" + urlParameters.get(LANGUAGE_CODE);
+        }
 
         Header[] headers = createHeaders(params);
 
@@ -198,8 +204,12 @@ public class OneyHttpClient extends AbstractHttpClient {
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
         parameters.put(REFERENCE, request.getPurchaseReference());
+
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put(LANGUAGE_CODE, request.getLanguageCode());
+
         // do the request
-        return doGet(STATUS_REQUEST_URL, parameters);
+        return doGet(STATUS_REQUEST_URL, parameters, urlParameters);
 
     }
 }

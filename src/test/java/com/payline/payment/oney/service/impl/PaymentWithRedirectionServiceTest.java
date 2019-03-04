@@ -146,7 +146,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredFundedEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         mockCorrectlyConfigPropertiesEnum(true);
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
@@ -159,7 +159,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredFundedNotEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         mockCorrectlyConfigPropertiesEnum(false);
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
@@ -173,7 +173,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredOnHoldEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"Zfxsl1nYU+7gI2vAD7S+JSO1EkNNk4gaIQcX++gJrX7NfjZ417t0L7ruzUCqFyxIVQWywc2FqrUK6J4kU5EPh0ksAzV6KmKWDolDoGte7uENMlMzcTriutnu5d/fJEf1\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         mockCorrectlyConfigPropertiesEnum(true);
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
@@ -186,7 +186,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredOnHoldNotEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\": { \"status_code\": \"PENDING\", \"status_label\": \"Waiting for customer validation\" }}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         mockCorrectlyConfigPropertiesEnum(false);
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
@@ -200,7 +200,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredTestRefused() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
@@ -212,7 +212,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredFavorableEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         //Mock appel post dans PaymentWithRedirection.validate()
         StringResponse responseMocked2 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked2).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
@@ -229,7 +229,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     public void handleSessionExpiredFavorableNotEncrypted() throws HttpCallException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
-        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMocked).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         //Mock appel post dans PaymentWithRedirection.validate()
         StringResponse responseMocked2 = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
         Mockito.doReturn(responseMocked2).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());

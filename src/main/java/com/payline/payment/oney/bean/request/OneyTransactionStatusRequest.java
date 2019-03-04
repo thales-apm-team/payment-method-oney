@@ -17,10 +17,7 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
 
     @SerializedName("language_code")
     private String languageCode;
-
-    /* TODO: PAYLAPMEXT-114 : le languageCode n'est utilisé nulle part dans le code.
-    Alors que la doc décrit bien qu'il fait partie de l'URL (paragraphe 7.1)
-    */
+    
     public String getLanguageCode() {
         return languageCode;
     }
