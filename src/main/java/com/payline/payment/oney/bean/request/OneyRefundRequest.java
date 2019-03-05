@@ -1,5 +1,8 @@
 package com.payline.payment.oney.bean.request;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.exception.InvalidDataException;
@@ -14,34 +17,24 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
-/**
- * Pour lot2
- */
+public class OneyRefundRequest extends ParameterizedUrlOneyRequest {
 
-public class OneyRefundRequest extends OneyRequest {
-
-    @SerializedName("reference")
-    private String purchaseReference;
-
-    //RequestBody
+    @Expose
     @SerializedName("language_code")
     private String languageCode;
 
     @Required
+    @Expose
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
 
     @Required
+    @Expose
     @SerializedName("purchase")
     private PurchaseCancel purchase;
 
-
     public PurchaseCancel getPurchase() {
         return purchase;
-    }
-
-    public String getPurchaseReference() {
-        return purchaseReference;
     }
 
     public String getLanguageCode() {
@@ -64,8 +57,7 @@ public class OneyRefundRequest extends OneyRequest {
         this.pspGuid = builder.pspGuid;
     }
 
-    public static class Builder {
-        private String purchaseReference;
+    public static class Builder extends ParameterizedUrlOneyRequest.Builder {
         private String languageCode;
         private String merchantRequestId;
         private PurchaseCancel purchase;
@@ -80,11 +72,6 @@ public class OneyRefundRequest extends OneyRequest {
 
         public Builder withPurchase(PurchaseCancel purchase) {
             this.purchase = purchase;
-            return this;
-        }
-
-        public Builder withPurchaseReference(String purchaseReference) {
-            this.purchaseReference = purchaseReference;
             return this;
         }
 
@@ -108,6 +95,11 @@ public class OneyRefundRequest extends OneyRequest {
             return this;
         }
 
+        public Builder withPurchaseReference( String purchaseReference ){
+            this.purchaseReference = purchaseReference;
+            return this;
+        }
+
         public Builder withEncryptKey(String key) {
             this.encryptKey = key;
             return this;
@@ -122,9 +114,8 @@ public class OneyRefundRequest extends OneyRequest {
 
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, MERCHANT_GUID_KEY);
 
-            this.purchaseReference = refundRequest.getTransactionId();
+            this.withPurchaseReferenceFromOrder( refundRequest.getOrder() );
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
-
 
             this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
@@ -133,6 +124,7 @@ public class OneyRefundRequest extends OneyRequest {
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();
+            this.languageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, LANGUAGE_CODE_KEY);
             this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(refundRequest);
 
@@ -178,4 +170,9 @@ public class OneyRefundRequest extends OneyRequest {
 
     }
 
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        return gson.toJson(this);
+    }
 }

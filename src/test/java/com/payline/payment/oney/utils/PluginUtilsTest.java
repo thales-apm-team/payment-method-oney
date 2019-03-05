@@ -17,6 +17,7 @@ import org.powermock.reflect.Whitebox;
 import java.math.BigInteger;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,8 @@ import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
 import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PluginUtilsTest {
@@ -51,16 +54,109 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testTruncateText() {
-        String longText = "Update: yes it doesn't take the slim characters into account but I don't agree with that considering everyone has different screens and fonts setup and a large portion of the people that land here on this page are probably looking for a maintained library like the above.";
-        String longText2 = "Update:";
-        Map textCutted = truncateLongText(longText, longText2, 19);
-        Assertions.assertTrue(textCutted.get("line1").toString().length() < 20);
-        Assertions.assertTrue(textCutted.get("line2") == null || textCutted.get("line2").toString().length() < 20);
-        Assertions.assertTrue(textCutted.get("line3") == null || textCutted.get("line3").toString().length() < 20);
-        Assertions.assertTrue(textCutted.get("line4") == null || textCutted.get("line4").toString().length() < 20);
-        Assertions.assertTrue(textCutted.get("line5") == null || textCutted.get("line5").toString().length() < 20);
+    public void spaceConcat_nominal() {
+        // given 2 strings
+        String text1 = "This is the first part";
+        String text2 = "This is the second part";
 
+        // when: concatenating
+        String result = PluginUtils.spaceConcat(text1, text2);
+
+        // expected
+        assertEquals(text1 + " " + text2, result);
+    }
+
+    @Test
+    public void spaceConcat_trailingSpace() {
+        // given 2 strings
+        String text1 = "The first part with a space at the end ";
+        String text2 = "the second part";
+
+        // when: concatenating
+        String result = PluginUtils.spaceConcat(text1, text2);
+
+        // expected
+        assertEquals(text1 + text2, result);
+    }
+
+    @Test
+    public void splitLongText_nothingToSplit() {
+        // given:
+        String toSplit = "This string's length is just the maxLength";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, toSplit.length());
+
+        // then: there is only one line, equal to the original string
+        assertEquals(1, result.size());
+        assertEquals(toSplit, result.get(0));
+    }
+
+    @Test
+    public void splitLongText_splitAfterSpace() {
+        // given:
+        String toSplit = "This string will be split in two";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, 17);
+
+        // then: two lines, the first does not end with a space
+        assertEquals(2, result.size());
+        assertFalse(result.get(0).endsWith(" "));
+    }
+
+    @Test
+    public void splitLongText_splitBeforeSpace() {
+        // given:
+        String toSplit = "This string will be split in two";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, 16);
+
+        // then: two lines, the second does not start with a space
+        assertEquals(2, result.size());
+        assertFalse(result.get(1).startsWith(" "));
+    }
+
+    @Test
+    public void splitLongText_splitMiddleWord() {
+        // given:
+        String toSplit = "This string should not be split in the middle of a word";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, 28);
+
+        // then: expect 3 lines "This string should not be", "split in the middle of a" and "word"
+        assertEquals(3, result.size());
+        assertEquals("This string should not be", result.get(0));
+        assertEquals("split in the middle of a", result.get(1));
+        assertEquals("word", result.get(2));
+    }
+
+    @Test
+    public void splitLongText_multipleSplitSpaces() {
+        // given:
+        String toSplit = "This string has a very      long space in the middle";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, 25);
+
+        // then: expect 2 lines, none with a trailing space
+        assertEquals(2, result.size());
+        assertEquals("This string has a very", result.get(0));
+        assertEquals("long space in the middle", result.get(1));
+    }
+
+    @Test
+    public void splitLongText_tooLongWithoutSpace() {
+        // given:
+        String toSplit = "ThisStringIsTooLongButThereIsNoSpaceBetweenWordsToSplitCleanly";
+
+        // when: splitting
+        List<String> result = PluginUtils.splitLongText(toSplit, 20);
+
+        // then: expect 4 lines
+        assertEquals(4, result.size());
     }
 
     @Test
@@ -146,16 +242,32 @@ public class PluginUtilsTest {
 
     @Test
     public void testHonorificName() {
-        String mr = "4";
-        String mme = "1";
-        String miss = "3";
-        int hCodeOney = getHonorificCode(mr);
-        int hCodeOney2 = getHonorificCode(mme);
-        int hCodeOney3 = getHonorificCode(miss);
 
-        Assertions.assertEquals(1, hCodeOney);
+        // Madame → PAYLINE: 1 → ONEY: 2
+        String mme = "1";
+        int hCodeOney2 = getHonorificCode(mme);
         Assertions.assertEquals(2, hCodeOney2);
+
+        // Mademoiselle → PAYLINE: 3 → ONEY: 3
+        String miss = "3";
+        int hCodeOney3 = getHonorificCode(miss);
         Assertions.assertEquals(3, hCodeOney3);
+
+        // Monsieur → PAYLINE: 4 → ONEY: 1
+        String mr = "4";
+        int hCodeOney1 = getHonorificCode(mr);
+        Assertions.assertEquals(1, hCodeOney1);
+
+        // Toutes les autres valeurs PAYLINE → ONEY 0
+        String others;
+        for (int i = 0; i < 11; i++) {
+            if (i == 1 || i == 3 || i == 4) {
+                continue;
+            }
+            others = ((Integer) i).toString();
+            int hCodeOney0 = getHonorificCode(others);
+            Assertions.assertEquals(0, hCodeOney0);
+        }
 
     }
 
@@ -287,23 +399,6 @@ public class PluginUtilsTest {
         Assertions.assertEquals(4, result.size());
 
     }
-
-    @Test
-    public void testGenerateReference() throws Exception {
-        String expected = "external_reference_type%7Cexternal_reference";
-        Purchase purchase = Purchase.Builder.aPurchaseBuilder()
-                .withCurrencyCode("EUR")
-                .withPurchaseAmount(150f)
-                .withDelivery(createDelivery())
-                .withExternalReference("external_reference")
-                .withListItem(createItemList())
-                .withNumberOfItems(2)
-                .withExternalReferenceType("external_reference_type")
-                .build();
-        String result = generateReference(purchase);
-        Assertions.assertEquals(expected, result);
-    }
-
 
     @Test
     public void parseReference_noPipe() {

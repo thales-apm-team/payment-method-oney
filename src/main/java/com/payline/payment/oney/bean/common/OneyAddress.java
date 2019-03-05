@@ -5,7 +5,7 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
-import java.util.Map;
+import java.util.List;
 
 import static com.payline.payment.oney.utils.PluginUtils.*;
 
@@ -204,22 +204,23 @@ public class OneyAddress extends OneyBean {
 
         // Découpe l'adresse intelligemment
         private void truncateAddress(String street1, String street2) {
-            Map addressTruncated = truncateLongText(street1, street2, 38);
+            List<String> addressTruncated = splitLongText( spaceConcat( street1, street2), 38);
+            int nbLines = addressTruncated.size();
 
-            if (addressTruncated.get("line1") != null) {
-                this.line1 = addressTruncated.get("line1").toString();
+            if (nbLines >= 1) {
+                this.line1 = addressTruncated.get(0);
             }
-            if (addressTruncated.get("line2") != null) {
-                this.line2 = addressTruncated.get("line2").toString();
+            if (nbLines >= 2) {
+                this.line2 = addressTruncated.get(1);
             }
-            if (addressTruncated.get("line3") != null) {
-                this.line3 = addressTruncated.get("line3").toString();
+            if (nbLines >= 3) {
+                this.line3 = addressTruncated.get(2);
             }
-            if (addressTruncated.get("line4") != null) {
-                this.line4 = addressTruncated.get("line4").toString();
+            if (nbLines >= 4) {
+                this.line4 = addressTruncated.get(3);
             }
-            if (addressTruncated.get("line5") != null) {
-                this.line5 = addressTruncated.get("line5").toString();
+            if (nbLines >= 5) {
+                this.line5 = addressTruncated.get(4);
             }
         }
 

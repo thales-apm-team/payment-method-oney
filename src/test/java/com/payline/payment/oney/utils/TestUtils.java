@@ -42,7 +42,8 @@ public class TestUtils {
     public static final String MERCHANT_REQUEST_ID = createMerchantRequestId();
     public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
-    private static final String CONFIRM_EXTERNAL_REFERENCE = "CMDE" + PIPE + TRANSACTION_ID;
+    private static final String EXTERNAL_REFERENCE = "123456789A";
+    private static final String CONFIRM_EXTERNAL_REFERENCE = OneyConstants.EXTERNAL_REFERENCE_TYPE + PIPE + EXTERNAL_REFERENCE;
 
     private static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
     private static final Locale LOCALE_FR = Locale.FRANCE;
@@ -426,7 +427,7 @@ public class TestUtils {
     public static TransactionStatusRequest createDefaultTransactionStatusRequest() {
         return TransactionStatusRequest.TransactionStatusRequestBuilder
                 .aNotificationRequest()
-                .withTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withTransactionId(TRANSACTION_ID)
                 .withAmount(createAmount(CONFIRM_AMOUNT, CURRENCY_EUR))
                 .withContractConfiguration(createContractConfiguration())
                 .withEnvironment(TEST_ENVIRONMENT)
