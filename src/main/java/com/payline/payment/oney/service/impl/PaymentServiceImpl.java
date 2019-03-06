@@ -128,7 +128,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
-
         }
 
     }

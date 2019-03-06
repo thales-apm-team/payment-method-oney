@@ -1,18 +1,22 @@
 package com.payline.payment.oney.bean.common;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 
 public class PurchaseCancel extends OneyBean {
 
+    @Expose
     @Required
     @SerializedName("cancellation_reason_code")
     private Integer reasonCode; //or enum (0 = cancellation, 1 = fraud)
 
+    @Expose
     @SerializedName("cancellation_amount")
     private Float amount; //must be present  if cancellationReason == 1  !! default value == total amount of payment
 
+    @Expose
     @SerializedName("refund_down_payment")
     private boolean refundFlag; // must be present  if cancellationReason == 1 true if is refunded
 

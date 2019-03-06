@@ -1,7 +1,10 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
+import com.payline.payment.oney.bean.request.OneyPaymentRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyConfigBean;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -12,16 +15,14 @@ import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import static com.payline.payment.oney.utils.TestUtils.*;
+import static com.payline.payment.oney.utils.TestUtils.createDefaultTransactionStatusRequest;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
@@ -32,7 +33,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     @Spy
     OneyHttpClient httpClient;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         service = new PaymentWithRedirectionServiceImpl();
         MockitoAnnotations.initMocks(this);
@@ -85,6 +86,36 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         Assertions.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
 
 
+    }
+
+    @Test
+    public void validatePayment_malformedConfirmResponseKO() throws PluginTechnicalException {
+        // given a malformed HTTP response received to the confirm request
+        StringResponse responseMocked = createStringResponse(404, "Bad request", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment( Mockito.any(OneyConfirmRequest.class) );
+
+        // when calling the method validatePayment
+        PaymentResponse response = service.validatePayment( new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
+                .build() );
+
+        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
+    }
+
+    @Test
+    public void validatePayment_malformedConfirmResponseOK() throws PluginTechnicalException {
+        // given a malformed HTTP response received to the confirm request
+        StringResponse responseMocked = createStringResponse(200, "OK", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment( Mockito.any(OneyConfirmRequest.class) );
+
+        // when calling the method validatePayment
+        PaymentResponse response = service.validatePayment( new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
+                .build() );
+
+        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
     }
 
     @Test
@@ -240,5 +271,33 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertEquals(paymentResponse.getClass(), PaymentResponseSuccess.class);
 
+    }
+
+    @Test
+    public void handleSessionExpired_malformedStatusResponseKO() throws PluginTechnicalException {
+        // given a malformed HTTP response received from the payment init
+        StringResponse responseMocked = createStringResponse(404, "Bad Request", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class) );
+
+        // when calling the method handleSessionExpired
+        PaymentResponse response = service.handleSessionExpired( createDefaultTransactionStatusRequest() );
+
+        // then a PaymentResponseFailure is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        //Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
+    }
+
+    @Test
+    public void handleSessionExpired_malformedStatusResponseOK() throws PluginTechnicalException {
+        // given a malformed HTTP response received from the payment init
+        StringResponse responseMocked = createStringResponse(200, "OK", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class) );
+
+        // when calling the method handleSessionExpired
+        PaymentResponse response = service.handleSessionExpired( createDefaultTransactionStatusRequest() );
+
+        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
     }
 }
