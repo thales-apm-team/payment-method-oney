@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.google.gson.JsonSyntaxException;
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
@@ -77,6 +78,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+
                 if (response.getStatusPurchase() != null) {
                     switch (response.getStatusPurchase().getStatusCode()) {
                         //renvoi d'un paymentResponseOnHold
@@ -135,6 +137,13 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
+        } catch( JsonSyntaxException e ){
+            LOGGER.error( "Unable to parse JSON content", e );
+            return OneyErrorHandler.getPaymentResponseFailure(
+                    FailureCause.COMMUNICATION_ERROR,
+                    oneyTransactionStatusRequest != null ? oneyTransactionStatusRequest.getPurchaseReference() : "null",
+                    "Unable to parse JSON content"
+            );
         }
 
 
@@ -148,6 +157,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest) throws PluginTechnicalException {
 
         StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest);
+
         // si erreur lors de l'envoi de la requete http
         if (oneyResponse == null) {
             LOGGER.debug("oneyResponse StringResponse is null !");
@@ -159,42 +169,51 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             );
 
         }
-        //si erreur dans la requete http
-        if (oneyResponse.getCode() != HTTP_OK) {
-            OneyFailureResponse failureResponse = new OneyFailureResponse(oneyResponse.getCode(), oneyResponse.getMessage(), oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
-            LOGGER.error("Payment failed {} ", failureResponse.getContent());
+        try {
+            //si erreur dans la requete http
+            if (oneyResponse.getCode() != HTTP_OK) {
+                OneyFailureResponse failureResponse = new OneyFailureResponse(oneyResponse.getCode(), oneyResponse.getMessage(), oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
+                LOGGER.error("Payment failed {} ", failureResponse.getContent());
 
-            return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                    .withFailureCause(handleOneyFailureResponse(failureResponse))
-                    .withErrorCode(failureResponse.toPaylineErrorCode())
-                    .build();
-        }
-        //Confirmation OK, on traite la reponse
-        else {
-            //On dechiffre la response
-            TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), confirmRequest.getEncryptKey());
-            //Si Oney renvoie une message vide, on renvoi un Payment Failure response
-            if (responseDecrypted == null || responseDecrypted.getStatusPurchase() == null) {
-                LOGGER.debug("oneyResponse StringResponse is null !");
-                LOGGER.error("Payment is null");
-                return OneyErrorHandler.getPaymentResponseFailure(
-                        FailureCause.REFUSED,
-                        confirmRequest.getPurchaseReference(),
-                        ERROR_CODE + "null");
+                return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                        .withFailureCause(handleOneyFailureResponse(failureResponse))
+                        .withErrorCode(failureResponse.toPaylineErrorCode())
+                        .build();
             }
+            //Confirmation OK, on traite la reponse
+            else {
+                TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), confirmRequest.getEncryptKey());
 
-            //definir les additionals data a renvoyer
-            //Additional data  : ajouter purchaseReference ? amount ? transaction status ??
-            String message = responseDecrypted.getStatusPurchase().getStatusLabel();
+                //Si Oney renvoie une message vide, on renvoi un Payment Failure response
+                if (responseDecrypted == null || responseDecrypted.getStatusPurchase() == null) {
+                    LOGGER.debug("oneyResponse StringResponse is null !");
+                    LOGGER.error("Payment is null");
+                    return OneyErrorHandler.getPaymentResponseFailure(
+                            FailureCause.REFUSED,
+                            confirmRequest.getPurchaseReference(),
+                            ERROR_CODE + "null");
+                }
 
+                //definir les additionals data a renvoyer
+                //Additional data  : ajouter purchaseReference ? amount ? transaction status ??
+                String message = responseDecrypted.getStatusPurchase().getStatusLabel();
 
-            return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
-                    .withTransactionAdditionalData(responseDecrypted.toString())
-                    .withPartnerTransactionId(PluginUtils.parseReference(confirmRequest.getPurchaseReference()))
-                    .withStatusCode(String.valueOf(oneyResponse.getCode()))
-                    .withMessage(new Message(SUCCESS, message))
-                    .withTransactionDetails(new EmptyTransactionDetails())
-                    .build();
+                return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
+                        .withTransactionAdditionalData(responseDecrypted.toString())
+                        .withPartnerTransactionId(PluginUtils.parseReference(confirmRequest.getPurchaseReference()))
+                        .withStatusCode(String.valueOf(oneyResponse.getCode()))
+                        .withMessage(new Message(SUCCESS, message))
+                        .withTransactionDetails(new EmptyTransactionDetails())
+                        .build();
+            }
+        }
+        catch( JsonSyntaxException e ){
+            LOGGER.error( "Unable to parse JSON content", e );
+            return OneyErrorHandler.getPaymentResponseFailure(
+                    FailureCause.COMMUNICATION_ERROR,
+                    confirmRequest.getPurchaseReference(),
+                    "Unable to parse JSON content"
+            );
         }
     }
 

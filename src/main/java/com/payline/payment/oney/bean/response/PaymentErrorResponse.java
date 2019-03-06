@@ -1,9 +1,6 @@
 package com.payline.payment.oney.bean.response;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.payline.payment.oney.bean.common.OneyBean;
@@ -35,7 +32,7 @@ public class PaymentErrorResponse extends OneyBean {
         this.errorList = oneyErrors;
     }
 
-    public static PaymentErrorResponse paymentErrorResponseFromJson(String json) {
+    public static PaymentErrorResponse paymentErrorResponseFromJson(String json) throws JsonSyntaxException {
 
         //Specifier le type renvoye
         Type errorListType = new TypeToken<ArrayList<OneyError>>() {

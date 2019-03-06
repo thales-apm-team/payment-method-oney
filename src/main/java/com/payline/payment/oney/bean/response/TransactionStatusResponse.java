@@ -1,6 +1,7 @@
 package com.payline.payment.oney.bean.response;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.exception.DecryptException;
@@ -26,7 +27,8 @@ public class TransactionStatusResponse extends OneyResponse {
     }
 
 
-    public static TransactionStatusResponse createTransactionStatusResponseFromJson(String json, String encryptKey) throws DecryptException {
+    public static TransactionStatusResponse createTransactionStatusResponseFromJson(String json, String encryptKey)
+            throws DecryptException, JsonSyntaxException {
         Gson parser = new Gson();
 
         TransactionStatusResponse transactionStatusResponse = parser.fromJson(json, TransactionStatusResponse.class);
@@ -41,7 +43,6 @@ public class TransactionStatusResponse extends OneyResponse {
 
         //Sinon on renvoie la reponse parsee
         return transactionStatusResponse;
-
     }
 
 

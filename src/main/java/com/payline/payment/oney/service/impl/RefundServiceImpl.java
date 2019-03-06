@@ -1,11 +1,14 @@
 package com.payline.payment.oney.service.impl;
 
+import com.google.gson.JsonSyntaxException;
+import com.payline.payment.oney.bean.common.OneyError;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -38,9 +41,9 @@ public class RefundServiceImpl implements RefundService {
         OneyRefundRequest oneyRefundRequest = null;
         try {
             //obtenir statut de la requete
-            String statusRequest = handleStatusRequest(refundRequest);
+            String status = handleStatusRequest(refundRequest);
             //faire une  transactionStatusRequest
-            boolean refundFlag = getRefundFlag(statusRequest);
+            boolean refundFlag = getRefundFlag(status);
 
             //creation d'une OneyRefundRequest
             oneyRefundRequest = OneyRefundRequest.Builder.aOneyRefundRequest()
@@ -69,6 +72,7 @@ public class RefundServiceImpl implements RefundService {
             } else {
                 //On dechiffre la response
                 TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), oneyRefundRequest.getEncryptKey());
+
                 //Si Oney renvoie une message vide, on renvoi un Payment Failure response
                 if (responseDecrypted.getStatusPurchase() == null) {
                     LOGGER.debug("oneyResponse StringResponse is null !");
@@ -88,7 +92,14 @@ public class RefundServiceImpl implements RefundService {
 
             }
 
-        } catch (InvalidDataException e) {
+        } catch( JsonSyntaxException e ){
+            LOGGER.error( "Unable to parse JSON content", e );
+            String ref = oneyRefundRequest != null ? oneyRefundRequest.getPurchaseReference() : OneyConstants.EXTERNAL_REFERENCE_TYPE + "|" + refundRequest.getOrder().getReference();
+            return OneyErrorHandler.geRefundResponseFailure(
+                    FailureCause.COMMUNICATION_ERROR, ref, "Unable to parse JSON content"
+            );
+        }
+        catch (InvalidDataException e) {
             LOGGER.error("unable init the payment", e);
             return e.toRefundResponseFailure();
 
