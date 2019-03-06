@@ -1,28 +1,25 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.request.OneyPaymentRequest;
 import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyConfigBean;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
 
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class PaymentServiceImplTest extends OneyConfigBean {
-
 
     @Spy
     OneyHttpClient httpClient;
@@ -30,8 +27,7 @@ public class PaymentServiceImplTest extends OneyConfigBean {
     @InjectMocks
     PaymentServiceImpl service;
 
-
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         service = new PaymentServiceImpl();
         MockitoAnnotations.initMocks(this);
@@ -144,5 +140,32 @@ public class PaymentServiceImplTest extends OneyConfigBean {
 
     }
 
+    @Test
+    public void paymentRequest_malformedInitiatePaymentResponseKO() throws PluginTechnicalException {
+        // given a malformed HTTP response received from the payment init
+        StringResponse responseMocked = createStringResponse(404, "Bad request", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class) );
+
+        // when calling method paymentRequest
+        PaymentResponse response = service.paymentRequest( createCompletePaymentBuilder().build() );
+
+        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
+    }
+
+    @Test
+    public void paymentRequest_malformedInitiatePaymentResponseOK() throws PluginTechnicalException {
+        // given a malformed HTTP response received from the payment init
+        StringResponse responseMocked = createStringResponse(200, "OK", "[]");
+        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class) );
+
+        // when calling method paymentRequest
+        PaymentResponse response = service.paymentRequest( createCompletePaymentBuilder().build() );
+
+        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
+        Assertions.assertTrue( response instanceof PaymentResponseFailure );
+        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
+    }
 
 }

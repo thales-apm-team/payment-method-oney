@@ -20,6 +20,7 @@ public class OneyConfirmRequestTest {
         Assertions.assertTrue(paymentRequest.toString().contains("language_code"));
         Assertions.assertTrue(paymentRequest.toString().contains("merchant_request_id"));
         Assertions.assertTrue(paymentRequest.toString().contains("payment"));
+        Assertions.assertTrue(paymentRequest.toString().contains("payment_amount"));
     }
 
 }

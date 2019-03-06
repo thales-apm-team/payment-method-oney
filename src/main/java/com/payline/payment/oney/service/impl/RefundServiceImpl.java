@@ -38,9 +38,9 @@ public class RefundServiceImpl implements RefundService {
         OneyRefundRequest oneyRefundRequest = null;
         try {
             //obtenir statut de la requete
-            String statusRequest = handleStatusRequest(refundRequest);
+            String status = handleStatusRequest(refundRequest);
             //faire une  transactionStatusRequest
-            boolean refundFlag = getRefundFlag(statusRequest);
+            boolean refundFlag = getRefundFlag(status);
 
             //creation d'une OneyRefundRequest
             oneyRefundRequest = OneyRefundRequest.Builder.aOneyRefundRequest()
@@ -69,6 +69,7 @@ public class RefundServiceImpl implements RefundService {
             } else {
                 //On dechiffre la response
                 TransactionStatusResponse responseDecrypted = createTransactionStatusResponseFromJson(oneyResponse.getContent(), oneyRefundRequest.getEncryptKey());
+
                 //Si Oney renvoie une message vide, on renvoi un Payment Failure response
                 if (responseDecrypted.getStatusPurchase() == null) {
                     LOGGER.debug("oneyResponse StringResponse is null !");
@@ -88,7 +89,8 @@ public class RefundServiceImpl implements RefundService {
 
             }
 
-        } catch (InvalidDataException e) {
+        }
+        catch (InvalidDataException e) {
             LOGGER.error("unable init the payment", e);
             return e.toRefundResponseFailure();
 

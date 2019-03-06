@@ -1,13 +1,11 @@
 package com.payline.payment.oney.bean.response;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.payline.payment.oney.bean.common.OneyBean;
 import com.payline.payment.oney.bean.common.OneyError;
+import com.payline.payment.oney.exception.MalformedResponseException;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,13 +33,21 @@ public class PaymentErrorResponse extends OneyBean {
         this.errorList = oneyErrors;
     }
 
-    public static PaymentErrorResponse paymentErrorResponseFromJson(String json) {
+    public static PaymentErrorResponse paymentErrorResponseFromJson(String json)
+            throws MalformedResponseException {
 
         //Specifier le type renvoye
         Type errorListType = new TypeToken<ArrayList<OneyError>>() {
         }.getType();
         Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        JsonObject jsonObject;
+        try {
+            jsonObject = gson.fromJson(json, JsonObject.class);
+        }
+        catch( JsonSyntaxException e ){
+            LOGGER.error("Unable to parse JSON content", e);
+            throw new MalformedResponseException( e );
+        }
 
         LOGGER.debug("Oney error message : {}", json);
 

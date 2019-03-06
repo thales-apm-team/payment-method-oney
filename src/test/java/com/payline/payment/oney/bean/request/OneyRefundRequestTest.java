@@ -23,6 +23,7 @@ public class OneyRefundRequestTest {
         Assertions.assertNotNull(request.getMerchantGuid());
         Assertions.assertTrue(request.toString().contains("merchant_request_id"));
         Assertions.assertTrue(request.toString().contains("purchase"));
+        Assertions.assertTrue(request.toString().contains("cancellation_reason_code"));
 
         Float paymentAmountConverted = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
         Assertions.assertEquals(paymentAmountConverted, request.getPurchase().getAmount(), 0.01);
