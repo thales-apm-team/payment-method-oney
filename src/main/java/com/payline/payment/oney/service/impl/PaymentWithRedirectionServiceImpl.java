@@ -1,6 +1,5 @@
 package com.payline.payment.oney.service.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
@@ -137,16 +136,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
-        } catch( JsonSyntaxException e ){
-            LOGGER.error( "Unable to parse JSON content", e );
-            return OneyErrorHandler.getPaymentResponseFailure(
-                    FailureCause.COMMUNICATION_ERROR,
-                    oneyTransactionStatusRequest != null ? oneyTransactionStatusRequest.getPurchaseReference() : "null",
-                    "Unable to parse JSON content"
-            );
         }
-
-
     }
 
     /**
@@ -207,13 +197,8 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                         .build();
             }
         }
-        catch( JsonSyntaxException e ){
-            LOGGER.error( "Unable to parse JSON content", e );
-            return OneyErrorHandler.getPaymentResponseFailure(
-                    FailureCause.COMMUNICATION_ERROR,
-                    confirmRequest.getPurchaseReference(),
-                    "Unable to parse JSON content"
-            );
+        catch (PluginTechnicalException e) {
+            return e.toPaymentResponseFailure();
         }
     }
 

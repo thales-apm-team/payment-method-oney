@@ -1,6 +1,5 @@
 package com.payline.payment.oney.service.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
@@ -129,14 +128,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
-
-        } catch( JsonSyntaxException e ){
-            LOGGER.error( "Unable to parse JSON content", e );
-            return OneyErrorHandler.getPaymentResponseFailure(
-                    FailureCause.COMMUNICATION_ERROR,
-                    paymentRequest.getOrder().getReference(),
-                    "Unable to parse JSON content"
-            );
         }
 
     }
