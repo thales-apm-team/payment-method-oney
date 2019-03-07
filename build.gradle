@@ -23,7 +23,7 @@ if (file(externalFileName).exists()) {
 
 description = 'payment-method-oney'
 group = 'com.payline.payment.oney'
-version = '1.0.0.1-RC2-SNAPSHOT'
+version = '1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -31,8 +31,8 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.0'
-    paymentMethodIntegrationVersion = '1.0'
+    paymentMethodApiVersion = '1.1'
+    paymentMethodIntegrationVersion = '1.1'
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
 }
