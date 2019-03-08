@@ -10,6 +10,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,17 +62,11 @@ public class OneyHttpClient extends AbstractHttpClient {
     public StringResponse doPost(String path, String requestContent, Map<String, String> params)
             throws HttpCallException {
 
-        try {
-            String url = params.get(PARTNER_API_URL);
-            StringEntity entity = new StringEntity(requestContent);
-            Header[] headers = createHeaders(params);
+        String url = params.get(PARTNER_API_URL);
+        StringEntity entity = new StringEntity(requestContent, StandardCharsets.UTF_8);
+        Header[] headers = createHeaders(params);
 
-            return super.doPost(url, path, headers, entity);
-
-        } catch (UnsupportedEncodingException e) {
-            throw new HttpCallException(e, "OneyHttpClient.doPost.UnsupportedEncodingException");
-        }
-
+        return super.doPost(url, path, headers, entity);
     }
 
     /**
