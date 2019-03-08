@@ -1,8 +1,14 @@
 package com.payline.payment.oney.bean.request;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.util.Map;
@@ -11,29 +17,24 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.createFloatAmount;
 import static com.payline.payment.oney.utils.PluginUtils.generateMerchantRequestId;
 
-/**
- * Pour lot2
- */
+public class OneyRefundRequest extends ParameterizedUrlOneyRequest {
 
-public class OneyRefundRequest extends OneyRequest {
-
-    @SerializedName("reference")
-    private String purchaseReference;
-    //RequestBody
+    @Expose
     @SerializedName("language_code")
     private String languageCode;
+
+    @Required
+    @Expose
     @SerializedName("merchant_request_id")
     private String merchantRequestId;
+
+    @Required
+    @Expose
     @SerializedName("purchase")
     private PurchaseCancel purchase;
 
-
     public PurchaseCancel getPurchase() {
         return purchase;
-    }
-
-    public String getPurchaseReference() {
-        return purchaseReference;
     }
 
     public String getLanguageCode() {
@@ -56,8 +57,7 @@ public class OneyRefundRequest extends OneyRequest {
         this.pspGuid = builder.pspGuid;
     }
 
-    public static class Builder {
-        private String purchaseReference;
+    public static class Builder extends ParameterizedUrlOneyRequest.Builder {
         private String languageCode;
         private String merchantRequestId;
         private PurchaseCancel purchase;
@@ -72,11 +72,6 @@ public class OneyRefundRequest extends OneyRequest {
 
         public Builder withPurchase(PurchaseCancel purchase) {
             this.purchase = purchase;
-            return this;
-        }
-
-        public Builder withPurchaseReference(String purchaseReference) {
-            this.purchaseReference = purchaseReference;
             return this;
         }
 
@@ -100,6 +95,11 @@ public class OneyRefundRequest extends OneyRequest {
             return this;
         }
 
+        public Builder withPurchaseReference( String purchaseReference ){
+            this.purchaseReference = purchaseReference;
+            return this;
+        }
+
         public Builder withEncryptKey(String key) {
             this.encryptKey = key;
             return this;
@@ -110,66 +110,69 @@ public class OneyRefundRequest extends OneyRequest {
             return this;
         }
 
-        public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest, boolean refundFlag) {
+        public OneyRefundRequest.Builder fromRefundRequest(RefundRequest refundRequest, boolean refundFlag) throws InvalidDataException {
 
-            String merchantGuidValue = refundRequest.getContractConfiguration().getProperty(MERCHANT_GUID_KEY).getValue();
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, MERCHANT_GUID_KEY);
 
-            this.purchaseReference = refundRequest.getTransactionId();
+            this.withPurchaseReferenceFromOrder( refundRequest.getOrder() );
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
-
-            this.pspGuid = refundRequest.getPartnerConfiguration().getProperty(PSP_GUID_KEY);
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PSP_GUID_KEY);
             this.merchantGuid = merchantGuidValue;
             this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
-                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(),refundRequest.getAmount().getCurrency()))
+                    .withAmount(createFloatAmount(refundRequest.getAmount().getAmountInSmallestUnit(), refundRequest.getAmount().getCurrency()))
                     .withReasonCode(0)
                     .withRefundFlag(refundFlag)
                     .build();
-            this.encryptKey = refundRequest.getPartnerConfiguration().getProperty(PARTNER_CHIFFREMENT_KEY);
-            this.callParameters = PluginUtils.getParametersMap(
-                    refundRequest.getPartnerConfiguration(),
-                    refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue());
+            this.languageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, LANGUAGE_CODE_KEY);
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(refundRequest);
 
             return this;
         }
 
-        private OneyRefundRequest.Builder verifyIntegrity() {
+        private OneyRefundRequest.Builder verifyIntegrity() throws InvalidDataException {
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a merchantGuid when built");
+                throw new InvalidDataException("OneyRefundRequest must have a merchantGuid when built", "OneyRefundRequest.merchantGuid");
             }
 
             if (this.merchantRequestId == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a merchantRequestId when built");
+                throw new InvalidDataException("OneyRefundRequest must have a merchantRequestId when built", "OneyRefundRequest.merchantRequestId");
             }
 
             if (this.pspGuid == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a pspGuid when built");
+                throw new InvalidDataException("OneyRefundRequest must have a pspGuid when built", "OneyRefundRequest.pspGuid");
             }
 
             if (this.purchaseReference == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a reference when built");
+                throw new InvalidDataException("OneyRefundRequest must have a reference when built", "OneyRefundRequest.reference");
             }
 
             if (this.purchase == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a purchase when built");
+                throw new InvalidDataException("OneyRefundRequest must have a purchase when built", "OneyRefundRequest.purchase");
             }
 
             if (this.encryptKey == null) {
-                throw new IllegalStateException("OneyRefundRequest must have a encryptKey when built");
+                throw new InvalidDataException("OneyRefundRequest must have a encryptKey when built", "OneyRefundRequest.encryptKey");
             }
 
             if (this.callParameters == null || callParameters.isEmpty()) {
-                throw new IllegalStateException("OneyRefundRequest must have a callParameters when built");
+                throw new InvalidDataException("OneyRefundRequest must have a callParameters when built", "OneyRefundRequest.callParameters");
             }
 
             return this;
 
         }
 
-        public OneyRefundRequest build() {
+        public OneyRefundRequest build() throws InvalidDataException {
             return new OneyRefundRequest(this.verifyIntegrity());
         }
 
     }
 
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        return gson.toJson(this);
+    }
 }

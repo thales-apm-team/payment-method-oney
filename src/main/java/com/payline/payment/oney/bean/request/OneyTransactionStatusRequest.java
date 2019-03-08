@@ -1,31 +1,26 @@
 package com.payline.payment.oney.bean.request;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.util.Map;
 
-import static com.payline.payment.oney.utils.OneyConstants.COUNTRY_CODE_KEY;
+public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
 
-public class OneyTransactionStatusRequest extends OneyRequest {
-
-    @SerializedName("reference")
-    private String purchaseReference;
     @SerializedName("language_code")
     private String languageCode;
-
-
-    public String getPurchaseReference() {
-        return purchaseReference;
-    }
-
+    
     public String getLanguageCode() {
         return languageCode;
     }
-
 
     private OneyTransactionStatusRequest(OneyTransactionStatusRequest.Builder builder) {
         this.purchaseReference = builder.purchaseReference;
@@ -37,8 +32,7 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
     }
 
-    public static class Builder {
-        private String purchaseReference;
+    public static class Builder extends ParameterizedUrlOneyRequest.Builder {
         private String languageCode;
         private String merchantGuid;
         private String pspGuid;
@@ -47,12 +41,6 @@ public class OneyTransactionStatusRequest extends OneyRequest {
 
         public static OneyTransactionStatusRequest.Builder aOneyGetStatusRequest() {
             return new OneyTransactionStatusRequest.Builder();
-        }
-
-
-        public Builder withPurchaseReference(String purchaseReference) {
-            this.purchaseReference = purchaseReference;
-            return this;
         }
 
         public Builder withLanguageCode(String languageCode) {
@@ -70,6 +58,16 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             return this;
         }
 
+        public Builder withPurchaseReference(String purchaseReference ){
+            this.purchaseReference = purchaseReference;
+            return this;
+        }
+
+        public Builder withPurchaseReferenceFromOrder( Order order ){
+            super.withPurchaseReferenceFromOrder( order );
+            return this;
+        }
+
         public Builder withEncryptKey(String key) {
             this.encryptKey = key;
             return this;
@@ -80,65 +78,57 @@ public class OneyTransactionStatusRequest extends OneyRequest {
             return this;
         }
 
-        public OneyTransactionStatusRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) {
+        public OneyTransactionStatusRequest.Builder fromTransactionStatusRequest(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                    .withLanguageCode(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
-                    .withMerchantGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(transactionStatusRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
-                    .withPurchaseReference(transactionStatusRequest.getTransactionId())
-                    .withEncryptKey(transactionStatusRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
-                    .withCallParameters(PluginUtils.getParametersMap(
-                            transactionStatusRequest.getPartnerConfiguration(),
-                            transactionStatusRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue()));
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PSP_GUID_KEY))
+                    .withPurchaseReferenceFromOrder( transactionStatusRequest.getOrder() )
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(transactionStatusRequest));
 
 
         }
 
         //Creer une transactionStatusRequest depuis une refund Request
-        public OneyTransactionStatusRequest.Builder fromRefundRequest(RefundRequest refundRequest) {
+        public OneyTransactionStatusRequest.Builder fromRefundRequest(RefundRequest refundRequest) throws InvalidDataException {
             return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                    .withLanguageCode(refundRequest.getContractConfiguration().getProperty(OneyConstants.LANGUAGE_CODE_KEY).getValue())
-                    .withMerchantGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.MERCHANT_GUID_KEY).getValue())
-                    .withPspGuid(refundRequest.getContractConfiguration().getProperty(OneyConstants.PSP_GUID_KEY).getValue())
-                    .withPurchaseReference(refundRequest.getTransactionId())
-                    .withEncryptKey(refundRequest.getPartnerConfiguration().getProperty(OneyConstants.PARTNER_CHIFFREMENT_KEY))
-                    .withCallParameters(PluginUtils.getParametersMap(
-                            refundRequest.getPartnerConfiguration(),
-                            refundRequest.getContractConfiguration().getProperty(COUNTRY_CODE_KEY).getValue()));
-
-
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PSP_GUID_KEY))
+                    .withPurchaseReferenceFromOrder( refundRequest.getOrder() )
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(refundRequest));
         }
 
-        private OneyTransactionStatusRequest.Builder verifyIntegrity() {
+        private OneyTransactionStatusRequest.Builder verifyIntegrity() throws InvalidDataException {
             if (this.merchantGuid == null) {
-                throw new IllegalStateException("OneyTransactionStatusRequest must have a merchantGuid when built");
+                throw new InvalidDataException("OneyTransactionStatusRequest must have a merchantGuid when built", "OneyTransactionStatusRequest.merchantGuid");
             }
 
             if (this.pspGuid == null) {
-                throw new IllegalStateException("OneyTransactionStatusRequest must have a pspGuid when built");
+                throw new InvalidDataException("OneyTransactionStatusRequest must have a pspGuid when built", "OneyTransactionStatusRequest.pspGuid");
             }
 
             if (this.purchaseReference == null) {
-                throw new IllegalStateException("OneyTransactionStatusRequest must have a reference when built");
+                throw new InvalidDataException("OneyTransactionStatusRequest must have a reference when built", "OneyTransactionStatusRequest.reference");
             }
 
             if (this.encryptKey == null) {
-                throw new IllegalStateException("OneyConfirmRequest must have a encryptKey when built");
+                throw new InvalidDataException("OneyConfirmRequest must have a encryptKey when built", "OneyTransactionStatusRequest.encryptKey");
             }
 
             if (this.callParameters == null || callParameters.isEmpty()) {
-                throw new IllegalStateException("OneyTransactionStatusRequest must have a callParameters when built");
+                throw new InvalidDataException("OneyTransactionStatusRequest must have a callParameters when built", "OneyTransactionStatusRequest.callParameters");
             }
 
             return this;
-
         }
 
-        public OneyTransactionStatusRequest build() {
+        public OneyTransactionStatusRequest build() throws InvalidDataException {
             return new OneyTransactionStatusRequest(this.verifyIntegrity());
         }
 
     }
-
 
 }

@@ -7,9 +7,6 @@ import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.purchase.Delivery;
 import com.payline.payment.oney.bean.common.purchase.Item;
-import com.payline.payment.oney.bean.common.purchase.PurchaseMerchant;
-import com.payline.payment.oney.bean.request.OneyConfirmRequest;
-import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.pmapi.bean.common.Buyer;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
 public class BeanUtils {
 
-    public static BusinessTransactionData createDefaultBusinessTransactionData(String code) {
+    public static BusinessTransactionData createDefaultBusinessTransactionData(String code) throws Exception {
 
         return BusinessTransactionData.Builder.aBusinessTransactionDataBuilder()
                 .withCode(code)
@@ -28,7 +25,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static Customer createDefaultCustomer() {
+    public static Customer createDefaultCustomer() throws Exception {
 
         return Customer.Builder.aCustomBuilder()
                 .withLanguageCode("FR")
@@ -39,7 +36,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static ContactDetails createDefaultContactDetails() {
+    public static ContactDetails createDefaultContactDetails() throws Exception {
         return ContactDetails.Builder.aContactDetailsBuilder()
                 .withLandLineNumber("0436656565")
                 .withMobilePhoneNumber("0636656565")
@@ -47,7 +44,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static OneyAddress createDefaultCustomerAdress() {
+    public static OneyAddress createDefaultCustomerAdress() throws Exception {
         return OneyAddress.Builder.aOneyAddressBuilder()
                 .withLine1("12 place de la Comedie")
                 .withLine2("residence ABC")
@@ -62,7 +59,7 @@ public class BeanUtils {
 
     }
 
-    public static CustomerIdentity createDefaultCustomerIdentity() {
+    public static CustomerIdentity createDefaultCustomerIdentity() throws Exception {
 
         return CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
@@ -72,16 +69,8 @@ public class BeanUtils {
                 .build();
     }
 
-    public static PurchaseMerchant createPurchaseMerchant() {
-        return PurchaseMerchant.Builder.aPurchaseMerchantBuilder()
-                .withCompanyName("cie")
-                .withExternalReference("ref")
-                .withMerchantGuid("guid")
-                .withMunicipality("city")
-                .build();
-    }
 
-    public static Delivery createDelivery() {
+    public static Delivery createDelivery() throws Exception {
 
         return Delivery.Builder.aDeliveryBuilder()
                 .withDeliveryDate("1998-07-12")
@@ -95,7 +84,7 @@ public class BeanUtils {
                 .build();
     }
 
-    public static List<Item> createItemList() {
+    public static List<Item> createItemList() throws Exception {
         List<Item> itemList = new ArrayList<>();
         itemList.add(Item.Builder.aItemBuilder()
                 .withMainItem(0)
@@ -119,17 +108,4 @@ public class BeanUtils {
 
     }
 
-    public static OneyConfirmRequest createOneyConfirmRequest() {
-        return null;
-    }
-
-
-    public static OneyTransactionStatusRequest createDefaultTransactionStatusRequest() {
-        return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .withLanguageCode("FR")
-                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
-                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference("CMDE" + OneyConstants.PIPE + "455454545415451198114")
-                .build();
-    }
 }

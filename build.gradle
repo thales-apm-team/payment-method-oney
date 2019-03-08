@@ -12,12 +12,18 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 
-apply from: "monext.gradle"
-//apply from: "external.gradle"
+
+def externalFileName = "$projectDir/.external"
+
+if (file(externalFileName).exists()) {
+    apply from: "external.gradle"
+} else {
+    apply from: "monext.gradle"
+}
 
 description = 'payment-method-oney'
 group = 'com.payline.payment.oney'
-version = '1.0-SNAPSHOT'
+version = '1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -25,8 +31,8 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.1-SNAPSHOT'
-    paymentMethodIntegrationVersion = "1.1-SNAPSHOT"
+    paymentMethodApiVersion = '1.1'
+    paymentMethodIntegrationVersion = '1.1'
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
 }
@@ -47,24 +53,18 @@ dependencies {
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0-RC.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.7.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-rule', version: '1.7.4'
+    testImplementation group: 'org.jmockit', name: 'jmockit', version: '1.8'
 
     testImplementation "com.payline:payment-method-api:${paymentMethodApiVersion}"
-//    testImplementation "com.payline:payment-method-integration:${paymentMethodIntegrationVersion}"
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
+
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.3'
     testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
     testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
 
     // fatJarTest include testImplementation dependencies (not for IT)
-    fatJarTest group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
-    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0-RC.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.7.4'
-    fatJarTest group: 'org.powermock', name: 'powermock-module-junit4-rule', version: '1.7.4'
+    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
+    fatJarTest group: 'org.jmockit', name: 'jmockit', version: '1.8'
     fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.3'
     fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
     fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
@@ -82,9 +82,9 @@ shadowJar {
         exclude(dependency('com.payline:payment-method-api'))
         exclude(dependency('org.apache.logging.log4j:log4j-api:2.11.0'))
         exclude(dependency('org.apache.logging.log4j:log4j-core:2.11.0'))
-        exclude(dependency('org.junit.jupiter:junit-jupiter-params:5.0.3'))
         exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.0.3'))
-        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0-RC.4'))
+        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0'))
+        exclude(dependency('org.jmockit:jmockit:1.8'))
         exclude(dependency('org.powermock:powermock-module-junit4:1.7.4'))
         exclude(dependency('org.powermock:powermock-module-junit4-rule-agent:1.7.4'))
         exclude(dependency('org.powermock:powermock-module-junit4-rule:1.7.4'))
@@ -140,4 +140,7 @@ task testJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     configurations = [project.configurations.fatJarTest]
 }
 
-test.exclude '**/*It.class'
+test {
+    useJUnitPlatform()
+    exclude('**/*IT.class')
+}

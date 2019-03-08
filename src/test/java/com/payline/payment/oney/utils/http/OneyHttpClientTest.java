@@ -3,7 +3,6 @@ package com.payline.payment.oney.utils.http;
 import com.payline.payment.oney.bean.common.PurchaseCancel;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.exception.DecryptException;
 import com.payline.payment.oney.utils.OneyConstants;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
@@ -18,8 +17,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +40,7 @@ public class OneyHttpClientTest {
 
 
     private Map<String, String> params;
+    private Map<String, String> urlParams;
 
     @BeforeEach
     public void setup() {
@@ -53,12 +51,15 @@ public class OneyHttpClientTest {
         params = new HashMap<>();
         params.put("psp_guid", "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
         params.put("merchant_guid", "9813e3ff-c365-43f2-8dca-94b850befbf9");
-        params.put("reference", "CMDE" + OneyConstants.PIPE + "455454545415451198a");
+        params.put("reference", OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198a");
         params.put(PARTNER_API_URL, "https://oney-staging.azure-api.net");
+
+        urlParams = new HashMap<>();
+        urlParams.put( OneyHttpClient.LANGUAGE_CODE, "fr" );
     }
 
     @Test
-    public void doGet() throws IOException, URISyntaxException {
+    public void doGet() throws Exception {
 
         CloseableHttpResponse httpResponse = Mockito.mock(CloseableHttpResponse.class);
         HttpEntity entity = Mockito.mock(HttpEntity.class);
@@ -67,7 +68,7 @@ public class OneyHttpClientTest {
         Mockito.when(httpResponse.getEntity()).thenReturn(entity);
         Mockito.doReturn(httpResponse).when(closableClient).execute(Mockito.any());
 
-        StringResponse response = client.doGet("/staging/payments/v1/purchase/", params);
+        StringResponse response = client.doGet("/staging/payments/v1/purchase/", params, urlParams);
 
         //Assert we have a response
         Assertions.assertNotNull(response);
@@ -124,19 +125,19 @@ public class OneyHttpClientTest {
     }
 
     @Test
-    public void initiateGetTransactionStatusTest() throws IOException, URISyntaxException {
+    public void initiateGetTransactionStatusTest() throws Exception {
 
         StringResponse responseMockedOK = createStringResponse(200, "ZZOK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul41+5xLG5BBT+jV4I19n1BxNgTTBkgClTslC3pM/0UXrEOJt3Nv3LTMrGFG1pzsOP6gxM5c+lw57K0YUbQqoGgI\\u003d\\\"}\",\"code\":200,\"message\":\"OK\"}");
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doGet"));
 
-        Mockito.doReturn(responseMockedOK).when(testedClient).doGet(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(responseMockedOK).when(testedClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
 
         OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .withLanguageCode("FR")
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
                 .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference("CMDE" + OneyConstants.PIPE + "455454545415451198114")
+                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198114")
                 .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
                 .withCallParameters(params)
                 .build();
@@ -148,7 +149,7 @@ public class OneyHttpClientTest {
 
 
     @Test
-    public void initiateRefundRequestTest() throws DecryptException, IOException, URISyntaxException {
+    public void initiateRefundRequestTest() throws Exception {
 
         StringResponse responseMockedOK = createStringResponse(200, "OK", "{\"content\":\"{\\\"encrypted_message\\\":\\\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}\",\"code\":200,\"message\":\"OK\"}");
         PowerMockito.suppress(PowerMockito.methods(AbstractHttpClient.class, "doPost"));
@@ -162,7 +163,7 @@ public class OneyHttpClientTest {
                 .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
                 .withMerchantRequestId(merchantReqId)
                 .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference("CMDE" + OneyConstants.PIPE + "455454545415451198119")
+                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198119")
                 .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
                 .withPurchase(PurchaseCancel.Builder.aPurchaseCancelBuilder()
                         .withReasonCode(1)

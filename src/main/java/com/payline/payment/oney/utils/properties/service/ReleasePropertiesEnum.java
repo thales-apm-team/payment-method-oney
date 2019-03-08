@@ -1,7 +1,8 @@
 package com.payline.payment.oney.utils.properties.service;
 
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
 import com.payline.payment.oney.utils.properties.constants.ConfigurationConstants;
+import com.payline.pmapi.logger.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 
@@ -10,7 +11,10 @@ import java.util.Properties;
  */
 public enum ReleasePropertiesEnum implements PropertiesService {
 
+
     INSTANCE;
+
+    private final Logger logger = LogManager.getLogger(ReleasePropertiesEnum.class);
 
     private static final String FILENAME = ConfigurationConstants.RELEASE_PROPERTIES;
 
@@ -20,7 +24,7 @@ public enum ReleasePropertiesEnum implements PropertiesService {
     ReleasePropertiesEnum() {
         properties = new Properties();
         // init of the Properties
-        readProperties(properties);
+        readProperties(properties, logger);
     }
 
 
@@ -34,8 +38,4 @@ public enum ReleasePropertiesEnum implements PropertiesService {
         return getProperty(properties, key);
     }
 
-    @Override
-    public String get(String key, ConfigEnvironment environment) {
-        return getProperty(properties, key, environment);
-    }
 }

@@ -14,7 +14,9 @@ public class OneyConstants {
     public static final String CONTENT_TYPE_VALUE = "application/json";
     public static final String AUTHORIZATION = "X-Oney-Authorization";
     public static final String SECRET_KEY = "X-Oney-Secret";
-    public static final String SECRET_VALUE = "Method-body";
+    public static final String CHIFFREMENT_IS_ACTIVE = "chiffrement.actif";
+    public static final String SECRET_VALUE_ON = "Method-body";
+    public static final String SECRET_VALUE_OFF = "None";
 
     public static final String CONFIG_HTTP_CONNECT_TIMEOUT = "http.connectTimeout";
     public static final String CONFIG_HTTP_WRITE_TIMEOUT = "http.writeTimeout";
@@ -23,13 +25,8 @@ public class OneyConstants {
 
     //Constant specific of this payment method
 
-    public static final String X_ONEY_AUTHORIZATION_LABEL = "api.key.label";
-    public static final String X_ONEY_AUTHORIZATION_KEY = "apiKey";
-    public static final String X_ONEY_AUTHORIZATION_DESCRIPTION = "api.key.description";
-    public static final String X_ONEY_AUTHORIZATION_MESSAGE_ERROR = "api.key.error.message";
-
     public static final String PSP_GUID_LABEL = "psp.id.label";
-    public static final String PSP_GUID_KEY = "pspId";
+    public static final String PSP_GUID_KEY = "psp.id";
     public static final String PSP_GUID_DESCRIPTION = "psp.id.description";
     public static final String PSP_GUID_MESSAGE_ERROR = "psp.id.error.message";
 
@@ -37,11 +34,6 @@ public class OneyConstants {
     public static final String MERCHANT_GUID_LABEL = "merchant.guid.label";
     public static final String MERCHANT_GUID_DESCRIPTION = "merchant.guid.description";
     public static final String MERCHANT_GUID_MESSAGE_ERROR = "merchant.guid.error.message";
-
-    public static final String API_MARKETING_KEY = "apiMarketing";
-    public static final String API_MARKETING_LABEL = "api.marketing.label";
-    public static final String API_MARKETING_DESCRIPTION = "api.marketing.description";
-    public static final String API_MARKETING_MESSAGE_ERROR = "api.marketing.error.message";
 
     public static final String OPC_KEY = "opc";
     public static final String OPC_LABEL = "opc.label";
@@ -52,19 +44,19 @@ public class OneyConstants {
     public static final String NB_ECHEANCES_LABEL = "nb.echeances.label";
     public static final String NB_ECHEANCES_MESSAGE_ERROR = "nb.echeances.error.message";
 
-    public static final String COUNTRY_CODE_KEY = "X-Oney-Partner-Country-Code";
-    public static final String COUNTRY_CODE_VALUE = "country.code.value";
+    public static final String COUNTRY_CODE_KEY = "xOneyPatnerCountryCode";
+    public static final String COUNTRY_CODE_HEADER = "X-Oney-Partner-Country-Code";
     public static final String COUNTRY_CODE_LABEL = "country.code.label";
     public static final String COUNTRY_CODE_DESCRIPTION = "X-Oney-Partner-Country-Code";
     public static final String COUNTRY_CODE_MESSAGE_ERROR = "country.code.error.message";
 
-    public static final String LANGUAGE_CODE_KEY = "merchant_language_code";
+    public static final String LANGUAGE_CODE_KEY = "merchantLanguageCode";
     public static final String LANGUAGE_CODE_DESCRIPTION = "language.code.description";
     public static final String LANGUAGE_CODE_LABEL = "language.code.label";
     public static final String LANGUAGE_CODE_MESSAGE_ERROR = "language.code.error.message";
 
 
-    public static final String ID_INTERNATIONAL_KEY = "oney_international_id";
+    public static final String ID_INTERNATIONAL_KEY = "oneyInternationalId";
     public static final String ID_INTERNATIONAL_DESCRIPTION = "X-Oney-International-Partner-ID";
     public static final String ID_INTERNATIONAL_LABEL = "international.code.label";
     public static final String ID_INTERNATIONAL_MESSAGE_ERROR = "international.code.error.message";
@@ -72,7 +64,11 @@ public class OneyConstants {
 
     public static final String PARTNER_AUTHORIZATION_VALUE = "oney.authorization";
     public static final String PARTNER_CHIFFREMENT_KEY = "partner.oney.access.secret.key";
-    public static final String PARTNER_AUTHRIZATION_KEY = "partner.oney.access.key";
+    public static final String PARTNER_CHIFFREMENT_DESCRIPTION = "partner.oney.access.secret.key.description";
+    public static final String PARTNER_CHIFFREMENT_LABEL = "partner.oney.access.secret.key.label";
+    public static final String PARTNER_CHIFFREMENT_KEY_MESSAGE_ERROR = "partner.oney.access.secret.key.error.message";
+    public static final String PARTNER_AUTHORIZATION_KEY = "partner.oney.access.key";
+    public static final String PARTNER_AUTHORIZATION_KEY_MESSAGE_ERROR = "partner.oney.access.key.error.message";
     public static final String PARTNER_API_URL = "partner.oney.url";
     public static final String HEADER_COUNTRY_CODE = "oney.coutry.code";
 
@@ -100,9 +96,17 @@ public class OneyConstants {
 
     //Code HTTP
     public static final int HTTP_OK = 200;
+    public static final int HTTP_401 = 401;
+    public static final int HTTP_400 = 400;
+    public static final int HTTP_404 = 404;
+    public static final int HTTP_500 = 500;
 
 
     public static final String COUNTRY_NOT_ISO = "contract.errors.countryNotISO";
     public static final String LANGUAGE_NOT_ISO = "contract.errors.languageNotISO";
 
+    public static final String UNEXPECTED_ERR = "error.unexpected";
+
+
+    public static final String DATE_FORMAT = "\\d{4}-\\d{2}-\\d{2}";
 }

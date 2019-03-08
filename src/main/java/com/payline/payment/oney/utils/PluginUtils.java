@@ -1,14 +1,16 @@
 package com.payline.payment.oney.utils;
 
 
-import com.payline.payment.oney.bean.common.purchase.Purchase;
+import com.payline.payment.oney.exception.InvalidDataException;
+import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
-import com.payline.payment.oney.utils.config.ConfigEnvironment;
-import com.payline.pmapi.bean.ActionRequest;
-import com.payline.pmapi.bean.Request;
+import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.common.Buyer;
-import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
+import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -18,8 +20,6 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 
 public class PluginUtils {
 
-
-    public static final String URL_DELIMITER = "/";
     public static final String LINE_1 = "line1";
     public static final String LINE_4 = "line4";
 
@@ -43,18 +43,6 @@ public class PluginUtils {
         return PluginUtils.requireNonNull((T) map.get(key), err);
     }
 
-    public static ConfigEnvironment getEnvironnement(ActionRequest actionRequest) {
-        return actionRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(Request request) {
-        return request.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
-    public static ConfigEnvironment getEnvironnement(ContractParametersCheckRequest contractParametersCheckRequest) {
-        return contractParametersCheckRequest.getEnvironment().isSandbox() ? ConfigEnvironment.DEV : ConfigEnvironment.PROD;
-    }
-
 // ------------  Methodes de mapping entre Oney et Payline  -----------------------
 
 
@@ -71,32 +59,33 @@ public class PluginUtils {
         return null;
     }
 
+    /**
+     * Mapping Payline Civility vers Oney HonorificCode
+     *
+     * @param civility Payline Civility
+     * @return Oney HonorificCode
+     */
     public static Integer getHonorificCode(String civility) {
 
         if (civility == null) {
             return null;
         }
+
         switch (civility.toLowerCase()) {
-            //Inconnu ex : professeu, Maitre, docteur
-            case "7":
-            case "9":
-            case "10":
-            case "11":
-                return 0;
-            //MR
-            case "4":
-            case "5":
-                return 1;
-            //MME
+
+            // Madame → PAYLINE: 1 → ONEY: 2
             case "1":
-            case "2":
-            case "6":
                 return 2;
-            //MLLE
+            // Mademoiselle → PAYLINE: 3 → ONEY: 3
             case "3":
                 return 3;
-            default:
+            // Monsieur → PAYLINE: 4 → ONEY: 1
+            case "4":
                 return 1;
+
+            default:
+                //Inconnu ex : Professeur, Maitre, Docteur
+                return 0;
         }
     }
 
@@ -151,72 +140,68 @@ public class PluginUtils {
     }
 
     /**
-     * Decoupe le texte en 5 renvoi un tableau
+     * Concatenates and trims two pieces of text, joining them by a space.
      *
-     * @param longText
-     * @param longText2
-     * @param size
-     * @return
+     * @param text1 the first string to concatenate.
+     * @param text2 the second string to concatenate.
+     * @return The resulting string.
      */
-    public static Map<String, String> truncateLongText(String longText, String longText2, int size) {
-        Map<String, String> textTruncated = new HashMap();
+    public static String spaceConcat(String text1, String text2) {
+        StringBuffer sb = new StringBuffer();
 
-        String line1;
-        String line2;
-        String line3;
-        String line4;
-        String line5;
 
-        int fromIndex = size;
-        int fromIndex2 = size;
-        int firstCharPosition = 0;
-        int firstCharPosition2 = 0;
-
-        if (longText == null) {
-            textTruncated.put(LINE_1, "");
+        if (text1 != null) {
+            sb.append(text1.trim());
         }
-        //-------------------- address 1
-        else if (longText.length() < size) {
-            textTruncated.put(LINE_1, longText);
-
-        } else {
-            int end1 = longText.lastIndexOf(' ', fromIndex);
-            line1 = longText.substring(firstCharPosition, end1);
-            fromIndex += line1.length();
-            firstCharPosition += line1.length();
-            textTruncated.put(LINE_1, line1);
-
-            int end2 = longText.lastIndexOf(' ', fromIndex);
-            line2 = longText.substring(firstCharPosition, end2);
-            fromIndex += line2.length();
-            firstCharPosition += line2.length();
-            textTruncated.put("line2", line2);
-
-            int end3 = longText.lastIndexOf(' ', fromIndex);
-            line3 = longText.substring(firstCharPosition, end3);
-            textTruncated.put("line3", line3);
+        if (text2 != null) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(text2.trim());
         }
-        //-------------------- address 2
-        if (longText2 == null) {
-            textTruncated.put(LINE_4, "");
 
-        } else if (longText2.length() < size) {
-            textTruncated.put(LINE_4, longText2);
-
-        } else {
-            int end4 = longText2.lastIndexOf(' ', fromIndex2);
-            line4 = longText2.substring(firstCharPosition2, end4);
-            fromIndex2 += line4.length();
-            firstCharPosition2 += line4.length();
-            textTruncated.put(LINE_4, line4);
-
-            int end5 = longText2.lastIndexOf(' ', fromIndex2);
-            line5 = longText2.substring(firstCharPosition2, end5);
-            textTruncated.put("line5", line5);
-        }
-        return textTruncated;
-
+        return sb.toString();
     }
+
+    /**
+     * Splits the given string into chunks of the given size, without truncating any word if possible.
+     * If the given string does not contain
+     *
+     * @param toSplit   The long string to split.
+     * @param maxLength The maximum length of a final text chunk.
+     * @return A map containing as many lines as necessary
+     * (key = "lineX" where X is the number of the line).
+     */
+    public static List<String> splitLongText(String toSplit, int maxLength) {
+        List<String> chunks = new ArrayList<>();
+        StringBuffer sb = new StringBuffer(toSplit);
+
+        while (sb.length() > 0) {
+            // remove whitespaces at the beginning
+            if (Character.isWhitespace(sb.charAt(0))) {
+                sb.delete(0, 1);
+                continue;
+            }
+
+            // identify the next chunk
+            String chunk;
+            if (sb.length() <= maxLength) {
+                chunk = sb.toString().trim();
+            } else {
+                int splitSpace = sb.substring(0, maxLength + 1).lastIndexOf(" ");
+                int end = splitSpace >= 0 ? splitSpace : maxLength;
+                chunk = sb.substring(0, end).trim();
+            }
+
+            chunks.add(chunk);
+
+            // remove processed chunk
+            sb.delete(0, chunk.length());
+        }
+
+        return chunks;
+    }
+
 // --------------------------- FIN methode de mapping -----------------------
 
     /**
@@ -240,6 +225,9 @@ public class PluginUtils {
      * @return
      */
     public static String getIsoAlpha3CodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
         Locale locale = new Locale("", code);
         return locale.getISO3Country();
     }
@@ -251,19 +239,18 @@ public class PluginUtils {
      * @return
      */
     public static String getCountryNameCodeFromCountryCode2(String code) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
+
         Locale locale = new Locale("", code);
         return locale.getDisplayCountry();
     }
 
-    public static String generateReference(Purchase purchase) {
-
-        return purchase.getExternalReferenceType() + OneyConstants.PIPE + purchase.getExternalReference();
-    }
-
-    public static String parseReference(String reference) throws InvalidRequestException {
+    public static String parseReference(String reference) throws InvalidFieldFormatException {
 
         if (reference == null || reference.isEmpty() || !reference.contains(OneyConstants.PIPE)) {
-            throw new InvalidRequestException("Oney reference should contain a '|' : " + reference);
+            throw new InvalidFieldFormatException("Oney reference should contain a '|' : " + reference, "Oney.PurchaseReference");
         }
         return reference.split(OneyConstants.PIPE)[1];
     }
@@ -275,7 +262,7 @@ public class PluginUtils {
      * @return true if countryCode is in ISO-3166 list, else return false
      */
     public static boolean isISO3166(String countryCode) {
-        return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
+        return countryCode != null && Arrays.asList(Locale.getISOCountries()).contains(countryCode);
     }
 
     /**
@@ -285,16 +272,16 @@ public class PluginUtils {
      * @return true if languageCode is in ISO-3166 list, else return false
      */
     public static boolean isISO639(String languageCode) {
-        return Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
+        return languageCode != null && Arrays.asList(Locale.getISOLanguages()).contains(languageCode);
     }
 
     /**
      * Return a string which was converted from cents to euro
      *
      * @param amount
-     * @return
+     * @return Amount as String
      */
-    public static String createStringAmount(BigInteger amount,Currency currency) {
+    public static String createStringAmount(BigInteger amount, Currency currency) {
         //récupérer le nombre de digits dans currency
         int nbDigits = currency.getDefaultFractionDigits();
 
@@ -312,64 +299,115 @@ public class PluginUtils {
     /**
      * Return a Float which was converted from cents to euro
      *
-     * @param amount
-     * @return
+     * @param amount   BigInteger
+     * @param currency Currency
+     * @return Amount as Float
      */
     public static Float createFloatAmount(BigInteger amount, Currency currency) {
-        return Float.parseFloat(createStringAmount(amount,currency));
-    }
-
-
-    public static boolean getRefundFlag(String transactionStatusRequest) {
-        switch (transactionStatusRequest) {
-            case "FUNDED":
-                return true;
-
-            case "PENDING":
-            case "FAVORABLE":
-                return false;
-
-            case "REFUSED":
-            case "ABORTED":
-            case "CANCELLED":
-                throw new IllegalStateException("a " + transactionStatusRequest + " transactionStatusRequest can't be cancelled");
-
-            default:
-                throw new IllegalStateException(transactionStatusRequest + " is not a valid status for refund or cancel");
-
+        if (amount == null || currency == null) {
+            return null;
         }
-
+        return Float.parseFloat(createStringAmount(amount, currency));
     }
 
     /**
      * Buid a map with all needed parameters for HTTP calls
      *
-     * @param partnerConfiguration Payline PartnerConfiguration
-     * @param coutryCode           coutryCode from ContractParameters
-     * @return
+     * @param refundRequest Payline RefundRequest
+     * @return the ParametersMap
      */
-    public static Map<String, String> getParametersMap(PartnerConfiguration partnerConfiguration, String coutryCode) {
+    public static Map<String, String> getParametersMap(RefundRequest refundRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param contractParametersCheckRequest Payline ContractParametersCheckRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(ContractParametersCheckRequest contractParametersCheckRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(contractParametersCheckRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param transactionStatusRequest Payline TransactionStatusRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(TransactionStatusRequest transactionStatusRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param paymentRequest Payline PaymentRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(PaymentRequest paymentRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param authorization PARTNER_AUTHORIZATION_KEY
+     * @param url           PARTNER_API_URL
+     * @param coutryCode    coutryCode from ContractParameters
+     * @return the ParametersMap
+     */
+    private static Map<String, String> getParametersMap(String authorization, String url, String coutryCode) throws InvalidDataException {
 
         if (coutryCode == null || coutryCode.isEmpty()) {
-            throw new IllegalStateException("coutryCode is mandatory");
+            throw new InvalidDataException("coutryCode is mandatory", "coutryCode");
         }
 
-        String authorization = partnerConfiguration.getProperty(PARTNER_AUTHRIZATION_KEY);
         if (authorization == null) {
-            throw new IllegalStateException(PARTNER_AUTHRIZATION_KEY + " is mandatory");
+            throw new InvalidDataException(PARTNER_AUTHORIZATION_KEY + " is mandatory", PARTNER_AUTHORIZATION_KEY);
         }
 
-        String url = partnerConfiguration.getProperty(PARTNER_API_URL);
         if (url == null) {
-            throw new IllegalStateException(PARTNER_API_URL + " is mandatory");
+            throw new InvalidDataException(PARTNER_API_URL + " is mandatory", PARTNER_API_URL);
         }
 
 
         Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(PARTNER_AUTHRIZATION_KEY, authorization);
+        parametersMap.put(PARTNER_AUTHORIZATION_KEY, authorization);
         parametersMap.put(PARTNER_API_URL, url);
         parametersMap.put(HEADER_COUNTRY_CODE, coutryCode.toUpperCase());
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            parametersMap.put(SECRET_KEY, SECRET_VALUE_ON);
+        } else {
+            parametersMap.put(SECRET_KEY, SECRET_VALUE_OFF);
+        }
 
         return parametersMap;
+    }
+
+
+    public static String truncate(String value, int length) {
+        if (value != null && value.length() > length) {
+            value = value.substring(0, length);
+        }
+        return value;
     }
 }

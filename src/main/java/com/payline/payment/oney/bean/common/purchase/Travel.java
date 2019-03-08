@@ -2,15 +2,17 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.payline.payment.oney.bean.common.OneyBean;
 
+import java.util.List;
+
 /**
  * Pour lot2.
  */
 public class Travel extends OneyBean {
 
-    private Journey journey;
+    private List<Journey> journey;
 
     @SuppressWarnings(value = "unused")
-    public Journey getJourney() {
+    public List<Journey> getJourney() {
         return journey;
     }
 }

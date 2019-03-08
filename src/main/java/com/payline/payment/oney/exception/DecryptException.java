@@ -1,8 +1,13 @@
 package com.payline.payment.oney.exception;
 
-public class DecryptException extends Exception {
+public class DecryptException extends PluginTechnicalException {
 
-    public DecryptException(String message, Throwable cause) {
-        super(message, cause);
+    /**
+     * @param e      the original catched Exception
+     * @param origin method and type of exception : 'Class.Method.Exception'
+     */
+    public DecryptException(Exception e, String origin) {
+        super(e, origin);
     }
+
 }

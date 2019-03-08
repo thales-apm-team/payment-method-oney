@@ -5,7 +5,7 @@ import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
-import org.apache.logging.log4j.LogManager;
+import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class OneyErrorHandler {
@@ -16,29 +16,19 @@ public class OneyErrorHandler {
         super();
     }
 
-    public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause) {
-        return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                .withFailureCause(failureCause)
-                .build();
-    }
-
-    public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause, String externalReference) {
+    public static PaymentResponseFailure getPaymentResponseFailure(final FailureCause failureCause, String externalReference, String errorCode) {
         return PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                 .withFailureCause(failureCause)
                 .withPartnerTransactionId(externalReference)
+                .withErrorCode(errorCode)
                 .build();
     }
 
-    public static RefundResponseFailure geRefundResponseFailure(final FailureCause failureCause) {
-        return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
-                .withFailureCause(failureCause)
-                .build();
-    }
-
-    public static RefundResponseFailure geRefundResponseFailure(final FailureCause failureCause, String externalReference) {
+    public static RefundResponseFailure geRefundResponseFailure(final FailureCause failureCause, String externalReference, String errorCode) {
         return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                 .withFailureCause(failureCause)
                 .withPartnerTransactionId(externalReference)
+                .withErrorCode(errorCode)
                 .build();
     }
 

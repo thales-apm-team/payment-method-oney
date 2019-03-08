@@ -2,13 +2,14 @@ package com.payline.payment.oney.utils.http;
 
 
 import com.payline.payment.oney.bean.request.*;
-import com.payline.payment.oney.exception.DecryptException;
+import com.payline.payment.oney.exception.HttpCallException;
+import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class OneyHttpClient extends AbstractHttpClient {
     public static final String PSP_GUID = "psp_guid";
     public static final String MERCHANT_GUID = "merchant_guid";
     public static final String REFERENCE = "reference";
+    public static final String LANGUAGE_CODE = "language_code";
     public static final String PSP_GUID_TAG = "/psp_guid/";
     public static final String MERCHANT_GUID_TAG = "/merchant_guid/";
     public static final String REFERENCE_TAG = "/reference/";
@@ -54,18 +56,21 @@ public class OneyHttpClient extends AbstractHttpClient {
      * @param path           URL path
      * @param requestContent The JSON content, as a string
      * @return The response returned from the HTTP call
-     * @throws IOException        I/O error
-     * @throws URISyntaxException URI Syntax Exception
+     * @throws HttpCallException COMMUNICATION_ERROR
      */
     public StringResponse doPost(String path, String requestContent, Map<String, String> params)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
 
-        String url = params.get(PARTNER_API_URL);
-        StringEntity entity = new StringEntity(requestContent);
-        Header[] headers = createHeaders(params);
+        try {
+            String url = params.get(PARTNER_API_URL);
+            StringEntity entity = new StringEntity(requestContent);
+            Header[] headers = createHeaders(params);
 
+            return super.doPost(url, path, headers, entity);
 
-        return super.doPost(url, path, headers, entity);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpCallException(e, "OneyHttpClient.doPost.UnsupportedEncodingException");
+        }
 
     }
 
@@ -74,16 +79,20 @@ public class OneyHttpClient extends AbstractHttpClient {
      *
      * @param path URL path
      * @return The response returned from the HTTP call
-     * @throws IOException        I/O error
-     * @throws URISyntaxException URI Syntax Exception
+     * @throws HttpCallException COMMUNICATION_ERROR
      */
-    public StringResponse doGet(String path, Map<String, String> params)
-            throws IOException, URISyntaxException {
+    public StringResponse doGet(String path, Map<String, String> params, Map<String, String> urlParameters)
+            throws HttpCallException {
 
         String url = params.get(PARTNER_API_URL);
 
         //build Request
         String finalPath = this.buildGetOrderPath(path, params);
+
+        // add url parameters
+        if( urlParameters.size() > 0 && urlParameters.get(LANGUAGE_CODE) != null ){
+            finalPath += "?" + LANGUAGE_CODE + "=" + urlParameters.get(LANGUAGE_CODE);
+        }
 
         Header[] headers = createHeaders(params);
 
@@ -117,64 +126,90 @@ public class OneyHttpClient extends AbstractHttpClient {
     private Header[] createHeaders(Map<String, String> params) {
 
         String countryCode = params.get(HEADER_COUNTRY_CODE);
-        String authorizationKey = params.get(PARTNER_AUTHRIZATION_KEY);
+        String authorizationKey = params.get(PARTNER_AUTHORIZATION_KEY);
+        String secretValue = params.get(SECRET_KEY);
         Header[] headers = new Header[4];
         headers[0] = new BasicHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
         headers[1] = new BasicHeader(AUTHORIZATION, authorizationKey);
-        headers[2] = new BasicHeader(COUNTRY_CODE_KEY, countryCode);
-        headers[3] = new BasicHeader(SECRET_KEY, SECRET_VALUE);
+        headers[2] = new BasicHeader(COUNTRY_CODE_HEADER, countryCode);
+        headers[3] = new BasicHeader(SECRET_KEY, secretValue);
 
         return headers;
     }
 
-
     public StringResponse initiatePayment(OneyPaymentRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws PluginTechnicalException {
 
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
-        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
-        String jsonBody = requestEncrypted.toString();
+        String jsonBody;
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyPaymentRequest(request);
+            jsonBody = requestEncrypted.toString();
+        } else {
+            jsonBody = request.toString();
+        }
+        // do the request
+        return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
+
+    }
+
+    public StringResponse initiateCheckPayment(String jsonBody, Map<String, String> parameters)
+            throws HttpCallException {
         // do the request
         return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
 
     }
 
     public StringResponse initiateConfirmationPayment(OneyConfirmRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
         parameters.put(REFERENCE, request.getPurchaseReference());
         String path = buildConfirmOrderPath(CONFIRM_REQUEST_URL, parameters);
-        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
-        String jsonBody = requestEncrypted.toString();
+        String jsonBody = null;
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyConfirmRequest(request);
+            jsonBody = requestEncrypted.toString();
+        } else {
+            jsonBody = request.toString();
+        }
         // do the request
         return doPost(path, jsonBody, parameters);
 
     }
 
     public StringResponse initiateRefundPayment(OneyRefundRequest request)
-            throws IOException, URISyntaxException, DecryptException {
+            throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
         parameters.put(REFERENCE, request.getPurchaseReference());
         String path = buildRefundOrderPath(CANCEL_REQUEST_URL, parameters);
-        OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyRefundRequest(request);
-        String jsonBody = requestEncrypted.toString();
+        String jsonBody;
+        if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromOneyRefundRequest(request);
+            jsonBody = requestEncrypted.toString();
+        } else {
+            jsonBody = request.toString();
+        }
         // do the request
         return doPost(path, jsonBody, parameters);
 
     }
 
     public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request)
-            throws IOException, URISyntaxException {
+            throws HttpCallException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
         parameters.put(REFERENCE, request.getPurchaseReference());
+
+        Map<String, String> urlParameters = new HashMap<>();
+        urlParameters.put(LANGUAGE_CODE, request.getLanguageCode());
+
         // do the request
-        return doGet(STATUS_REQUEST_URL, parameters);
+        return doGet(STATUS_REQUEST_URL, parameters, urlParameters);
 
     }
 }

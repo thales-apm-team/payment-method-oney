@@ -1,2 +1,5 @@
 rootProject.name = 'payment-method-oney'
 
+if (file('../payline-payment-method-api').exists()) {
+    includeBuild '../payline-payment-method-api'
+}
