@@ -30,14 +30,11 @@ public abstract class TestIT extends AbstractPaymentIntegration {
     protected PaymentServiceImpl paymentService = new PaymentServiceImpl();
     protected PaymentWithRedirectionServiceImpl paymentWithRedirectionService = new PaymentWithRedirectionServiceImpl();
 
+    abstract public TestCountry getCountry();
 
-    Map.Entry<String, String> getPspGuid() {
-        return null;
-    }
+    abstract Map.Entry<String, String> getPspGuid();
 
-    public Map.Entry<String, String> getPartnerAuthorizationKey() {
-        return null;
-    }
+    abstract public Map.Entry<String, String> getPartnerAuthorizationKey();
 
     @Override
     protected PaymentFormContext generatePaymentFormContext() {
@@ -68,7 +65,9 @@ public abstract class TestIT extends AbstractPaymentIntegration {
 //            wt1_wt7_Oney_Theme_wt162_block_wtMainContent_WebPatterns_wtStructure_block_wtColumn1_wtWithoutAccount_rb2
             driver.findElement(By.xpath(struct + "_block_wtColumn1_wtWithoutAccount_rb2']")).click();
 //            driver.findElement(By.name("wt1_wt7$1105887523")).click();
+
             //champs date de naissance
+            /*
             WebDriverWait wait0 = new WebDriverWait(driver, 30);
             wait0.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowDay']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowDay']"))).selectByVisibleText("1");
@@ -80,6 +79,7 @@ public abstract class TestIT extends AbstractPaymentIntegration {
             WebDriverWait wait2 = new WebDriverWait(driver, 60);
             wait2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']")));
             new Select(driver.findElement(By.xpath(struct + "_block_wtColumn1_WebPatterns_wt20_block_wtColumn1_DateSelector_wt78_block_wtShowYear']"))).selectByVisibleText("1993");
+            */
 
             //nationalite
             WebDriverWait wait4 = new WebDriverWait(driver, 30);
@@ -148,7 +148,7 @@ public abstract class TestIT extends AbstractPaymentIntegration {
             wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")));
             driver.findElement(By.xpath("//*[@id='Oney_Theme_wt32_block_wtMainContent_wtbtnFinishAndActivate']")).click();
 
-            wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
+            wait10.until(ExpectedConditions.or(ExpectedConditions.urlToBe(SUCCESS_URL), ExpectedConditions.urlToBe(CANCEL_URL)));
 
             return driver.getCurrentUrl();
             //debug
@@ -166,13 +166,9 @@ public abstract class TestIT extends AbstractPaymentIntegration {
 
     @Override
     public PaymentRequest createDefaultPaymentRequest() {
-        return TestUtils.createCompletePaymentRequestBuilder(getContry(), generateContractConfiguration(),
+        return TestUtils.createCompletePaymentRequestBuilder(getCountry(), generateContractConfiguration(),
                 generatePaymentFormContext(), generatePartnerConfiguration()).build();
 
-    }
-
-    public TestCountry getContry() {
-        return null;
     }
 
     public PartnerConfiguration generatePartnerConfiguration() {

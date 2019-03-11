@@ -20,13 +20,18 @@ public class ItalieTestIT extends TestIT {
     private HashMap<String, ContractProperty> contractConfiguration;
 
     @Override
+    public TestCountry getCountry() {
+        return TestCountry.IT;
+    }
+
+    @Override
     public Map.Entry<String, String> getPspGuid() {
-        return new AbstractMap.SimpleEntry<String, String>(TEST_PSP_GUID_KEY, "31d8acd3-0c52-4bee-8ca1-36976c0b0317");
+        return new AbstractMap.SimpleEntry<>(TEST_PSP_GUID_KEY, "31d8acd3-0c52-4bee-8ca1-36976c0b0317");
     }
 
     @Override
     public Map.Entry<String, String> getPartnerAuthorizationKey() {
-        return new AbstractMap.SimpleEntry<String, String>(TEST_PARTNER_AUTHORIZATION_KEY, "706ef0c03c71443295f1a7bbcff68bcb");
+        return new AbstractMap.SimpleEntry<>(TEST_PARTNER_AUTHORIZATION_KEY, "706ef0c03c71443295f1a7bbcff68bcb");
     }
 
 
@@ -50,10 +55,5 @@ public class ItalieTestIT extends TestIT {
         PaymentRequest request = createDefaultPaymentRequest();
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
 
-    }
-
-    @Override
-    public TestCountry getContry() {
-        return TestCountry.IT;
     }
 }

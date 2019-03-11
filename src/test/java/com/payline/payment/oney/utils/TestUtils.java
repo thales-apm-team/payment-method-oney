@@ -297,10 +297,30 @@ public class TestUtils {
     }
 
     public static Address createDefaultCompleteAddress(TestCountry testCountry) {
+        String city = null;
+        String zipCode = null;
+        switch( testCountry ){
+            case FR:
+                city = "Paris";
+                zipCode = "75013";
+                break;
+            case BE:
+                city = "Bruxelles";
+                zipCode = "1000";
+                break;
+            case ES:
+                city = "Madrid";
+                zipCode = "28001";
+                break;
+            case IT:
+                city = "Roma";
+                zipCode = "00010";
+                break;
+        }
         return createCompleteAddress(RandomStringUtils.random(3, false, true)
-                        + " rue " + RandomStringUtils.random(5, true, false),
-                "residence " + RandomStringUtils.random(9
-                        , true, false), "Bruxelles", "1000", testCountry.name());
+                        + " allée " + RandomStringUtils.random(5, true, false),
+                "résidence " + RandomStringUtils.random(9
+                        , true, false), city, zipCode, testCountry.name());
     }
 
     public static Map<String, String> createDefaultExtendedData() {

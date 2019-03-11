@@ -20,6 +20,11 @@ public class BelgiqueTestIT extends TestIT {
     private HashMap<String, ContractProperty> contractConfiguration;
 
     @Override
+    public TestCountry getCountry() {
+        return TestCountry.BE;
+    }
+
+    @Override
     public Map.Entry<String, String> getPspGuid() {
         return new AbstractMap.SimpleEntry<String, String>(TEST_PSP_GUID_KEY, "6ba2a5e2-df17-4ad7-8406-6a9fc488a60a");
     }
@@ -49,10 +54,5 @@ public class BelgiqueTestIT extends TestIT {
         PaymentRequest request = createDefaultPaymentRequest();
         this.fullRedirectionPayment(request, paymentService, paymentWithRedirectionService);
 
-    }
-
-    @Override
-    public TestCountry getContry() {
-        return TestCountry.BE;
     }
 }
