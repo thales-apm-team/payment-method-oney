@@ -65,6 +65,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         final LinkedHashMap<String, String> nbEcheances = new LinkedHashMap<>();
         nbEcheances.put("3x", "3x");
         nbEcheances.put("4x", "4x");
+        nbEcheances.put("6x", "6x");
+        nbEcheances.put("10x", "10x");
+        nbEcheances.put("12x", "12x");
         nbEcheancesParameter.setList(nbEcheances);
         parameters.add(nbEcheancesParameter);
 
