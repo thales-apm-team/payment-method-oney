@@ -64,7 +64,8 @@ public class ContactDetails extends OneyBean {
         }
 
         public ContactDetails.Builder withMobilePhoneNumber(String number) {
-            this.mobilePhoneNumber = number;
+//            this.mobilePhoneNumber = number;
+            this.mobilePhoneNumber = "0000000000";  // verrue en attendant
             return this;
         }
 
