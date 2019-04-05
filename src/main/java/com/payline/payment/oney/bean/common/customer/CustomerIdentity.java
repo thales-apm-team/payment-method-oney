@@ -223,9 +223,9 @@ public class CustomerIdentity extends OneyBean {
                     this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
                 }
                 this.birthName = buyer.getFullName().getLastName();
-                if (this.honorificCode != null && (this.honorificCode == 2 || this.honorificCode == 3)) {
-                    this.lastName = buyer.getFullName().getLastName();
-                }
+//                if (this.honorificCode != null && (this.honorificCode == 2 || this.honorificCode == 3)) {
+//                    this.lastName = buyer.getFullName().getLastName();
+//                }
                 this.firstName = buyer.getFullName().getFirstName();
             }
 

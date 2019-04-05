@@ -1,6 +1,7 @@
 package com.payline.payment.oney.bean.common;
 
 import com.payline.payment.oney.bean.common.customer.CustomerIdentity;
+import com.payline.payment.oney.utils.TestUtils;
 import com.payline.pmapi.bean.common.Buyer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,12 @@ public class CustomerIdentityTest {
 
     private CustomerIdentity customerIdentity;
 
+    @Test
+    void customerFromPaylineTest() throws Exception {
+        Buyer buyer = TestUtils.createDefaultBuyer();
+        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity().fromPayline(buyer).build();
+        Assertions.assertNull(customerIdentity.getLastName());
+    }
 
     @Test
     public void customerIdentityTest() throws Exception {
