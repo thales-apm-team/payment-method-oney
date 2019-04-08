@@ -2,6 +2,7 @@ package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
@@ -64,8 +65,13 @@ public class ContactDetails extends OneyBean {
         }
 
         public ContactDetails.Builder withMobilePhoneNumber(String number) {
-//            this.mobilePhoneNumber = number;
-            this.mobilePhoneNumber = "0000000000";  // verrue en attendant
+            this.mobilePhoneNumber = number;
+
+            // verrue en attendant (ticket 138)
+            if (PluginUtils.isEmpty(this.mobilePhoneNumber)){
+                this.mobilePhoneNumber = "0000000000";
+            }
+
             return this;
         }
 
