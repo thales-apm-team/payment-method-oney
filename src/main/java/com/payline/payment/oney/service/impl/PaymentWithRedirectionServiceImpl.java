@@ -87,10 +87,11 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     }
 
                 } else {
+                    OneyFailureResponse failureResponse = new OneyFailureResponse(status.getCode(), status.getMessage(), status.getContent(), paymentErrorResponseFromJson(status.getContent()));
                     return OneyErrorHandler.getPaymentResponseFailure(
-                            FailureCause.CANCEL,
+                            handleOneyFailureResponse(failureResponse),
                             oneyTransactionStatusRequest.getPurchaseReference(),
-                            "HTTP return code " + status.getCode());
+                            failureResponse.toPaylineErrorCode());
                 }
 
             }
