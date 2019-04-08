@@ -91,10 +91,11 @@ public class ContactDetails extends OneyBean {
             }
 
             final String phoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR);
-            this.mobilePhoneNumber = phoneNumber;
-            this.landLineNumber = phoneNumber;
-            // this.faxNumber
-            this.emailAdress = buyer.getEmail();
+
+            this.withLandLineNumber(phoneNumber);
+            this.withMobilePhoneNumber(phoneNumber);
+            this.withEmailAdress(buyer.getEmail());
+
             return this;
         }
 

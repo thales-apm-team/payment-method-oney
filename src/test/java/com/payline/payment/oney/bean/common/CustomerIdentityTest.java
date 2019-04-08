@@ -29,7 +29,7 @@ public class CustomerIdentityTest {
                 //Optinals
                 .withLastName("LN")
                 .withGivenNames("GN")
-                .withBithDate("1990-12-11")
+                .withBirthDate("1990-12-11")
                 .build();
         Assertions.assertNotNull(customerIdentity);
     }
@@ -61,7 +61,7 @@ public class CustomerIdentityTest {
                 //Optinals
                 .withLastName("LN")
                 .withGivenNames("GN")
-                .withBithDate("1990-12-11")
+                .withBirthDate("1990-12-11")
                 .withBirthCountryCode("FR")
                 .withTaxpayerCode("34000")
                 .withBirthMunicipalityCode("75018")
