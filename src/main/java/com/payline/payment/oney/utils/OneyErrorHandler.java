@@ -100,7 +100,7 @@ public class OneyErrorHandler {
                 break;
 
             default:
-                paylineCause = FailureCause.PARTNER_UNKNOWN_ERROR;
+                paylineCause = FailureCause.INVALID_DATA;
         }
 
         return paylineCause;
