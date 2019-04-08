@@ -70,7 +70,12 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                                 // do nothing
                             }
                             i--;
-                        }else {
+                        }
+                        else if ("FAVORABLE".equals(response.getStatusPurchase().getStatusCode())){
+                            confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest).build();
+                            return validatePayment(confirmRequest);
+                        }
+                        else {
                             return handleTransactionStatusResponse(response,oneyTransactionStatusRequest.getPurchaseReference());
                         }
                     } else {
@@ -93,8 +98,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             return handleTransactionStatusResponse(response,oneyTransactionStatusRequest.getPurchaseReference());
 
             //////////// FIN VERRUE ticket PAYLAPMEXT-144
-//            confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest).build();
-//            return validatePayment(confirmRequest);
 
         } catch (InvalidDataException e) {
             LOGGER.error("unable to confirm the payment", e);
