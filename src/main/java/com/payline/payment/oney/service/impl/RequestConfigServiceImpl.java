@@ -8,6 +8,7 @@ import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.bean.payment.request.NotifyTransactionStatusRequest;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
+import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
@@ -180,6 +181,19 @@ public enum RequestConfigServiceImpl implements RequestConfigService {
 
     @Override
     public String getParameterValue(BuyerDetailsRequest request, String key) throws InvalidDataException {
+        PaylineParameterType paylineParameterType = PARAMETERS_MAP.get(key);
+        if (PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER == paylineParameterType) {
+            return safeGetValue(request.getContractConfiguration(), key);
+        } else if (PaylineParameterType.PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {
+            return safeGetValue(request.getPartnerConfiguration(), key);
+        } else if (PaylineParameterType.EXT_PARTNER_CONFIGURATION_PARAMETER == paylineParameterType) {
+            String ext = safeGetValue(request.getContractConfiguration(), OneyConstants.COUNTRY_CODE_KEY);
+            return safeGetValue(request.getPartnerConfiguration(), key, ext);
+        }
+        return null;
+    }
+
+    public String getParameterValue(RedirectionPaymentRequest request, String key) throws InvalidDataException {
         PaylineParameterType paylineParameterType = PARAMETERS_MAP.get(key);
         if (PaylineParameterType.CONTRACT_CONFIGURATION_PARAMETER == paylineParameterType) {
             return safeGetValue(request.getContractConfiguration(), key);

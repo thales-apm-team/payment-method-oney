@@ -6,6 +6,7 @@ import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.payment.Order;
+import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
@@ -56,13 +57,13 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
             return this;
         }
 
-        public Builder withPurchaseReference(String purchaseReference ){
+        public Builder withPurchaseReference(String purchaseReference) {
             this.purchaseReference = purchaseReference;
             return this;
         }
 
-        public Builder withPurchaseReferenceFromOrder( Order order ){
-            super.withPurchaseReferenceFromOrder( order );
+        public Builder withPurchaseReferenceFromOrder(Order order) {
+            super.withPurchaseReferenceFromOrder(order);
             return this;
         }
 
@@ -81,7 +82,7 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PSP_GUID_KEY))
-                    .withPurchaseReferenceFromOrder( transactionStatusRequest.getOrder() )
+                    .withPurchaseReferenceFromOrder(transactionStatusRequest.getOrder())
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(transactionStatusRequest));
 
@@ -94,9 +95,20 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
                     .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.LANGUAGE_CODE_KEY))
                     .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.MERCHANT_GUID_KEY))
                     .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PSP_GUID_KEY))
-                    .withPurchaseReferenceFromOrder( refundRequest.getOrder() )
+                    .withPurchaseReferenceFromOrder(refundRequest.getOrder())
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(refundRequest));
+        }
+
+        //Creer une transactionStatusRequest depuis une redirectionPaymentRequest
+        public Builder fromRedirectionPaymentRequest(RedirectionPaymentRequest redirectionPaymentRequest) throws InvalidDataException {
+            return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(redirectionPaymentRequest, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(redirectionPaymentRequest, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(redirectionPaymentRequest, OneyConstants.PSP_GUID_KEY))
+                    .withPurchaseReferenceFromOrder(redirectionPaymentRequest.getOrder())
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(redirectionPaymentRequest, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(redirectionPaymentRequest));
         }
 
         public OneyTransactionStatusRequest build() {

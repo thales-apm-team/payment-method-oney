@@ -44,9 +44,57 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     public PaymentResponse finalizeRedirectionPayment(RedirectionPaymentRequest redirectionPaymentRequest) {
         OneyConfirmRequest confirmRequest = null;
         try {
-            confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest).build();
 
-            return validatePayment(confirmRequest);
+            ///////// debut verrue ticket PAYLAPMEXT-144
+
+            // creation de l'objet necessaire a l'appel getTransactionStatus
+            OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                    .fromRedirectionPaymentRequest(redirectionPaymentRequest)
+                    .build();
+
+            int i = 15; // 15 iterations
+            TransactionStatusResponse response = new TransactionStatusResponse();
+            while(i >=0) {
+                // appelle Oney pour connaitre le status de la transaction
+                StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest);
+
+                //l'appel est OK on gere selon la response
+                if (status.getCode() == HTTP_OK) {
+                    response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+
+                    if (response.getStatusPurchase() != null) {
+                        // attend 1 seconde
+                        if ("PENDING".equals(response.getStatusPurchase().getStatusCode())){
+                            long endTime = System.currentTimeMillis() + 1000;
+                            while (System.currentTimeMillis() < endTime){
+                                // do nothing
+                            }
+                            i--;
+                        }else {
+                            return handleTransactionStatusResponse(response,oneyTransactionStatusRequest.getPurchaseReference());
+                        }
+                    } else {
+                        //Pas de statut pour cette demande
+                        return OneyErrorHandler.getPaymentResponseFailure(
+                                FailureCause.CANCEL,
+                                oneyTransactionStatusRequest.getPurchaseReference(),
+                                ERROR_CODE + "null");
+                    }
+
+                } else {
+                    return OneyErrorHandler.getPaymentResponseFailure(
+                            FailureCause.CANCEL,
+                            oneyTransactionStatusRequest.getPurchaseReference(),
+                            "HTTP return code " + status.getCode());
+                }
+
+            }
+            // 15 appels ont été executé et le reotur est encore PENDING
+            return handleTransactionStatusResponse(response,oneyTransactionStatusRequest.getPurchaseReference());
+
+            //////////// FIN VERRUE ticket PAYLAPMEXT-144
+//            confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest).build();
+//            return validatePayment(confirmRequest);
 
         } catch (InvalidDataException e) {
             LOGGER.error("unable to confirm the payment", e);
@@ -60,7 +108,6 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .withPartnerTransactionId(confirmRequest != null ? confirmRequest.getPurchaseReference() : "")
                     .build();
         }
-
     }
 
     @Override
