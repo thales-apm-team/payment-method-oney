@@ -152,7 +152,7 @@ public class CustomerIdentity extends OneyBean {
         }
 
         public CustomerIdentity.Builder withPersonType(Integer code) {
-            this.personType = code;
+            this.personType = (code == null ? 2 : code);
             return this;
         }
 
@@ -216,7 +216,7 @@ public class CustomerIdentity extends OneyBean {
                 return null;
             }
             this.withTaxpayerCode(buyer.getLegalDocument()) ;
-            this.withPersonType(PluginUtils.getPersonType(buyer.getLegalStatus())) ;
+            this.withPersonType(PluginUtils.getPersonType(buyer.getLegalStatus()));
             if (buyer.getFullName() != null) {
                 if (buyer.getFullName().getCivility() != null) {
                     this.withHonorificCode( PluginUtils.getHonorificCode(buyer.getFullName().getCivility()));

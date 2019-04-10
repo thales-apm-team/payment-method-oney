@@ -10,18 +10,16 @@ import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
 public class CustomerIdentityTest {
 
-    private CustomerIdentity customerIdentity;
-
     @Test
-    void customerFromPaylineTest() throws Exception {
+    void customerFromPaylineTest() {
         Buyer buyer = TestUtils.createDefaultBuyer();
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity().fromPayline(buyer).build();
+        CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity().fromPayline(buyer).build();
         Assertions.assertNull(customerIdentity.getLastName());
     }
 
     @Test
-    public void customerIdentityTest() throws Exception {
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+    public void customerIdentityTest() {
+        CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)
                 .withHonorificCode(1)
@@ -35,9 +33,9 @@ public class CustomerIdentityTest {
     }
 
     @Test
-    public void fromPaylineBuyer() throws Exception {
+    public void fromPaylineBuyer() {
         Buyer buyer = createDefaultBuyer();
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+        CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .fromPayline(buyer)
                 .build();
         Assertions.assertNotNull(customerIdentity.getFirstName());
@@ -48,12 +46,26 @@ public class CustomerIdentityTest {
         Assertions.assertNull(customerIdentity.getGivenNames());
         Assertions.assertNull(customerIdentity.getBirthMunicipalityCode());
         Assertions.assertNull(customerIdentity.getCityzenshipCountryCode());
+    }
 
+    // PAYLAPMEXT-147
+    @Test
+    public void fromPaylineBuyer_noLegalStatus(){
+        Buyer buyer = Buyer.BuyerBuilder.aBuyer()
+                .withEmail(TestUtils.generateRamdomEmail())
+                .withFullName(TestUtils.createFullName())
+                .build();
+
+        CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+                .fromPayline(buyer)
+                .build();
+
+        Assertions.assertNotNull(  customerIdentity.getPersonType() );
     }
 
     @Test
-    public void testToString() throws Exception {
-        customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
+    public void testToString() {
+        CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)
                 .withHonorificCode(1)
