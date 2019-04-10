@@ -152,7 +152,7 @@ public class CustomerIdentity extends OneyBean {
         }
 
         public CustomerIdentity.Builder withPersonType(Integer code) {
-            this.personType = (code == null ? 2 : code);
+            this.personType = code;
             return this;
         }
 
