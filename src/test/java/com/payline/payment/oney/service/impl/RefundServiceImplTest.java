@@ -58,7 +58,6 @@ public class RefundServiceImplTest extends OneyConfigBean {
 
     }
 
-
     @Test
     public void refundRequestTestKO() throws Exception {
         StringResponse responseMocked1 = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
@@ -155,20 +154,6 @@ public class RefundServiceImplTest extends OneyConfigBean {
     }
 
     @Test
-    public void refundRequest_malformedStatusResponseKO() throws PluginTechnicalException {
-        // given a malformed HTTP response received to the status request
-        StringResponse responseMocked = createStringResponse(404, "Bad Request", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class) );
-
-        // when calling the method refundRequest
-        RefundResponse response = service.refundRequest( createDefaultRefundRequest() );
-
-        // then a RefundResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
-        Assertions.assertTrue( response instanceof RefundResponseFailure);
-        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((RefundResponseFailure)response).getFailureCause() );
-    }
-
-    @Test
     public void refundRequest_malformedStatusResponseOK() throws PluginTechnicalException {
         // given a malformed HTTP response received to the status request
         StringResponse responseMocked = createStringResponse(200, "OK", "[]");
@@ -181,6 +166,10 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Assertions.assertTrue( response instanceof RefundResponseFailure);
         Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((RefundResponseFailure)response).getFailureCause() );
     }
+    /*
+    It is not necessary to perform the corresponding KO test (would be refundRequest_malformedStatusResponseKO) because,
+    in that case, the status response content is not parsed. Only the HTTP status code is relevant.
+     */
 
     @Test
     public void refundRequest_malformedRefundResponseKO() throws PluginTechnicalException {

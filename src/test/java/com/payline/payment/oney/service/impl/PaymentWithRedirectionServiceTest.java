@@ -274,20 +274,6 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void handleSessionExpired_malformedStatusResponseKO() throws PluginTechnicalException {
-        // given a malformed HTTP response received from the payment init
-        StringResponse responseMocked = createStringResponse(404, "Bad Request", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class) );
-
-        // when calling the method handleSessionExpired
-        PaymentResponse response = service.handleSessionExpired( createDefaultTransactionStatusRequest() );
-
-        // then a PaymentResponseFailure is returned
-        Assertions.assertTrue( response instanceof PaymentResponseFailure );
-        //Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
-    }
-
-    @Test
     public void handleSessionExpired_malformedStatusResponseOK() throws PluginTechnicalException {
         // given a malformed HTTP response received from the payment init
         StringResponse responseMocked = createStringResponse(200, "OK", "[]");
@@ -300,4 +286,8 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         Assertions.assertTrue( response instanceof PaymentResponseFailure );
         Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
     }
+    /*
+    It is not necessary to perform the corresponding KO test (would be handleSessionExpired_malformedStatusResponseKO) because,
+    in that case, the status response content is not parsed. Only the HTTP status code is relevant.
+     */
 }
