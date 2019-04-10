@@ -1,6 +1,5 @@
 package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
@@ -41,84 +40,6 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void confirmPaymentTest() throws Exception {
-        StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus(any());
-
-        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
-                .build();
-
-        PaymentResponse response = service.validatePayment(paymentRequest);
-
-        if (response.getClass() == PaymentResponseSuccess.class) {
-            PaymentResponseSuccess success = (PaymentResponseSuccess) response;
-            Assertions.assertEquals("200", success.getStatusCode());
-            Assertions.assertEquals("Transaction is completed", success.getMessage().getMessage());
-            Assertions.assertNotNull(success.getTransactionAdditionalData());
-        }
-
-    }
-
-    @Test
-    public void confirmPaymentTestInvalidData() throws Exception {
-        StringResponse responseMocked = createStringResponse(400, "Bad Request", "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"Merchant_request_id\",\"error_code\":\"ERR_04\",\"error_label\":\"Value of the field is invalid [{String}]\"}]}}");
-        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
-
-        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
-                .build();
-
-        PaymentResponse response = service.validatePayment(paymentRequest);
-        PaymentResponseFailure fail = (PaymentResponseFailure) response;
-        Assertions.assertEquals("400 - ERR_04 - Merchant_request_id", fail.getErrorCode());
-        Assertions.assertEquals(FailureCause.INVALID_DATA, fail.getFailureCause());
-    }
-
-
-    @Test
-    public void confirmPaymentTestNotFound() throws Exception {
-        StringResponse responseMocked = createStringResponse(404, "Not Found", "{\"statusCode\": 404, \"message\": \"Resource not found\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
-
-        OneyConfirmRequest paymentRequest = new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
-                .build();
-
-        PaymentResponseFailure response = (PaymentResponseFailure) service.validatePayment(paymentRequest);
-        Assertions.assertEquals("404", response.getErrorCode());
-        Assertions.assertEquals(FailureCause.COMMUNICATION_ERROR, response.getFailureCause());
-
-
-    }
-
-    @Test
-    public void validatePayment_malformedConfirmResponseKO() throws PluginTechnicalException {
-        // given a malformed HTTP response received to the confirm request
-        StringResponse responseMocked = createStringResponse(404, "Bad request", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment( any(OneyConfirmRequest.class) );
-
-        // when calling the method validatePayment
-        PaymentResponse response = service.validatePayment( new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
-                .build() );
-
-        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
-        Assertions.assertTrue( response instanceof PaymentResponseFailure );
-        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
-    }
-
-    @Test
-    public void validatePayment_malformedConfirmResponseOK() throws PluginTechnicalException {
-        // given a malformed HTTP response received to the confirm request
-        StringResponse responseMocked = createStringResponse(200, "OK", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment( any(OneyConfirmRequest.class) );
-
-        // when calling the method validatePayment
-        PaymentResponse response = service.validatePayment( new OneyConfirmRequest.Builder(createCompleteRedirectionPaymentBuilder())
-                .build() );
-
-        // then a PaymentResponseFailure with the FailureCause.COMMUNICATION_ERROR is returned
-        Assertions.assertTrue( response instanceof PaymentResponseFailure );
-        Assertions.assertEquals( FailureCause.COMMUNICATION_ERROR, ((PaymentResponseFailure)response).getFailureCause() );
-    }
 
     @Test
     public void finalizeRedirectionPaymentEncryptedOK() throws HttpCallException {
@@ -140,9 +61,10 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void finalizeRedirectionPaymentNotEncryptedOK() throws HttpCallException {
+    public void finalizeRedirectionPaymentNotEncryptedOK() throws Exception {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus(any());
+        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment(any());
 
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         mockCorrectlyConfigPropertiesEnum(false);
@@ -160,9 +82,10 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void finalizeRedirectionPaymentTestKO() throws HttpCallException {
+    public void finalizeRedirectionPaymentTestKO() throws Exception {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus(any());
+        Mockito.doReturn(responseMocked).when(httpClient).initiateConfirmationPayment(any());
 
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         PaymentResponse response = service.finalizeRedirectionPayment(redirectionPaymentRequest);
@@ -171,7 +94,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         PaymentResponseFailure failure = (PaymentResponseFailure) response;
         Assertions.assertNotNull(failure.getPartnerTransactionId());
         Assertions.assertNotNull(failure.getFailureCause());
-        Assertions.assertEquals(FailureCause.CANCEL, failure.getFailureCause());
+        Assertions.assertEquals(FailureCause.REFUSED, failure.getFailureCause());
 
     }
 
