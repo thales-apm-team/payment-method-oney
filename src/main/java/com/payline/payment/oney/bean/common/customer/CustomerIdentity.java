@@ -2,10 +2,6 @@ package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.payment.oney.exception.InvalidDataException;
-import com.payline.payment.oney.exception.InvalidFieldFormatException;
-import com.payline.payment.oney.exception.PluginTechnicalException;
-import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
@@ -115,7 +111,7 @@ public class CustomerIdentity extends OneyBean {
     private CustomerIdentity() {
     }
 
-    public CustomerIdentity(CustomerIdentity.Builder builder) {
+    private CustomerIdentity(CustomerIdentity.Builder builder) {
         this.taxpayerCode = builder.taxpayerCode;
         this.personType = builder.personType;
         this.honorificCode = builder.honorificCode;
@@ -185,7 +181,7 @@ public class CustomerIdentity extends OneyBean {
             return this;
         }
 
-        public CustomerIdentity.Builder withBithDate(String date) {
+        public CustomerIdentity.Builder withBirthDate(String date) {
             this.birthDate = date;
             return this;
         }
@@ -219,62 +215,32 @@ public class CustomerIdentity extends OneyBean {
             if (buyer == null) {
                 return null;
             }
-            this.taxpayerCode = null;
-            this.taxpayerCode = buyer.getLegalDocument();
-            this.personType = PluginUtils.getPersonType(buyer.getLegalStatus());
+            this.withTaxpayerCode(buyer.getLegalDocument()) ;
+            this.withPersonType(PluginUtils.getPersonType(buyer.getLegalStatus()));
             if (buyer.getFullName() != null) {
                 if (buyer.getFullName().getCivility() != null) {
-                    this.honorificCode = PluginUtils.getHonorificCode(buyer.getFullName().getCivility());
+                    this.withHonorificCode( PluginUtils.getHonorificCode(buyer.getFullName().getCivility()));
                 }
-                this.birthName = buyer.getFullName().getLastName();
-                if (this.honorificCode != null && (this.honorificCode == 2 || this.honorificCode == 3)) {
-                    this.lastName = buyer.getFullName().getLastName();
-                }
-                this.firstName = buyer.getFullName().getFirstName();
+                this.withBirthName(buyer.getFullName().getLastName()) ;
+                this.withFirstName(buyer.getFullName().getFirstName()) ;
             }
-
 
             if (buyer.getBirthday() != null) {
-                this.birthDate = new SimpleDateFormat("yyyy-MM-dd").format(buyer.getBirthday());
+                this.withBirthDate( new SimpleDateFormat("yyyy-MM-dd").format(buyer.getBirthday()));
             }
             //Champs a mapper dans les prochains lots
-            this.givenNames = null;
-            this.birthMunicipalityCode = null;
-            this.birthArrondissementCode = null;
-            this.birthCountryCode = null;
-            this.cityzenshipCountryCode = null;
-            this.companyName = null;
+            this.withGivenNames(null);
+            this.withBirthCountryCode(null);
+            this.withBirthArrondissementCode(null);
+            this.withBirthCountryCode(null);
+            this.withCitizenCountryCode(null);
+            this.withCompanyName(null);
 
             return this;
         }
 
-        private CustomerIdentity.Builder verifyIntegrity() throws InvalidDataException {
-
-            if (this.personType == null) {
-                throw new InvalidDataException("CustomerIdentity must have a personType when built", "CustomerIdentity.personType");
-            }
-
-            if (this.honorificCode == null) {
-                throw new InvalidDataException("CustomerIdentity must have a honorificCode when built", "CustomerIdentity.honorificCode");
-            }
-
-            if (this.birthName == null) {
-                throw new InvalidDataException("CustomerIdentity must have a birthName when built", "CustomerIdentity.birthName");
-            }
-
-            if (this.firstName == null) {
-                throw new InvalidDataException("CustomerIdentity must have a firstName when built", "CustomerIdentity.firstName");
-            }
-
-            if (this.birthDate != null && !this.birthDate.matches(OneyConstants.DATE_FORMAT)) {
-                throw new InvalidFieldFormatException("CustomerIdentity must have a birthDate in format 'yyyy-MM-dd' when built", "CustomerIdentity.birthDate");
-            }
-            return this;
-
-        }
-
-        public CustomerIdentity build() throws PluginTechnicalException {
-            return new CustomerIdentity(this.verifyIntegrity());
+        public CustomerIdentity build() {
+            return new CustomerIdentity(this);
         }
     }
 }

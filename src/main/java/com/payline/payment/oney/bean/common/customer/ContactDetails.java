@@ -2,9 +2,7 @@ package com.payline.payment.oney.bean.common.customer;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.payment.oney.exception.InvalidDataException;
-import com.payline.payment.oney.exception.InvalidFieldFormatException;
-import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
@@ -18,6 +16,7 @@ public class ContactDetails extends OneyBean {
     @SerializedName("mobile_phone_number")
     private String mobilePhoneNumber;
 
+    @SerializedName("fax_number")
     private String faxNumber;
 
     @Required
@@ -40,7 +39,7 @@ public class ContactDetails extends OneyBean {
         return faxNumber;
     }
 
-    private ContactDetails() {
+    private ContactDetails(){
     }
 
     private ContactDetails(ContactDetails.Builder builder) {
@@ -67,6 +66,12 @@ public class ContactDetails extends OneyBean {
 
         public ContactDetails.Builder withMobilePhoneNumber(String number) {
             this.mobilePhoneNumber = number;
+
+            // verrue en attendant (ticket 138)
+            if (PluginUtils.isEmpty(this.mobilePhoneNumber)){
+                this.mobilePhoneNumber = "0000000000";
+            }
+
             return this;
         }
 
@@ -80,42 +85,23 @@ public class ContactDetails extends OneyBean {
             return this;
         }
 
-        private ContactDetails.Builder verifyIntegrity() throws InvalidDataException {
-            //.matches("\\d{10}") ?
-            if (this.landLineNumber == null) {
-                throw new InvalidDataException("ContactDetails must have a landLineNumber when built", "ContactDetails.landLineNumber");
-            }
-
-            if (this.mobilePhoneNumber == null) {
-                throw new InvalidDataException("ContactDetails must have a mobilePhoneNumber when built", "ContactDetails.mobilePhoneNumber");
-            }
-
-            if (this.emailAdress == null) {
-                throw new InvalidDataException("ContactDetails must have a valid emailAddress when built", "ContactDetails.emailAddress");
-            } else if (emailAdress.contains("+")) {
-                throw new InvalidFieldFormatException("character '+' is  is not allowed for ContactDetails.emailAddress", "ContactDetails.emailAddress");
-            }
-
-            return this;
-        }
-
         public ContactDetails.Builder fromPayline(Buyer buyer) {
             if (buyer == null) {
                 return null;
             }
 
             final String phoneNumber = buyer.getPhoneNumberForType(Buyer.PhoneNumberType.CELLULAR);
-            this.mobilePhoneNumber = phoneNumber;
-            this.landLineNumber = phoneNumber;
-            // this.faxNumber
-            this.emailAdress = buyer.getEmail();
+
+            this.withLandLineNumber(phoneNumber);
+            this.withMobilePhoneNumber(phoneNumber);
+            this.withEmailAdress(buyer.getEmail());
+
             return this;
         }
 
-        public ContactDetails build() throws PluginTechnicalException {
-            return new ContactDetails(this.verifyIntegrity());
+        public ContactDetails build() {
+            return new ContactDetails(this);
         }
-
 
     }
 }

@@ -11,7 +11,7 @@ public class OneyConstants {
 
     //Headers
     public static final String CONTENT_TYPE = "Content-Type";
-    public static final String CONTENT_TYPE_VALUE = "application/json";
+    public static final String CONTENT_TYPE_VALUE = "application/json; charset=UTF-8";
     public static final String AUTHORIZATION = "X-Oney-Authorization";
     public static final String SECRET_KEY = "X-Oney-Secret";
     public static final String CHIFFREMENT_IS_ACTIVE = "chiffrement.actif";
@@ -99,6 +99,7 @@ public class OneyConstants {
     public static final int HTTP_401 = 401;
     public static final int HTTP_400 = 400;
     public static final int HTTP_404 = 404;
+    public static final int HTTP_409 = 409;
     public static final int HTTP_500 = 500;
 
 

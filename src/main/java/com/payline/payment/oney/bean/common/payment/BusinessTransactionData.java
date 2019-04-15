@@ -65,14 +65,6 @@ public class BusinessTransactionData extends OneyBean {
             return this;
         }
 
-        public BusinessTransactionData.Builder verifyIntegrity() throws InvalidFieldFormatException {
-            if (this.code == null) {
-                throw new InvalidFieldFormatException("BusinessTransactionData must have a code when built", "BusinessTransactionData.code");
-            }
-
-            return this;
-        }
-
         public BusinessTransactionData.Builder fromPayline(ContractConfiguration contract) throws InvalidFieldFormatException {
 
             if (contract == null) {
@@ -83,7 +75,7 @@ public class BusinessTransactionData extends OneyBean {
                 throw new InvalidFieldFormatException("Property " + OPC_KEY + " doesn't exists", OPC_KEY);
             }
 
-            this.code = contract.getProperty(OPC_KEY).getValue();
+            this.withCode(contract.getProperty(OPC_KEY).getValue());
 
             //optional ajouter dans les contract configuration  v2 ??
             /**
@@ -93,8 +85,8 @@ public class BusinessTransactionData extends OneyBean {
             return this;
         }
 
-        public BusinessTransactionData build() throws InvalidFieldFormatException {
-            return new BusinessTransactionData(this.verifyIntegrity());
+        public BusinessTransactionData build() {
+            return new BusinessTransactionData(this);
         }
     }
 }

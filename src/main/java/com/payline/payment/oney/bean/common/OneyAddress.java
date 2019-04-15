@@ -1,7 +1,6 @@
 package com.payline.payment.oney.bean.common;
 
 import com.google.gson.annotations.SerializedName;
-import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
 
@@ -164,26 +163,6 @@ public class OneyAddress extends OneyBean {
             return this;
         }
 
-        private OneyAddress.Builder checkIntegrity() throws InvalidDataException {
-            if (this.line1 == null) {
-                throw new InvalidDataException("OneyAddress must have a line1 when built", "OneyAddress.line1");
-            }
-            if (this.countryLabel == null) {
-                throw new InvalidDataException("OneyAddress must have a countryLabel when built", "OneyAddress.countryLabel");
-            }
-            if (this.postalCode == null) {
-                throw new InvalidDataException("OneyAddress must have a postalCode when built", "OneyAddress.postalCode");
-            }
-            if (this.municipality == null) {
-                throw new InvalidDataException("OneyAddress must have a municipality when built", "OneyAddress.municipality");
-            }
-            if (this.countryCode == null) {
-                throw new InvalidDataException("OneyAddress must have a countryCode when built", "OneyAddress.countryCode");
-            }
-            return this;
-
-        }
-
         public Builder fromPayline(Buyer buyer, Buyer.AddressType addressType) {
             if (buyer == null) {
                 return null;
@@ -193,10 +172,10 @@ public class OneyAddress extends OneyBean {
             if (address != null) {
                 this.truncateAddress(address.getStreet1(), address.getStreet2());
 
-                this.municipality = address.getCity();
-                this.postalCode = address.getZipCode();
-                this.countryLabel = getCountryNameCodeFromCountryCode2(address.getCountry());
-                this.countryCode = getIsoAlpha3CodeFromCountryCode2(address.getCountry());
+                this.withMunicipality(address.getCity());
+                this.withPostalCode(address.getZipCode());
+                this.withCountryLabel(getCountryNameCodeFromCountryCode2(address.getCountry()));
+                this.withCountryCode(getIsoAlpha3CodeFromCountryCode2(address.getCountry()));
             }
 
             return this;
@@ -204,7 +183,7 @@ public class OneyAddress extends OneyBean {
 
         // Découpe l'adresse intelligemment
         private void truncateAddress(String street1, String street2) {
-            List<String> addressTruncated = splitLongText( spaceConcat( street1, street2), 38);
+            List<String> addressTruncated = splitLongText(spaceConcat(street1, street2), 38);
             int nbLines = addressTruncated.size();
 
             if (nbLines >= 1) {
@@ -224,8 +203,8 @@ public class OneyAddress extends OneyBean {
             }
         }
 
-        public OneyAddress build() throws InvalidDataException {
-            return new OneyAddress(this.checkIntegrity());
+        public OneyAddress build() {
+            return new OneyAddress(this);
         }
     }
 

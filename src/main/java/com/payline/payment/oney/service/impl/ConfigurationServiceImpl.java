@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
+import static com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest.GENERIC_ERROR;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
 
@@ -65,6 +66,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         final LinkedHashMap<String, String> nbEcheances = new LinkedHashMap<>();
         nbEcheances.put("3x", "3x");
         nbEcheances.put("4x", "4x");
+        nbEcheances.put("6x", "6x");
+        nbEcheances.put("10x", "10x");
+        nbEcheances.put("12x", "12x");
         nbEcheancesParameter.setList(nbEcheances);
         parameters.add(nbEcheancesParameter);
 
@@ -244,6 +248,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             errMsg = stringResponse.toString();
                             checkOpcError(errors, errMsg);
                         }
+                        break;
+                    case HTTP_409:
+                        err = OneyError40x.parseJson(stringResponse.getContent());
+                        errors.put(GENERIC_ERROR, err.getMessage() );
                         break;
                     case HTTP_500:
                         errMsg = stringResponse.toString();

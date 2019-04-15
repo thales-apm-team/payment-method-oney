@@ -2,7 +2,6 @@ package com.payline.payment.oney.bean.common.purchase;
 
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.ItemComparator;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.payment.Order;
@@ -193,57 +192,24 @@ public class Item extends OneyBean {
             if (item == null) {
                 return null;
             }
-            this.isMainItem = 0;
-            this.categoryCode = findCategory(item.getCategory());
-            this.label = item.getComment(); //or get Brand +" "+ get comment ?
-            this.itemExternalcode = item.getReference();
-            this.quantity = item.getQuantity().intValue();
+            this.withMainItem(0);
+            this.withCategoryCode( findCategory(item.getCategory()));
+            this.withLabel(item.getComment()); //or get Brand +" "+ get comment ?
+            this.withItemExternalCode( item.getReference());
+            this.withQuantity(item.getQuantity().intValue());
             if (item.getAmount() != null) {
-                this.price = createFloatAmount(item.getAmount().getAmountInSmallestUnit(), item.getAmount().getCurrency());
+                this.withPrice(createFloatAmount(item.getAmount().getAmountInSmallestUnit(), item.getAmount().getCurrency()));
             }
             //note HME  mapper selon marketplace lot 2
 //            this.marketplaceFlag = 0;
 //            this.marketplaceName = null;
-            this.travel = null;
+            this.withTravel(null);
 
             return this;
         }
 
-        private Item.Builder verifyIntegrity() throws InvalidDataException {
-
-            if (this.isMainItem == null) {
-                throw new InvalidDataException("Item must have a isMainItem when built", "Item.isMainItem");
-            }
-
-            if (this.categoryCode == null) {
-                throw new InvalidDataException("Item must have a categoryCode when built", "Item.categoryCode");
-            }
-
-            if (this.label == null) {
-                throw new InvalidDataException("Item must have a label when built", "Item.label");
-            }
-
-            if (this.itemExternalcode == null) {
-                throw new InvalidDataException("Item must have a itemExternalcode when built", "Item.itemExternalcode");
-            }
-
-            if (this.quantity == null) {
-                throw new InvalidDataException("Item must have a quantity when built", "Item.quantity");
-            }
-
-            if (this.price == null) {
-                throw new InvalidDataException("Item must have a price when built", "Item.price");
-            }
-
-            if (this.marketplaceFlag != null && this.marketplaceFlag == 1 && this.marketplaceName == null) {
-                throw new InvalidDataException("Item with marketplaceFlag == 1 must have a marketplaceName when built", "Item.marketplaceName");
-            }
-
-            return this;
-        }
-
-        public Item build() throws InvalidDataException {
-            return new Item(this.verifyIntegrity());
+        public Item build() {
+            return new Item(this);
         }
     }
 
