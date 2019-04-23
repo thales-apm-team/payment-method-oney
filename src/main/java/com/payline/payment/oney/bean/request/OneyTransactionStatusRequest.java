@@ -5,6 +5,7 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
@@ -108,8 +109,16 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
                     .withPurchaseReferenceFromOrder( request.getOrder() )
                     .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PARTNER_CHIFFREMENT_KEY))
                     .withCallParameters(PluginUtils.getParametersMap(request));
+        }
 
-
+        public OneyTransactionStatusRequest.Builder fromCaptureRequest(CaptureRequest request) throws InvalidDataException {
+            return OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                    .withLanguageCode(RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.LANGUAGE_CODE_KEY))
+                    .withMerchantGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.MERCHANT_GUID_KEY))
+                    .withPspGuid(RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PSP_GUID_KEY))
+                    .withPurchaseReferenceFromOrder( request.getOrder() )
+                    .withEncryptKey(RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PARTNER_CHIFFREMENT_KEY))
+                    .withCallParameters(PluginUtils.getParametersMap(request));
         }
 
         public OneyTransactionStatusRequest build() {
