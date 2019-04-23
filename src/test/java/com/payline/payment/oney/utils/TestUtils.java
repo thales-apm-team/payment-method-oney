@@ -205,6 +205,7 @@ public class TestUtils {
                 .withRequestData(requestData)
                 .build();
         return RedirectionPaymentRequest.builder()
+                .withCaptureNow(true)
                 .withAmount(amount)
                 .withBrowser(new Browser("", LOCALE_FR))
                 .withContractConfiguration(contractConfiguration)
