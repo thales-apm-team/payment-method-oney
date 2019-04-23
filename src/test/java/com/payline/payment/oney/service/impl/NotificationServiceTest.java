@@ -124,6 +124,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .build();
 
         NotificationResponse response = service.parse(request);
-        Assertions.assertEquals(FailureTransactionStatus.class ,response.getClass());
+        TransactionStateChangedResponse stateChangedResponse = (TransactionStateChangedResponse) response;
+        Assertions.assertEquals(FailureTransactionStatus.class ,stateChangedResponse.getTransactionStatus().getClass());
     }
 }
