@@ -1,7 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
-import com.payline.payment.oney.bean.request.OneyPaymentRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
@@ -15,14 +14,16 @@ import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import static com.payline.payment.oney.utils.TestUtils.*;
-import static com.payline.payment.oney.utils.TestUtils.createDefaultTransactionStatusRequest;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
@@ -138,9 +139,13 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void finalizeRedirectionPaymentNotEncryptedOK() throws HttpCallException {
-        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
-        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+    public void finalizeRedirectionPaymentNotEncryptedOK() throws Exception {
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Transaction is completed\"}}");
+        StringResponse responseMockedConfirmation = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
+
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any() );
+        Mockito.doReturn(responseMockedConfirmation).when(httpClient).initiateConfirmationPayment( Mockito.any() );
+
 
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         mockCorrectlyConfigPropertiesEnum(false);
