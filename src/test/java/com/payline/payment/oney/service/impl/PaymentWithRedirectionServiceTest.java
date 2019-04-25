@@ -120,9 +120,12 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void finalizeRedirectionPaymentEncryptedOK() throws HttpCallException {
-        StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
-        Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+    public void finalizeRedirectionPaymentEncryptedOK() throws Exception {
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul/bQBJ3C1/cyjmvmAAmMq9gLttO54jS+b/UB/MPwY6YeiFWc7TtYNuIHJF3Grkl2/O4B6r4zkTpus9DrEZIou4aE8tfX+G43n2zFDAoYG3u3\"}");
+        StringResponse responseMockedConfirmation = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
+
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any() );
+        Mockito.doReturn(responseMockedConfirmation).when(httpClient).initiateConfirmationPayment( Mockito.any() );
 
         RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
         mockCorrectlyConfigPropertiesEnum(true);
