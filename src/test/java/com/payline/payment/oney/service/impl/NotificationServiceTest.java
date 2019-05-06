@@ -1,100 +1,130 @@
 package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.bean.response.TransactionStatusResponse;
-import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.OneyConfigBean;
-import com.payline.payment.oney.utils.OneyConstants;
-import com.payline.payment.oney.utils.http.OneyHttpClient;
-import com.payline.payment.oney.utils.http.StringResponse;
+import com.payline.pmapi.bean.common.FailureTransactionStatus;
+import com.payline.pmapi.bean.common.SuccessTransactionStatus;
+import com.payline.pmapi.bean.notification.request.NotificationRequest;
+import com.payline.pmapi.bean.notification.response.NotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.IgnoreNotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.TransactionStateChangedResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
-import java.util.Map;
-
-import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
-import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationServiceTest extends OneyConfigBean {
 
-
-    @Spy
-    OneyHttpClient httpClient;
-
-    @InjectMocks
     NotificationServiceImpl service;
 
     @BeforeAll
     public void setup() {
         service = new NotificationServiceImpl();
-        MockitoAnnotations.initMocks(this);
+
 
     }
 
-    @Test
-    public void notifyTransactionStatusRequestEncrypted() throws Exception {
+    private static Stream<Arguments> parseSet() {
+        return Stream.of(
+                Arguments.of("FUNDED", SuccessTransactionStatus.class),
+                Arguments.of("REFUSED", FailureTransactionStatus.class),
+                Arguments.of("ABORTED", FailureTransactionStatus.class)
+        );
+    }
 
-        Map<String, String> map = new HashMap<>();
-        map.put("test", "test");
-        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
+    @ParameterizedTest
+    @MethodSource("parseSet")
+    void parse(String OneyStatus, Class expectedClass) {
+        String content = "{" +
+                "  \"language_code\": \"FR\"," +
+                "  \"merchant_guid\": \"anId\"," +
+                "  \"oney_request_id\": \"123456789\"," +
+                "  \"purchase\": {" +
+                "    \"external_reference_type\": \"aType\"," +
+                "    \"external_reference\": \"987654321\"," +
+                "    \"purchase_merchant\": {" +
+                "      \"merchant_guid\": \"azerty\"" +
+                "    }," +
+                "    \"status_code\": \"0000\"," +
+                "    \"status_label\": \"XXXXXX\"," +
+                "    \"reason_code\": \"aReason\"," +
+                "    \"reason_label\": \"aLabel\"" +
+                "  }," +
+                "  \"customer\": {" +
+                "    \"customer_external_code\": \"aCode\"" +
+                "  }," +
+                "  \"merchant_context\": \"aContext\"," +
+                "  \"psp_context\": \"1234\"" +
+                "}";
+        content = content.replace("XXXXXX", OneyStatus);
 
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
-
-
-        OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .withLanguageCode("FR")
-                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
-                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198119")
-                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
-                .withCallParameters(map)
+        NotificationRequest request = NotificationRequest.NotificationRequestBuilder.aNotificationRequest()
+                .withHeaderInfos(new HashMap<>())
+                .withPathInfo("thisIsAPath")
+                .withHttpMethod("POST")
+                .withContent(new ByteArrayInputStream(content.getBytes()))
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
+        NotificationResponse response = service.parse(request);
+        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
 
-        mockCorrectlyConfigPropertiesEnum(true);
-        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
-
-        Assertions.assertNotNull(transactStatus.getCode());
-        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
-        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
-
+        Assertions.assertEquals(expectedClass ,transactionStateChangedResponse.getTransactionStatus().getClass());
     }
 
     @Test
-    public void notifyTransactionStatusRequestNotEncrypted() throws Exception {
-
-        Map<String, String> map = new HashMap<>();
-        map.put("test", "test");
-        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"PENDING\",\"status_label\":\"Waiting for customer validation\"}}");
-
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
-
-
-        OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .withLanguageCode("FR")
-                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
-                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198119")
-                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
-                .withCallParameters(map)
+    void parseOther(){
+        String content = "{" +
+                "  \"language_code\": \"FR\"," +
+                "  \"merchant_guid\": \"anId\"," +
+                "  \"oney_request_id\": \"123456789\"," +
+                "  \"purchase\": {" +
+                "    \"external_reference_type\": \"aType\"," +
+                "    \"external_reference\": \"987654321\"," +
+                "    \"purchase_merchant\": {" +
+                "      \"merchant_guid\": \"azerty\"" +
+                "    }," +
+                "    \"status_code\": \"0000\"," +
+                "    \"status_label\": \"XXXXXX\"," +
+                "    \"reason_code\": \"aReason\"," +
+                "    \"reason_label\": \"aLabel\"" +
+                "  }," +
+                "  \"customer\": {" +
+                "    \"customer_external_code\": \"aCode\"" +
+                "  }," +
+                "  \"merchant_context\": \"aContext\"," +
+                "  \"psp_context\": \"1234\"" +
+                "}";
+        content = content.replace("XXXXXX", "FAVORABLE");
+        NotificationRequest request = NotificationRequest.NotificationRequestBuilder.aNotificationRequest()
+                .withHeaderInfos(new HashMap<>())
+                .withPathInfo("thisIsAPath")
+                .withHttpMethod("POST")
+                .withContent(new ByteArrayInputStream(content.getBytes()))
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
-        mockCorrectlyConfigPropertiesEnum(false);
-        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
+        NotificationResponse response = service.parse(request);
+        Assertions.assertEquals(IgnoreNotificationResponse.class, response.getClass());
+    }
 
-        Assertions.assertNotNull(transactStatus.getCode());
-        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
-        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
 
+    @Test
+    void parseException(){
+        NotificationRequest request = NotificationRequest.NotificationRequestBuilder.aNotificationRequest()
+                .withHeaderInfos(new HashMap<>())
+                .withPathInfo("thisIsAPath")
+                .withHttpMethod("POST")
+                .withContent(new ByteArrayInputStream("foo".getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        TransactionStateChangedResponse stateChangedResponse = (TransactionStateChangedResponse) response;
+        Assertions.assertEquals(FailureTransactionStatus.class ,stateChangedResponse.getTransactionStatus().getClass());
     }
 }
