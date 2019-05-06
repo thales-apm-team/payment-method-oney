@@ -6,6 +6,7 @@ import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
+import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -412,6 +413,20 @@ public class PluginUtils {
         }
 
         return parametersMap;
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
+     * @param captureRequest Payline captureRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(CaptureRequest captureRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
     }
 
 
