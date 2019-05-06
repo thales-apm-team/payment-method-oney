@@ -9,6 +9,7 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
+import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 
@@ -97,6 +98,21 @@ public class OneyConfirmRequest extends ParameterizedUrlOneyRequest {
                     .buildForConfirmRequest();
             this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(transactionStatusRequest, PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(transactionStatusRequest);
+        }
+
+        public Builder(CaptureRequest captureRequest) throws InvalidDataException {
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, MERCHANT_GUID_KEY);
+
+            this.withPurchaseReferenceFromOrder( captureRequest.getOrder() );
+            this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
+
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, PSP_GUID_KEY);
+            this.merchantGuid = merchantGuidValue;
+            this.paymentData = PaymentData.Builder.aPaymentData()
+                    .withAmount(createFloatAmount(captureRequest.getAmount().getAmountInSmallestUnit(), captureRequest.getAmount().getCurrency()))
+                    .buildForConfirmRequest();
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(captureRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(captureRequest);
         }
 
         public OneyConfirmRequest build() {
