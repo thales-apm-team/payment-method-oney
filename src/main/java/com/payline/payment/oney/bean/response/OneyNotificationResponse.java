@@ -34,6 +34,9 @@ public class OneyNotificationResponse extends OneyResponse {
     @SerializedName("psp_context")
     private String pspContext;
 
+    @SerializedName("merchant_context")
+    private String merchantContext;
+
     public String getLanguageCode() {
         return languageCode;
     }
@@ -58,6 +61,9 @@ public class OneyNotificationResponse extends OneyResponse {
         return pspContext;
     }
 
+    public String getMerchantContext() {
+        return merchantContext;
+    }
 
     public static OneyNotificationResponse createTransactionStatusResponseFromJson(String json, String encryptKey)
             throws DecryptException, MalformedResponseException {
