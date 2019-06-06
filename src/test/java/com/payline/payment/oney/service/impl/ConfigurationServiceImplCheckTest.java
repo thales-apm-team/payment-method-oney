@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 /**
  * Validates the {@link ConfigurationServiceImpl#check(ContractParametersCheckRequest)} method.
@@ -54,7 +55,7 @@ public class ConfigurationServiceImplCheckTest {
 
         // Mock HTTP call to the partner API.
         StringResponse mockResponsePending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
-        Mockito.doReturn(mockResponsePending).when(httpClient).initiateCheckPayment(Mockito.anyString(), Mockito.anyMap());
+        Mockito.doReturn(mockResponsePending).when(httpClient).initiateCheckPayment(Mockito.anyString(), Mockito.anyMap(), anyBoolean());
     }
 
     @BeforeEach

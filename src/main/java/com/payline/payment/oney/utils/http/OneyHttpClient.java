@@ -131,7 +131,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         return headers;
     }
 
-    public StringResponse initiatePayment(OneyPaymentRequest request)
+    public StringResponse initiatePayment(OneyPaymentRequest request, boolean isSandbox)
             throws PluginTechnicalException {
 
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
@@ -142,19 +142,19 @@ public class OneyHttpClient extends AbstractHttpClient {
         } else {
             jsonBody = request.toString();
         }
+
         // do the request
-        return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
+        return doPost(finalPath(PAYMENT_REQUEST_URL, isSandbox), jsonBody, parameters);
 
     }
 
-    public StringResponse initiateCheckPayment(String jsonBody, Map<String, String> parameters)
+    public StringResponse initiateCheckPayment(String jsonBody, Map<String, String> parameters, boolean isSandbox)
             throws HttpCallException {
         // do the request
-        return doPost(PAYMENT_REQUEST_URL, jsonBody, parameters);
-
+        return doPost(finalPath(PAYMENT_REQUEST_URL, isSandbox), jsonBody, parameters);
     }
 
-    public StringResponse initiateConfirmationPayment(OneyConfirmRequest request)
+    public StringResponse initiateConfirmationPayment(OneyConfirmRequest request, boolean isSandbox)
             throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
@@ -168,12 +168,12 @@ public class OneyHttpClient extends AbstractHttpClient {
         } else {
             jsonBody = request.toString();
         }
-        // do the request
-        return doPost(path, jsonBody, parameters);
 
+        // do the request
+        return doPost(finalPath(path, isSandbox), jsonBody, parameters);
     }
 
-    public StringResponse initiateRefundPayment(OneyRefundRequest request)
+    public StringResponse initiateRefundPayment(OneyRefundRequest request, boolean isSandbox)
             throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
@@ -188,11 +188,10 @@ public class OneyHttpClient extends AbstractHttpClient {
             jsonBody = request.toString();
         }
         // do the request
-        return doPost(path, jsonBody, parameters);
-
+        return doPost(finalPath(path, isSandbox), jsonBody, parameters);
     }
 
-    public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request)
+    public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request, boolean isSandbox)
             throws HttpCallException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
@@ -203,7 +202,10 @@ public class OneyHttpClient extends AbstractHttpClient {
         urlParameters.put(LANGUAGE_CODE, request.getLanguageCode());
 
         // do the request
-        return doGet(STATUS_REQUEST_URL, parameters, urlParameters);
+        return doGet(finalPath(STATUS_REQUEST_URL, isSandbox), parameters, urlParameters);
+    }
 
+    String finalPath( String path, boolean isSandbox ){
+        return isSandbox ? SANDBOX_PATH_PREFIX + path : path;
     }
 }

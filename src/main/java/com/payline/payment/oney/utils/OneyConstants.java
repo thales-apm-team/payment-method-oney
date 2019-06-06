@@ -76,11 +76,12 @@ public class OneyConstants {
     public static final String PIPE = "%7C";
 
 
-    //Request URL's
-    public static final String PAYMENT_REQUEST_URL = "/staging/payments/v1/purchase/facilypay_url";
-    public static final String CONFIRM_REQUEST_URL = "/staging/payments/v1/purchase";
-    public static final String CANCEL_REQUEST_URL = "/staging/payments/v1/purchase";
-    public static final String STATUS_REQUEST_URL = "/staging/payments/v1/purchase";
+    // Request URL's
+    public static final String PAYMENT_REQUEST_URL = "/payments/v1/purchase/facilypay_url";
+    public static final String CONFIRM_REQUEST_URL = "/payments/v1/purchase";
+    public static final String CANCEL_REQUEST_URL = "/payments/v1/purchase";
+    public static final String STATUS_REQUEST_URL = "/payments/v1/purchase";
+    public static final String SANDBOX_PATH_PREFIX = "/staging";
 
     //0 immediate, 1 deferred, 2 check card
     public static final int PAYMENT_TYPE = 0;

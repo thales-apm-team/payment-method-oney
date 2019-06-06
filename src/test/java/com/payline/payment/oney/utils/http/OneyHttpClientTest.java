@@ -23,6 +23,8 @@ import java.util.Map;
 
 import static com.payline.payment.oney.utils.OneyConstants.PARTNER_API_URL;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PrepareForTest(AbstractHttpClient.class)
 public class OneyHttpClientTest {
@@ -72,7 +74,7 @@ public class OneyHttpClientTest {
 
         //Assert we have a response
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(200, response.getCode());
+        assertEquals(200, response.getCode());
 
     }
 
@@ -93,7 +95,7 @@ public class OneyHttpClientTest {
 
         //Assert we have a response
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(400, response.getCode());
+        assertEquals(400, response.getCode());
 
     }
 
@@ -108,7 +110,7 @@ public class OneyHttpClientTest {
 
         String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3";
         String path = testedClient.buildGetOrderPath("somePath", param);
-        Assertions.assertEquals(pathAttempted, path);
+        assertEquals(pathAttempted, path);
     }
 
     @Test
@@ -121,7 +123,7 @@ public class OneyHttpClientTest {
 
         String pathAttempted = "somePath/psp_guid/val1/merchant_guid/val2/reference/val3/action/confirm";
         String path = testedClient.buildConfirmOrderPath("somePath", param);
-        Assertions.assertEquals(pathAttempted, path);
+        assertEquals(pathAttempted, path);
     }
 
     @Test
@@ -143,7 +145,7 @@ public class OneyHttpClientTest {
                 .build();
 
         Assertions.assertNotNull(request);
-        StringResponse transactStatus = testedClient.initiateGetTransactionStatus(request);
+        StringResponse transactStatus = testedClient.initiateGetTransactionStatus(request, true);
         Assertions.assertNotNull(transactStatus.getCode());
     }
 
@@ -174,8 +176,21 @@ public class OneyHttpClientTest {
                 .build();
 
         Assertions.assertNotNull(request);
-        StringResponse transactStatus = testedClient.initiateRefundPayment(request);
+        StringResponse transactStatus = testedClient.initiateRefundPayment(request, true);
         Assertions.assertNotNull(transactStatus.getCode());
         Assertions.assertNotNull(transactStatus.getContent());
     }
+
+    @Test
+    public void finalPath_sandbox(){
+        String finalPath = testedClient.finalPath( "/path", true );
+        assertTrue( finalPath.startsWith( OneyConstants.SANDBOX_PATH_PREFIX ) );
+    }
+
+    @Test
+    public void finalPath_prod(){
+        String finalPath = testedClient.finalPath( "/path", false );
+        assertEquals( "/path", finalPath );
+    }
+
 }

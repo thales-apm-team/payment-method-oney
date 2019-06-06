@@ -202,10 +202,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return errors;
         }
 
-        return validateCall(contractParametersCheckRequest, errors, pspId, merchantGuid, opcKey, codePays);
+        return validateCall(contractParametersCheckRequest, errors, pspId, merchantGuid, opcKey, codePays, contractParametersCheckRequest.getEnvironment().isSandbox());
     }
 
-    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, String pspId, String merchantGuid, String opcKey, String codePays) {
+    private Map<String, String> validateCall(ContractParametersCheckRequest contractParametersCheckRequest, Map<String, String> errors, String pspId, String merchantGuid, String opcKey, String codePays, boolean isSandbox) {
         try {
 
             String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey, codePays);
@@ -213,9 +213,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             StringResponse stringResponse;
             if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
                 OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromJson(jsonMsg, contractParametersCheckRequest);
-                stringResponse = httpClient.initiateCheckPayment(requestEncrypted.toString(), parameters);
+                stringResponse = httpClient.initiateCheckPayment(requestEncrypted.toString(), parameters, isSandbox);
             } else {
-                stringResponse = httpClient.initiateCheckPayment(jsonMsg, parameters);
+                stringResponse = httpClient.initiateCheckPayment(jsonMsg, parameters, isSandbox);
             }
             if (stringResponse == null) {
                 errors.put(PARTNER_API_URL, UNEXPECTED_ERR);
