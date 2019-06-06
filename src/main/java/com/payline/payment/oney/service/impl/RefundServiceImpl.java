@@ -47,7 +47,7 @@ public class RefundServiceImpl implements RefundService {
                     .fromRefundRequest(refundRequest, refundFlag)
                     .build();
 
-            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest);
+            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, refundRequest.getEnvironment().isSandbox());
             //handle Response
             if (oneyResponse == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
@@ -127,7 +127,7 @@ public class RefundServiceImpl implements RefundService {
                 .build();
         String transactionStatusCode = "";
         try {
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest);
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, refundRequest.getEnvironment().isSandbox());
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());

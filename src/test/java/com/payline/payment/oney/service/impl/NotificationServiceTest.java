@@ -58,7 +58,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withCallParameters(map)
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request);
+        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
 
         mockCorrectlyConfigPropertiesEnum(true);
         TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
@@ -88,7 +88,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withCallParameters(map)
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request);
+        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
         mockCorrectlyConfigPropertiesEnum(false);
         TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
 
