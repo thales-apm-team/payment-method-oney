@@ -1,7 +1,7 @@
 package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
-import com.payline.payment.oney.exception.MalformedResponseException;
+import com.payline.payment.oney.exception.MalformedJsonException;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
@@ -103,7 +103,7 @@ public class OneyErrorHandlerTest {
     }
 
     @Test
-    public void handleOneyFailureResponseFromCause() throws MalformedResponseException {
+    public void handleOneyFailureResponseFromCause() throws MalformedJsonException {
         String json = "{\"Payments_Error_Response\":{\"error_list \":[{\"field\":\"payment.business_transaction.code\",\"error_code\":\"ERR_02\",\"error_label\":\"Size of the field should be less than or equal to [5] characters\"}]}}";
 
         StringResponse stringResponse = createStringResponse(400, "Bad request", json);

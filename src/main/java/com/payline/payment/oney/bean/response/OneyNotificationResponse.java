@@ -6,10 +6,13 @@ import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.PurchaseNotification;
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.exception.DecryptException;
-import com.payline.payment.oney.exception.MalformedResponseException;
+import com.payline.payment.oney.exception.MalformedJsonException;
 import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.payline.payment.oney.utils.OneyConstants.CHIFFREMENT_IS_ACTIVE;
 
@@ -65,8 +68,13 @@ public class OneyNotificationResponse extends OneyResponse {
         return merchantContext;
     }
 
+    public boolean isEmpty(){
+        return Stream.of(languageCode, merchantGuid, oneyRequestId, purchase, customer, pspContext, merchantContext)
+                .allMatch(Objects::isNull);
+    }
+
     public static OneyNotificationResponse createTransactionStatusResponseFromJson(String json, String encryptKey)
-            throws DecryptException, MalformedResponseException {
+            throws DecryptException, MalformedJsonException {
         Gson parser = new Gson();
 
         OneyNotificationResponse oneyNotificationResponse;
@@ -75,7 +83,12 @@ public class OneyNotificationResponse extends OneyResponse {
         }
         catch( JsonSyntaxException e){
             LOGGER.error("Unable to parse JSON content", e);
-            throw new MalformedResponseException( e );
+            throw new MalformedJsonException( e );
+        }
+
+        // JSON was properly formed, but there was some unexpected field()s in the content.
+        if( oneyNotificationResponse.isEmpty() ){
+            throw new MalformedJsonException("Unable to parse JSON as OneyNotificationResponse");
         }
 
         //Cas reponse est chiffree : on dechiffre la reponse afin de recuperer le statut de la transaction

@@ -44,7 +44,7 @@ public class NotificationServiceImpl implements NotificationService {
         String transactionId = "UNKNOWN";
         String partnerTransactionId = "UNKNOWN";
         TransactionStateChangedResponse.Action action = TransactionStateChangedResponse.Action.AUTHOR_AND_CAPTURE;
-        TransactionStatus status = new FailureTransactionStatus();
+        TransactionStatus status;
 
         // get the body of the request
         try (BufferedReader br = new BufferedReader(new InputStreamReader(notificationRequest.getContent(), "UTF-8"))) {
@@ -58,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
             // check the payment status
-            String paymentStatus = oneyResponse.getPurchase().getStatusLabel();
+            String paymentStatus = oneyResponse.getPurchase().getStatusCode();
             switch (paymentStatus) {
                 case "FUNDED":
                     status = new SuccessTransactionStatus();
@@ -107,14 +107,19 @@ public class NotificationServiceImpl implements NotificationService {
                     status = new FailureTransactionStatus(FailureCause.CANCEL);
                     break;
                 default:
-                    return new IgnoreNotificationResponse();
+                    // Ignore the notification, with a 204 HTTP status code
+                    return IgnoreNotificationResponse.IgnoreNotificationResponseBuilder.aIgnoreNotificationResponseBuilder()
+                            .withHttpStatus(204)
+                            .build();
             }
 
 
         } catch (IOException e) {
             LOGGER.error("Unable to read the notification request's body");
+            status = new FailureTransactionStatus(FailureCause.COMMUNICATION_ERROR);
         } catch (PluginTechnicalException e) {
             LOGGER.error("Unable to get infomation needed to know the transaction status");
+            status = new FailureTransactionStatus(e.getFailureCause());
         }
 
         return TransactionStateChangedResponse.TransactionStateChangedResponseBuilder.aTransactionStateChangedResponse()
