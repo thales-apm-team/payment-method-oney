@@ -88,6 +88,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContent(new ByteArrayInputStream(content.getBytes()))
                 .withContractConfiguration(TestUtils.createContractConfiguration())
                 .withPartnerConfiguration(TestUtils.createDefaultPartnerConfiguration())
+                .withEnvironment(TestUtils.TEST_ENVIRONMENT)
                 .build();
 
         StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
@@ -130,6 +131,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContent(new ByteArrayInputStream(content.getBytes()))
                 .withContractConfiguration(TestUtils.createContractConfiguration())
                 .withPartnerConfiguration(TestUtils.createDefaultPartnerConfiguration())
+                .withEnvironment(TestUtils.TEST_ENVIRONMENT)
                 .build();
 
         NotificationResponse response = service.parse(request);
@@ -146,6 +148,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContent(new ByteArrayInputStream("foo".getBytes()))
                 .withContractConfiguration(TestUtils.createContractConfiguration())
                 .withPartnerConfiguration(TestUtils.createDefaultPartnerConfiguration())
+                .withEnvironment(TestUtils.TEST_ENVIRONMENT)
                 .build();
 
         NotificationResponse response = service.parse(request);
