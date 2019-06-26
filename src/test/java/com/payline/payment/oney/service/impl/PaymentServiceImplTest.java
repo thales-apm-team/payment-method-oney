@@ -17,6 +17,7 @@ import org.mockito.*;
 
 import static com.payline.payment.oney.utils.TestUtils.createCompletePaymentBuilder;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class PaymentServiceImplTest extends OneyConfigBean {
@@ -144,7 +145,7 @@ public class PaymentServiceImplTest extends OneyConfigBean {
     public void paymentRequest_malformedInitiatePaymentResponseKO() throws PluginTechnicalException {
         // given a malformed HTTP response received from the payment init
         StringResponse responseMocked = createStringResponse(404, "Bad request", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class) );
+        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class), anyBoolean() );
 
         // when calling method paymentRequest
         PaymentResponse response = service.paymentRequest( createCompletePaymentBuilder().build() );
@@ -158,7 +159,7 @@ public class PaymentServiceImplTest extends OneyConfigBean {
     public void paymentRequest_malformedInitiatePaymentResponseOK() throws PluginTechnicalException {
         // given a malformed HTTP response received from the payment init
         StringResponse responseMocked = createStringResponse(200, "OK", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class) );
+        Mockito.doReturn(responseMocked).when(httpClient).initiatePayment( Mockito.any(OneyPaymentRequest.class), anyBoolean() );
 
         // when calling method paymentRequest
         PaymentResponse response = service.paymentRequest( createCompletePaymentBuilder().build() );

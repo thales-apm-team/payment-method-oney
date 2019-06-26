@@ -24,6 +24,7 @@ import org.mockito.Spy;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundRequest;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RefundServiceImplTest extends OneyConfigBean {
@@ -157,7 +158,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     public void refundRequest_malformedStatusResponseOK() throws PluginTechnicalException {
         // given a malformed HTTP response received to the status request
         StringResponse responseMocked = createStringResponse(200, "OK", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class) );
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class), anyBoolean() );
 
         // when calling the method refundRequest
         RefundResponse response = service.refundRequest( createDefaultRefundRequest() );
@@ -175,7 +176,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     public void refundRequest_malformedRefundResponseKO() throws PluginTechnicalException {
         // given a malformed HTTP response received to the refund/cancel request
         StringResponse responseMocked = createStringResponse(404, "Bad Request", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateRefundPayment( Mockito.any(OneyRefundRequest.class) );
+        Mockito.doReturn(responseMocked).when(httpClient).initiateRefundPayment( Mockito.any(OneyRefundRequest.class), anyBoolean() );
 
         // when calling the method refundRequest
         RefundResponse response = service.refundRequest( createDefaultRefundRequest() );
@@ -189,7 +190,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
     public void refundRequest_malformedRefundResponseOK() throws PluginTechnicalException {
         // given a malformed HTTP response received to the refund/cancel request
         StringResponse responseMocked = createStringResponse(200, "OK", "[]");
-        Mockito.doReturn(responseMocked).when(httpClient).initiateRefundPayment( Mockito.any(OneyRefundRequest.class) );
+        Mockito.doReturn(responseMocked).when(httpClient).initiateRefundPayment( Mockito.any(OneyRefundRequest.class), anyBoolean() );
 
         // when calling the method refundRequest
         RefundResponse response = service.refundRequest( createDefaultRefundRequest() );

@@ -46,7 +46,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
         try {
             confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest).build();
 
-            return validatePayment(confirmRequest);
+            return validatePayment(confirmRequest, redirectionPaymentRequest.getEnvironment().isSandbox());
 
         } catch (InvalidDataException e) {
             LOGGER.error("unable to confirm the payment", e);
@@ -69,7 +69,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
             oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                     .fromTransactionStatusRequest(transactionStatusRequest)
                     .build();
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest);
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, transactionStatusRequest.getEnvironment().isSandbox());
 
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
@@ -79,7 +79,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     if( "FAVORABLE".equals( response.getStatusPurchase().getStatusCode() ) ){
                         OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(transactionStatusRequest)
                                 .build();
-                        return this.validatePayment( confirmRequest );
+                        return this.validatePayment( confirmRequest, transactionStatusRequest.getEnvironment().isSandbox() );
                     }
                     else {
                         return this.handleTransactionStatusResponse( response,
@@ -111,9 +111,9 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
      *
      * @return PaymentResponse
      */
-    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest) throws PluginTechnicalException {
+    public PaymentResponse validatePayment(OneyConfirmRequest confirmRequest, boolean isSandbox) throws PluginTechnicalException {
 
-        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest);
+        StringResponse oneyResponse = httpClient.initiateConfirmationPayment(confirmRequest, isSandbox);
 
         // si erreur lors de l'envoi de la requete http
         if (oneyResponse == null) {

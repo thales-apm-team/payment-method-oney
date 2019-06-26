@@ -76,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withCallParameters(PluginUtils.getParametersMap(paymentRequest))
                     .build();
 
-            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest);
+            final StringResponse oneyResponse = httpClient.initiatePayment(oneyRequest, paymentRequest.getEnvironment().isSandbox());
 
             if (oneyResponse == null) {
                 LOGGER.debug("InitiateSignatureResponse StringResponse is null !");
