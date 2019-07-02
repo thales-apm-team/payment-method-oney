@@ -96,8 +96,10 @@ public class NotificationServiceImpl implements NotificationService {
                         } else {
                             status = new FailureTransactionStatus(FailureCause.REFUSED);
                         }
+                    } else {
+                        // is NOT to capture now
+                        status = new SuccessTransactionStatus();
                     }
-                    status = new SuccessTransactionStatus();
 
                     break;
                 case "REFUSED":
