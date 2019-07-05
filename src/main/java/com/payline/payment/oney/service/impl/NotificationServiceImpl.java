@@ -73,8 +73,6 @@ public class NotificationServiceImpl implements NotificationService {
             switch (paymentStatus) {
                 case "FUNDED":
                 case "TO_BE_FUNDED":
-                    paymentResponse = successPaymentResponse;
-                    break;
                 case "CANCELLED":
                     paymentResponse = successPaymentResponse;
                     break;
@@ -87,18 +85,19 @@ public class NotificationServiceImpl implements NotificationService {
                         StringResponse confirmResponse = httpClient.initiateConfirmationPayment(confirmRequest, notificationRequest.getEnvironment().isSandbox());
 
                         // check the confirmation response
-                        if (confirmResponse == null || confirmResponse.getContent() == null || confirmResponse.getCode() != HTTP_OK) {
+                        if (confirmResponse.getContent() == null || confirmResponse.getCode() != HTTP_OK) {
                             // unable to read the response
                             LOGGER.error("Unable to read the confirmation response");
-                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, paymentStatus);
+                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, String.valueOf(confirmResponse.getCode()));
                             break;
                         }
 
                         TransactionStatusResponse confirmTransactionResponse = createTransactionStatusResponseFromJson(confirmResponse.getContent(), key);
                         if (confirmTransactionResponse == null || confirmTransactionResponse.getStatusPurchase() == null) {
                             // unable to read the payment status
-                            LOGGER.error("Unable to read the comfiration response transaction status");
-                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, paymentStatus);
+                            String errorMessage = "Unable to read the confirmation response transaction status";
+                            LOGGER.error(errorMessage);
+                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, PluginUtils.truncate(errorMessage, 50));
                             break;
                         }
 
@@ -108,7 +107,7 @@ public class NotificationServiceImpl implements NotificationService {
                             // success
                             paymentResponse = successPaymentResponse;
                         } else {
-                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, partnerTransactionId, paymentStatus);
+                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, partnerTransactionId, "payment not funded");
                         }
                     } else {
                         // is NOT to capture now
@@ -117,10 +116,12 @@ public class NotificationServiceImpl implements NotificationService {
 
                     break;
                 case "REFUSED":
-                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, partnerTransactionId, paymentStatus);
+                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED,
+                            partnerTransactionId, PluginUtils.truncate(oneyResponse.getPurchase().getStatusLabel(), 50));
                     break;
                 case "ABORTED":
-                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, partnerTransactionId, paymentStatus);
+                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL,
+                            partnerTransactionId, PluginUtils.truncate(oneyResponse.getPurchase().getStatusLabel(), 50));
                     break;
                 case "PENDING":
                     paymentResponse = PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
@@ -137,11 +138,12 @@ public class NotificationServiceImpl implements NotificationService {
             }
 
         } catch (IOException e) {
-            LOGGER.error("Unable to read the notification request's body");
-            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, paymentStatus);
+            String errorMessage = "Unable to read the notification request's body";
+            LOGGER.error(errorMessage);
+            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, PluginUtils.truncate(errorMessage, 50));
         } catch (PluginTechnicalException e) {
-            LOGGER.error("Unable to get infomation needed to know the transaction status");
-            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(e.getFailureCause(), partnerTransactionId, paymentStatus);
+            LOGGER.error("Unable to get information needed to know the transaction status");
+            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(e.getFailureCause(), partnerTransactionId, e.getTruncatedErrorCodeOrLabel());
         }
 
         // create response
