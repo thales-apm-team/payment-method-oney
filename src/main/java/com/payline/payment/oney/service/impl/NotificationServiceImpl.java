@@ -87,8 +87,9 @@ public class NotificationServiceImpl implements NotificationService {
                         // check the confirmation response
                         if (confirmResponse.getContent() == null || confirmResponse.getCode() != HTTP_OK) {
                             // unable to read the response
-                            LOGGER.error("Unable to read the confirmation response");
-                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, String.valueOf(confirmResponse.getCode()));
+                            String errorMessage ="Unable to read the confirmation response";
+                            LOGGER.error(errorMessage);
+                            paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, PluginUtils.truncate(errorMessage, 50));
                             break;
                         }
 
