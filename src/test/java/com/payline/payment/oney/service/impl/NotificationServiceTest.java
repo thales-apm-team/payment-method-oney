@@ -70,7 +70,7 @@ public class NotificationServiceTest extends OneyConfigBean {
                 Arguments.of("REFUSED", PaymentResponseFailure.class),
                 Arguments.of("ABORTED", PaymentResponseFailure.class),
                 Arguments.of("PENDING", PaymentResponseOnHold.class),
-                Arguments.of("TO_BE_FUNDED", PaymentResponseOnHold.class)
+                Arguments.of("TO_BE_FUNDED", PaymentResponseSuccess.class)
         );
     }
 

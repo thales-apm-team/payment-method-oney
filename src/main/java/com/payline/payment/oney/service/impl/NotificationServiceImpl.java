@@ -72,6 +72,7 @@ public class NotificationServiceImpl implements NotificationService {
             // check the payment status
             switch (paymentStatus) {
                 case "FUNDED":
+                case "TO_BE_FUNDED":
                     paymentResponse = successPaymentResponse;
                     break;
                 case "CANCELLED":
@@ -122,7 +123,6 @@ public class NotificationServiceImpl implements NotificationService {
                     paymentResponse = OneyErrorHandler.getPaymentResponseFailure(FailureCause.CANCEL, partnerTransactionId, paymentStatus);
                     break;
                 case "PENDING":
-                case "TO_BE_FUNDED":
                     paymentResponse = PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
                             .withPartnerTransactionId(partnerTransactionId)
                             .withOnHoldCause(OnHoldCause.SCORING_ASYNC)
