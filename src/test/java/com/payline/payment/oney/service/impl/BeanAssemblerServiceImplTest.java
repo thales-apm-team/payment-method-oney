@@ -51,8 +51,8 @@ public class BeanAssemblerServiceImplTest {
         // test method
         PurchaseHistory purchaseHistory = beanAssembleService.assemblePurchaseHistory(request);
 
-        Assertions.assertEquals(10,purchaseHistory.getNumberOfPurchase());
-        Assertions.assertEquals(100,purchaseHistory.getTotalAmount());
+        Assertions.assertEquals(Integer.valueOf(10),purchaseHistory.getNumberOfPurchase());
+        Assertions.assertEquals(Float.valueOf(100),purchaseHistory.getTotalAmount());
         Assertions.assertNotNull(purchaseHistory.getFirstPurchasedate());
         Assertions.assertNotNull(purchaseHistory.getLastPurchaseDate());
     }
@@ -65,8 +65,8 @@ public class BeanAssemblerServiceImplTest {
         // test method
         PurchaseHistory purchaseHistory = beanAssembleService.assemblePurchaseHistory(request);
 
-        Assertions.assertEquals(0,purchaseHistory.getNumberOfPurchase());
-        Assertions.assertEquals(0,purchaseHistory.getTotalAmount());
+        Assertions.assertEquals(Integer.valueOf(0),purchaseHistory.getNumberOfPurchase());
+        Assertions.assertEquals(Float.valueOf(0),purchaseHistory.getTotalAmount());
         Assertions.assertNull(purchaseHistory.getFirstPurchasedate());
         Assertions.assertNull(purchaseHistory.getLastPurchaseDate());
     }

@@ -20,11 +20,11 @@ public class PurchaseHistory {
     @SerializedName("last_purchase_date")
     private String lastPurchaseDate;
 
-    public int getNumberOfPurchase() {
+    public Integer getNumberOfPurchase() {
         return numberOfPurchase;
     }
 
-    public float getTotalAmount() {
+    public Float getTotalAmount() {
         return totalAmount;
     }
 
@@ -36,7 +36,7 @@ public class PurchaseHistory {
         return lastPurchaseDate;
     }
 
-    public PurchaseHistory(Builder builder) {
+    private PurchaseHistory(Builder builder) {
         this.numberOfPurchase = builder.numberOfPurchase;
         this.totalAmount = builder.totalAmount;
         this.firstPurchasedate = builder.firstPurchasedate;

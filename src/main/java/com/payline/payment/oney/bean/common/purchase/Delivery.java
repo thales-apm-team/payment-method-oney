@@ -9,8 +9,6 @@ import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
-import java.text.SimpleDateFormat;
-
 public class Delivery extends OneyBean {
 
     @Required
@@ -133,7 +131,7 @@ public class Delivery extends OneyBean {
 
             Order order = request.getOrder();
             if (order != null) {
-                this.withDeliveryDate((new SimpleDateFormat("yyyy-MM-dd")).format(order.getExpectedDeliveryDate()));
+                this.withDeliveryDate(PluginUtils.dateToString(order.getExpectedDeliveryDate()));
                 if (request.getOrder() != null) {
                     this.withDeliveryModeCode(PluginUtils.getOneyDeliveryModeCode(order.getDeliveryMode()));
                     this.withDeliveryOption(PluginUtils.getOneyDeliveryOption(order.getDeliveryTime()));
@@ -146,19 +144,19 @@ public class Delivery extends OneyBean {
                 case 1:
                 case 2:
                 case 3:
-                    this.addressType = this.deliveryModeCode;
+                    this.withAddressType(this.deliveryModeCode);
                     break;
                 case 4:
-                    this.addressType = 5;
+                    this.withAddressType(5);
                     break;
                 case 5:
-                    this.addressType = 6;
+                    this.withAddressType(6);
                     break;
                 case 6:
-                    this.addressType = 4;
+                    this.withAddressType(4);
                     break;
                 default:
-                    this.addressType = 1;
+                    this.withAddressType(1);
                     break;
             }
 
