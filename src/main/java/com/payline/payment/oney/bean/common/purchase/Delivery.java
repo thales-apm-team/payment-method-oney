@@ -3,7 +3,6 @@ package com.payline.payment.oney.bean.common.purchase;
 import com.google.gson.annotations.SerializedName;
 import com.payline.payment.oney.bean.common.OneyAddress;
 import com.payline.payment.oney.bean.common.OneyBean;
-import com.payline.payment.oney.bean.common.enums.AddressType;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.common.Buyer;
@@ -141,9 +140,25 @@ public class Delivery extends OneyBean {
                 }
             }
 
-            AddressType addressTyp = AddressType.fromPaylineAddressType(Buyer.AddressType.DELIVERY);
-            if (addressTyp != null) {
-                this.withAddressType(addressTyp.getValue()) ;
+
+            // set the address_type from the delivery mode code (see JIRA 175)
+            switch (this.deliveryModeCode) {
+                case 1:
+                case 2:
+                case 3:
+                    this.addressType = this.deliveryModeCode;
+                    break;
+                case 4:
+                    this.addressType = 5;
+                    break;
+                case 5:
+                    this.addressType = 6;
+                    break;
+                case 6:
+                    this.addressType = 4;
+                default:
+                    this.addressType = 1;
+                    break;
             }
 
             Buyer buyer = request.getBuyer();

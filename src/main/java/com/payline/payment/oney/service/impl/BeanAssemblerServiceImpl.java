@@ -2,6 +2,7 @@ package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.NavigationData;
 import com.payline.payment.oney.bean.common.customer.Customer;
+import com.payline.payment.oney.bean.common.customer.PurchaseHistory;
 import com.payline.payment.oney.bean.common.enums.PaymentType;
 import com.payline.payment.oney.bean.common.payment.BusinessTransactionData;
 import com.payline.payment.oney.bean.common.payment.PaymentData;
@@ -10,6 +11,9 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.service.BeanAssembleService;
+import com.payline.payment.oney.utils.PluginUtils;
+import com.payline.pmapi.bean.payment.BuyerExtended;
+import com.payline.pmapi.bean.payment.BuyerExtendedHistory;
 import com.payline.pmapi.bean.payment.Environment;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 
@@ -82,10 +86,36 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
     }
 
     @Override
-    public Purchase assemblePurchase(final PaymentRequest paymentRequest) throws PluginTechnicalException {
+    public Purchase assemblePurchase(final PaymentRequest paymentRequest) {
         return Purchase.Builder.aPurchaseBuilder()
                 .fromPayline(paymentRequest)
                 .build();
+    }
+
+    @Override
+    public PurchaseHistory assemblePurchaseHistory(PaymentRequest paymentRequest) {
+        // init variables
+        PurchaseHistory.Builder purchaseHistoryBuilder = PurchaseHistory.Builder.aPurchaseHistoryBuilder();
+
+        // checks data is not null
+        BuyerExtended buyerExtended = paymentRequest.getBuyer().getBuyerExtended();
+        if (buyerExtended != null) {
+            BuyerExtendedHistory buyerExtendedHistory = buyerExtended.getBuyerExtendedHistory();
+            if (buyerExtendedHistory != null) {
+                if (buyerExtendedHistory.getOrderCount6Months() != null)
+                    purchaseHistoryBuilder.withNumberOfPurchase(buyerExtendedHistory.getOrderCount6Months());
+                if (buyerExtendedHistory.getFirstOrderDate() != null)
+                    purchaseHistoryBuilder.withFirstPurchasedate(PluginUtils.dateToString(buyerExtendedHistory.getFirstOrderDate()));
+                if (buyerExtendedHistory.getLastOrderDate() != null)
+                    purchaseHistoryBuilder.withLastPurchaseDate(PluginUtils.dateToString(buyerExtendedHistory.getLastOrderDate()));
+            }
+        }
+
+        if (paymentRequest.getBuyer().getAccountAverageAmount() != null && paymentRequest.getBuyer().getAccountOrderCount() != null) {
+            purchaseHistoryBuilder.withTotalAmount(paymentRequest.getBuyer().getAccountAverageAmount().getAmountInSmallestUnit().multiply(paymentRequest.getBuyer().getAccountOrderCount()).floatValue());
+        }
+
+        return purchaseHistoryBuilder.build();
     }
 
     /**
