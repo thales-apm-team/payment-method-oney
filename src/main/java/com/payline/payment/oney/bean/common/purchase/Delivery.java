@@ -156,6 +156,7 @@ public class Delivery extends OneyBean {
                     break;
                 case 6:
                     this.addressType = 4;
+                    break;
                 default:
                     this.addressType = 1;
                     break;
