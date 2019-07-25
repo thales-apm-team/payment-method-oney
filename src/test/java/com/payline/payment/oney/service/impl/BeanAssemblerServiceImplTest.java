@@ -26,9 +26,6 @@ public class BeanAssemblerServiceImplTest {
                 .withOrderCount6Months(10)
                 .build();
 
-        BuyerExtended buyerExtended = BuyerExtended.BuyerExtendedBuilder.aBuyerExtended()
-                .withBuyerExtendedHistory(buyerExtendedHistory).build();
-
         Buyer buyer = Buyer.BuyerBuilder.aBuyer()
                 .withEmail(TestUtils.generateRamdomEmail())
                 .withPhoneNumbers(null)
@@ -38,7 +35,7 @@ public class BeanAssemblerServiceImplTest {
                 .withExtendedData(TestUtils.createDefaultExtendedData())
                 .withBirthday(null)
                 .withLegalStatus(Buyer.LegalStatus.PERSON)
-                .withBuyerExtended(buyerExtended)
+                .withBuyerExtendedHistory(buyerExtendedHistory)
                 .withAccountAverageAmount(TestUtils.createAmount("10", Currency.getInstance("EUR")))
                 .withAccountOrderCount(BigInteger.TEN)
                 .build();

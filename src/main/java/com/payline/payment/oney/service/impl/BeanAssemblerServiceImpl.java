@@ -12,7 +12,6 @@ import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.utils.PluginUtils;
-import com.payline.pmapi.bean.payment.BuyerExtended;
 import com.payline.pmapi.bean.payment.BuyerExtendedHistory;
 import com.payline.pmapi.bean.payment.Environment;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -36,7 +35,7 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
 
 
     @Override
-    public Customer assembleCustomer(final PaymentRequest paymentRequest) throws PluginTechnicalException {
+    public Customer assembleCustomer(final PaymentRequest paymentRequest) {
         return Customer.Builder.aCustomBuilder()
                 .fromPaylineRequest(paymentRequest)
                 .build();
@@ -44,8 +43,7 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
 
     @Override
     public PaymentData assemblePaymentData(
-            final PaymentRequest paymentRequest, final BusinessTransactionData businessTransaction)
-            throws PluginTechnicalException {
+            final PaymentRequest paymentRequest, final BusinessTransactionData businessTransaction) {
         final float amount = createFloatAmount(paymentRequest.getAmount().getAmountInSmallestUnit(),
                 paymentRequest.getAmount().getCurrency());
         final String currencyCode = paymentRequest.getAmount().getCurrency().getCurrencyCode();
@@ -98,17 +96,14 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
         PurchaseHistory.Builder purchaseHistoryBuilder = PurchaseHistory.Builder.aPurchaseHistoryBuilder();
 
         // checks data is not null
-        BuyerExtended buyerExtended = paymentRequest.getBuyer().getBuyerExtended();
-        if (buyerExtended != null) {
-            BuyerExtendedHistory buyerExtendedHistory = buyerExtended.getBuyerExtendedHistory();
-            if (buyerExtendedHistory != null) {
-                if (buyerExtendedHistory.getOrderCount6Months() != null)
-                    purchaseHistoryBuilder.withNumberOfPurchase(buyerExtendedHistory.getOrderCount6Months());
-                if (buyerExtendedHistory.getFirstOrderDate() != null)
-                    purchaseHistoryBuilder.withFirstPurchasedate(PluginUtils.dateToString(buyerExtendedHistory.getFirstOrderDate()));
-                if (buyerExtendedHistory.getLastOrderDate() != null)
-                    purchaseHistoryBuilder.withLastPurchaseDate(PluginUtils.dateToString(buyerExtendedHistory.getLastOrderDate()));
-            }
+        BuyerExtendedHistory buyerExtendedHistory = paymentRequest.getBuyer().getBuyerExtendedHistory();
+        if (buyerExtendedHistory != null) {
+            if (buyerExtendedHistory.getOrderCount6Months() != null)
+                purchaseHistoryBuilder.withNumberOfPurchase(buyerExtendedHistory.getOrderCount6Months());
+            if (buyerExtendedHistory.getFirstOrderDate() != null)
+                purchaseHistoryBuilder.withFirstPurchasedate(PluginUtils.dateToString(buyerExtendedHistory.getFirstOrderDate()));
+            if (buyerExtendedHistory.getLastOrderDate() != null)
+                purchaseHistoryBuilder.withLastPurchaseDate(PluginUtils.dateToString(buyerExtendedHistory.getLastOrderDate()));
         }
 
         if (paymentRequest.getBuyer().getAccountAverageAmount() != null && paymentRequest.getBuyer().getAccountOrderCount() != null) {
