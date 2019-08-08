@@ -1,100 +1,276 @@
 package com.payline.payment.oney.service.impl;
 
-import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
-import com.payline.payment.oney.bean.response.TransactionStatusResponse;
-import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.utils.OneyConfigBean;
-import com.payline.payment.oney.utils.OneyConstants;
+import com.payline.payment.oney.utils.TestUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
-import org.junit.jupiter.api.Assertions;
+import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.pmapi.bean.common.FailureTransactionStatus;
+import com.payline.pmapi.bean.common.OnHoldTransactionStatus;
+import com.payline.pmapi.bean.common.SuccessTransactionStatus;
+import com.payline.pmapi.bean.notification.request.NotificationRequest;
+import com.payline.pmapi.bean.notification.response.NotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.IgnoreNotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.PaymentResponseByNotificationResponse;
+import com.payline.pmapi.bean.notification.response.impl.TransactionStateChangedResponse;
+import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
+import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
+import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Stream;
 
-import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationServiceTest extends OneyConfigBean {
 
-
-    @Spy
-    OneyHttpClient httpClient;
-
     @InjectMocks
     NotificationServiceImpl service;
+
+    @Spy
+    OneyHttpClient client;
+
+    private NotificationRequest.NotificationRequestBuilder requestBuilder;
 
     @BeforeAll
     public void setup() {
         service = new NotificationServiceImpl();
         MockitoAnnotations.initMocks(this);
+    }
 
+    @BeforeEach
+    public void setupNotificationRequestBuilder() {
+        requestBuilder = NotificationRequest.NotificationRequestBuilder.aNotificationRequest()
+                .withHeaderInfos(new HashMap<>())
+                .withPathInfo("thisIsAPath")
+                .withHttpMethod("POST")
+                .withContractConfiguration(TestUtils.createContractConfiguration())
+                .withPartnerConfiguration(TestUtils.createDefaultPartnerConfiguration())
+                .withEnvironment(TestUtils.TEST_ENVIRONMENT);
+    }
+
+    private static Stream<Arguments> parse_nonExistingTransaction_set() {
+        return Stream.of(
+                Arguments.of("FUNDED", PaymentResponseSuccess.class),
+                Arguments.of("CANCELLED", PaymentResponseSuccess.class),
+                Arguments.of("FAVORABLE", PaymentResponseSuccess.class),
+                Arguments.of("REFUSED", PaymentResponseFailure.class),
+                Arguments.of("ABORTED", PaymentResponseFailure.class),
+                Arguments.of("PENDING", PaymentResponseOnHold.class),
+                Arguments.of("TO_BE_FUNDED", PaymentResponseSuccess.class)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("parse_nonExistingTransaction_set")
+    void parse_nonExistingTransaction(String oneyStatus, Class expectedClass) throws Exception {
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(mockContent(oneyStatus).getBytes()))
+                .build();
+
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        NotificationResponse response = service.parse(request);
+        assertTrue( response instanceof PaymentResponseByNotificationResponse );
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+
+        assertEquals(expectedClass, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+    }
+
+    private static Stream<Arguments> parse_existingTransaction_set() {
+        return Stream.of(
+                Arguments.of("FUNDED", SuccessTransactionStatus.class),
+                Arguments.of("CANCELLED", SuccessTransactionStatus.class),
+                Arguments.of("FAVORABLE", SuccessTransactionStatus.class),
+                Arguments.of("REFUSED", FailureTransactionStatus.class),
+                Arguments.of("ABORTED", FailureTransactionStatus.class),
+                Arguments.of("PENDING", OnHoldTransactionStatus.class),
+                Arguments.of("TO_BE_FUNDED", SuccessTransactionStatus.class)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("parse_existingTransaction_set")
+    void parse_existingTransaction(String oneyStatus, Class expectedClass) throws Exception {
+        NotificationRequest request = requestBuilder
+                .withTransactionId("G1906171638279792")
+                .withContent(new ByteArrayInputStream(mockContent(oneyStatus).getBytes()))
+                .build();
+
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        NotificationResponse response = service.parse(request);
+        assertTrue( response instanceof TransactionStateChangedResponse );
+        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
+
+        assertEquals(expectedClass, transactionStateChangedResponse.getTransactionStatus().getClass());
     }
 
     @Test
-    public void notifyTransactionStatusRequestEncrypted() throws Exception {
-
-        Map<String, String> map = new HashMap<>();
-        map.put("test", "test");
-        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul3aakmok0anPtpBvW1vZ3e83c7evaIMgKsuqlJpPjg407AoMkFm94736cZcnpC81qiX4V8n9IxMD1E50QBAOkMZ1S8Pf90kxhXSDe3wt4J13\"}");
-
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
-
-
-        OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .withLanguageCode("FR")
-                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
-                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198119")
-                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
-                .withCallParameters(map)
+    void parse_nonExistingTransaction_confirmationFail() throws Exception {
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(mockContent("FAVORABLE").getBytes()))
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "this is not a good content");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
 
-        mockCorrectlyConfigPropertiesEnum(true);
-        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
-
-        Assertions.assertNotNull(transactStatus.getCode());
-        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
-        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
-
+        NotificationResponse response = service.parse(request);
+        assertTrue( response instanceof PaymentResponseByNotificationResponse );
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+        PaymentResponseFailure responseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
+        assertEquals(FailureCause.COMMUNICATION_ERROR,responseFailure.getFailureCause());
     }
 
     @Test
-    public void notifyTransactionStatusRequestNotEncrypted() throws Exception {
-
-        Map<String, String> map = new HashMap<>();
-        map.put("test", "test");
-        StringResponse responseMockedPending = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"PENDING\",\"status_label\":\"Waiting for customer validation\"}}");
-
-        Mockito.doReturn(responseMockedPending).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
-
-
-        OneyTransactionStatusRequest request = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .withLanguageCode("FR")
-                .withMerchantGuid("9813e3ff-c365-43f2-8dca-94b850befbf9")
-                .withPspGuid("6ba2a5e2-df17-4ad7-8406-6a9fc488a60a")
-                .withPurchaseReference(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + "455454545415451198119")
-                .withEncryptKey("66s581CG5W+RLEqZHAGQx+vskjy660Kt8x8rhtRpXtY=")
-                .withCallParameters(map)
+    void parse_existingTransaction_confirmationFail() throws Exception {
+        NotificationRequest request = requestBuilder
+                .withTransactionId("G1906171638279792")
+                .withContent(new ByteArrayInputStream(mockContent("FAVORABLE").getBytes()))
                 .build();
 
-        StringResponse transactStatus = this.httpClient.initiateGetTransactionStatus(request, true);
-        mockCorrectlyConfigPropertiesEnum(false);
-        TransactionStatusResponse resp = createTransactionStatusResponseFromJson(transactStatus.getContent(), request.getEncryptKey());
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "this is not a good content");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
 
-        Assertions.assertNotNull(transactStatus.getCode());
-        Assertions.assertEquals("Waiting for customer validation", resp.getStatusPurchase().getStatusLabel());
-        Assertions.assertEquals("PENDING", resp.getStatusPurchase().getStatusCode());
-
+        NotificationResponse response = service.parse(request);
+        assertTrue( response instanceof TransactionStateChangedResponse );
+        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
+        assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
     }
+
+    @Test
+    void parseOther() {
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(mockContent("ANYTHING").getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        assertEquals(IgnoreNotificationResponse.class, response.getClass());
+    }
+
+    @Test
+    void parse_nonExistingTransaction_exception() {
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream("foo".getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+        PaymentResponseFailure responseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
+        assertNotNull(responseFailure.getFailureCause());
+    }
+
+    @Test
+    void parse_existingTransaction_exception() {
+        NotificationRequest request = requestBuilder
+                .withTransactionId("G1906171638279792")
+                .withContent(new ByteArrayInputStream("foo".getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
+        assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
+    }
+
+    @Test
+    void parse_existingTransaction_wrongTransactionId(){
+        NotificationRequest request = requestBuilder
+                .withTransactionId("123456")
+                .withContent(new ByteArrayInputStream(mockContent("FAVORABLE").getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
+        assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
+    }
+
+    /**
+     * Test the case in which the notification request contains a properly formatted JSON with an unexpected structure
+     * that cannot be cast into {@link com.payline.payment.oney.bean.response.OneyNotificationResponse}.
+     * In that case, Gson returns an empty object, containing only null attributes.
+     *
+     * @see https://github.com/google/gson/issues/188
+     * @see https://payline.atlassian.net/browse/PAYLAPMEXT-165
+     */
+    @Test
+    void parse_unexpectedFields() {
+        String content = "{" +
+                "  \"merchant_id\": \"18093\"," +
+                "  \"psp_id\": \"200000782\"," +
+                "  \"server_response_url\": \"https://webpayment.dev.payline.com/payline-widget/pmapiNotification/ONEY/v/…\"," +
+                "  \"message\": {" +
+                "    \"language_code\": \"fr\"," +
+                "    \"merchant_guid\": \"6fd0d7f8123b4a729cb74a89f32e6035\"," +
+                "    \"purchase\": {" +
+                "      \"external_reference_type\": \"CMDE\"," +
+                "      \"external_reference\": \"NR_ONEY_FR_TC1_W3025_PENDING_170619163818\"," +
+                "      \"status_code\": \"PENDING\"," +
+                "      \"status_label\": \"La demande de paiement est en cours d’étude.\"" +
+                "    }," +
+                "    \"customer\": {" +
+                "      \"customer_external_code\": \"client\"" +
+                "    }," +
+                "    \"merchant_context\": \"\"," +
+                "    \"psp_context\": \"G1906171638279792\"" +
+                "  }," +
+                "  \"crypting_method\": \"\"" +
+                "}";
+        content = content.replace("XXXXXX", "ANYTHING");
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(content.getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+        PaymentResponseFailure responseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
+        assertNotNull(responseFailure.getFailureCause());
+    }
+
+    private String mockContent( String statusCode ){
+        String content = "{" +
+                "  \"language_code\": \"FR\"," +
+                "  \"merchant_guid\": \"anId\"," +
+                "  \"oney_request_id\": \"123456789\"," +
+                "  \"purchase\": {" +
+                "    \"external_reference_type\": \"aType\"," +
+                "    \"external_reference\": \"987654321\"," +
+                "    \"purchase_merchant\": {" +
+                "      \"merchant_guid\": \"azerty\"" +
+                "    }," +
+                "    \"status_code\": \"XXXXXX\"," +
+                "    \"status_label\": \"a status label\"," +
+                "    \"reason_code\": \"aReason\"," +
+                "    \"reason_label\": \"aLabel\"" +
+                "  }," +
+                "  \"customer\": {" +
+                "    \"customer_external_code\": \"aCode\"" +
+                "  }," +
+                "  \"merchant_context\": \"CN!1000!EUR\"," +
+                "  \"psp_context\": \"G1906171638279792\"" +
+                "}";
+        content = content.replace("XXXXXX", statusCode);
+        return content;
+    }
+
 }

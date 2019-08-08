@@ -1,7 +1,6 @@
 package com.payline.payment.oney.utils;
 
 import com.payline.payment.oney.bean.common.purchase.Item;
-import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
@@ -15,17 +14,13 @@ import org.junit.jupiter.api.TestInstance;
 import org.powermock.reflect.Whitebox;
 
 import java.math.BigInteger;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.payline.payment.oney.bean.common.enums.CategoryCodeHandler.findCategory;
-import static com.payline.payment.oney.utils.BeanUtils.createDelivery;
-import static com.payline.payment.oney.utils.BeanUtils.createItemList;
 import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.PluginUtils.*;
+import static com.payline.payment.oney.utils.TestUtils.createDefaultPaymentRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -458,4 +453,41 @@ public class PluginUtilsTest {
         Assertions.assertEquals("", PluginUtils.truncate("", 30));
         Assertions.assertNull(PluginUtils.truncate(null, 30));
     }
+
+    @Test
+    void createMerchantContext() {
+        String expectedMerchantContext = "CL!40800!EUR";
+        PaymentRequest request = createDefaultPaymentRequest();
+
+        //  creation test
+        String merchantContext = PluginUtils.createMerchantContext(request);
+        Assertions.assertEquals(expectedMerchantContext, merchantContext);
+
+        // recorery test
+        Assertions.assertEquals(false, PluginUtils.isCaptureNow(merchantContext));
+        Assertions.assertEquals(408.00f, PluginUtils.getAmount(merchantContext));
+        Assertions.assertEquals("EUR", PluginUtils.getCurrency(merchantContext));
+    }
+
+
+    @Test
+    void readMerchantContextCN() {
+        String merchantContext = "CN!17204!EUR";
+
+        // recorery test
+        Assertions.assertEquals(true, PluginUtils.isCaptureNow(merchantContext));
+        float toto =  PluginUtils.getAmount(merchantContext);
+        Assertions.assertEquals(172.04f,toto);
+        Assertions.assertEquals("EUR", PluginUtils.getCurrency(merchantContext));
+    }
+
+    @Test
+    void dateToString(){
+        Date date = new Date();
+        String sDate = PluginUtils.dateToString(date);
+
+        Assertions.assertNotNull(sDate);
+        Assertions.assertTrue(sDate.matches("[0-9]{4}-[0-1][0-9]-[0-3][0-9]"));
+    }
+
 }
