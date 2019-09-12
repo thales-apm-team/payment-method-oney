@@ -14,6 +14,7 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import com.payline.pmapi.bean.reset.request.ResetRequest;
 import com.payline.pmapi.integration.AbstractPaymentIntegration;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -459,6 +460,25 @@ public class TestUtils {
 
 
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
+                .withAmount(amount)
+                .withContractConfiguration(contractConfiguration)
+                .withOrder(order)
+                .withBuyer(createDefaultBuyer())
+                .withSoftDescriptor(SOFT_DESCRIPTOR)
+                .withEnvironment(TEST_ENVIRONMENT)
+                .withPartnerConfiguration(createDefaultPartnerConfiguration())
+                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withTransactionId(createTransactionId())
+                .build();
+    }
+
+    public static ResetRequest createDefaultResetRequest() {
+        final Amount amount = createAmount(CONFIRM_AMOUNT, CURRENCY_EUR);
+        final ContractConfiguration contractConfiguration = createContractConfiguration();
+        final Order order = createOrder(TRANSACTION_ID);
+
+
+        return ResetRequest.ResetRequestBuilder.aResetRequest()
                 .withAmount(amount)
                 .withContractConfiguration(contractConfiguration)
                 .withOrder(order)

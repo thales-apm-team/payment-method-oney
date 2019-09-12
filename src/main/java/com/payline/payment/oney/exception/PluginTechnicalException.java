@@ -6,6 +6,7 @@ import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseFailure;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
+import com.payline.pmapi.bean.reset.response.impl.ResetResponseFailure;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,6 +61,14 @@ public class PluginTechnicalException extends Exception {
     public RefundResponseFailure toRefundResponseFailure() {
 
         return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+                .withFailureCause(getFailureCause())
+                .withErrorCode(getTruncatedErrorCodeOrLabel())
+                .build();
+    }
+
+    public ResetResponseFailure toResetResponseFailure() {
+
+        return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
                 .withFailureCause(getFailureCause())
                 .withErrorCode(getTruncatedErrorCodeOrLabel())
                 .build();
