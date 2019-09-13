@@ -20,8 +20,8 @@ import static com.payline.payment.oney.utils.TestUtils.createDefaultResetRequest
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
 public class ResetServiceImplTest {
+    private String responseOK = "{\"purchase\":{\"status_code\":\"CANCELLED\",\"status_label\":\"Transaction is completed\"}}";
     private String responseOkCiphered = "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}";
-    private String responseOkCiphered2 = "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}";
     private String responseKOCiphered = "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}";
 
     @InjectMocks
@@ -39,10 +39,10 @@ public class ResetServiceImplTest {
 
     @Test
     void resetRequestTestOK() throws Exception {
-        StringResponse responseMocked1 = createStringResponse(200, "OK", responseOkCiphered);
+        StringResponse responseMocked1 = createStringResponse(200, "OK", responseOK);
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
-        StringResponse responseMocked = createStringResponse(200, "OK", responseOkCiphered2);
+        StringResponse responseMocked = createStringResponse(200, "OK", responseOK);
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
 
         ResetResponse response = service.resetRequest(createDefaultResetRequest());

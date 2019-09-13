@@ -48,14 +48,14 @@ public class RefundServiceImplTest extends OneyConfigBean {
         StringResponse responseMocked1 = createStringResponse(200, "OK", responseOk);
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
 
-        StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ul+pupX40ZlQGwcgL91laJl8Vmw5MnvB6zm+cpQviUjey0a4YEoiRButKTLyhHS8SBlDyClrx8GM0AWSp0+DsthbblWPrSSH9+6Oj0h25FWyQ\"}");
+        StringResponse responseMocked = createStringResponse(200, "OK", responseOk);
         Mockito.doReturn(responseMocked).when(httpClient).doPost(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
 
         RefundResponse response = service.refundRequest(createDefaultRefundRequest());
 
         Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
         RefundResponseSuccess success = (RefundResponseSuccess) response;
-        Assertions.assertEquals("CANCELLED", success.getStatusCode());
+        Assertions.assertEquals("FUNDED", success.getStatusCode());
         Assertions.assertNotNull(success.getPartnerTransactionId());
 
     }

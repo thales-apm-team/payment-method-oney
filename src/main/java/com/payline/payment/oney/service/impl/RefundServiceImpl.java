@@ -4,7 +4,6 @@ import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
-import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.PluginUtils;
@@ -81,21 +80,15 @@ public class RefundServiceImpl implements RefundService {
                             "Purchase status : null");
                 }
 
-                LOGGER.info("Payment has been cancelled");
+                LOGGER.info("Refund success");
                 return RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
                         .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
-                        .withStatusCode(String.valueOf(oneyResponse.getCode()))
                         .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
                         .build();
 
             }
-
-        } catch (InvalidDataException e) {
-            LOGGER.error("unable init the payment", e);
-            return e.toRefundResponseFailure();
-
         } catch (PluginTechnicalException e) {
-            LOGGER.error("unable init the payment", e);
+            LOGGER.error("unable init the refund", e);
             String ref = oneyRefundRequest != null ? oneyRefundRequest.getPurchaseReference() : "null";
             return OneyErrorHandler.geRefundResponseFailure(
                     e.getFailureCause(),

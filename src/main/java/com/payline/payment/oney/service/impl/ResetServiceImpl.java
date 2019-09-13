@@ -50,7 +50,7 @@ public class ResetServiceImpl implements ResetService {
             //handle Response
             if (oneyResponse == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
-                LOGGER.error("Refund is null");
+                LOGGER.error("Reset is null");
 
 
                 return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
@@ -62,7 +62,7 @@ public class ResetServiceImpl implements ResetService {
             //si erreur dans la requete http
             if (oneyResponse.getCode() != HTTP_OK) {
                 OneyFailureResponse failureResponse = new OneyFailureResponse(oneyResponse.getCode(), oneyResponse.getMessage(), oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
-                LOGGER.error("Refund failed {} ", failureResponse.getContent());
+                LOGGER.error("Reset failed {} ", failureResponse.getContent());
 
                 return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
                         .withFailureCause(handleOneyFailureResponse(failureResponse))
@@ -75,7 +75,7 @@ public class ResetServiceImpl implements ResetService {
                 //Si Oney renvoie une message vide, on renvoi un Payment Failure response
                 if (responseDecrypted.getStatusPurchase() == null) {
                     LOGGER.debug("oneyResponse StringResponse is null !");
-                    LOGGER.error("Refund is null");
+                    LOGGER.error("Reset is null");
                     return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
                             .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
                             .withErrorCode("Purchase status : null")
@@ -83,17 +83,16 @@ public class ResetServiceImpl implements ResetService {
                             .build();
                 }
 
-                LOGGER.info("Payment has been cancelled");
+                LOGGER.info("Reset Success");
                 return ResetResponseSuccess.ResetResponseSuccessBuilder.aResetResponseSuccess()
                         .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
-                        .withStatusCode(String.valueOf(oneyResponse.getCode()))
                         .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
                         .build();
 
             }
 
         } catch (PluginTechnicalException e) {
-            LOGGER.error("unable init the payment", e);
+            LOGGER.error("unable init the reset", e);
             return e.toResetResponseFailure();
         }
     }
