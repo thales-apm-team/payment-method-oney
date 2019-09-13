@@ -94,6 +94,19 @@ public class NotificationServiceTest extends OneyConfigBean {
         assertEquals(expectedClass, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
     }
 
+    @Test
+    void parse_nonExistingTransactionOther() throws Exception{
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(mockContent("FOO").getBytes()))
+                .build();
+
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        NotificationResponse response = service.parse(request);
+        assertEquals(IgnoreNotificationResponse.class, response.getClass());
+    }
+
     private static Stream<Arguments> parse_existingTransaction_set() {
         return Stream.of(
                 Arguments.of("FUNDED", SuccessTransactionStatus.class),
@@ -122,6 +135,20 @@ public class NotificationServiceTest extends OneyConfigBean {
         TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
 
         assertEquals(expectedClass, transactionStateChangedResponse.getTransactionStatus().getClass());
+    }
+
+    @Test
+    void parse_existingTransactionOther() throws Exception{
+        NotificationRequest request = requestBuilder
+                .withTransactionId("G1906171638279792")
+                .withContent(new ByteArrayInputStream(mockContent("FOO").getBytes()))
+                .build();
+
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        NotificationResponse response = service.parse(request);
+        assertEquals(IgnoreNotificationResponse.class, response.getClass());
     }
 
     @Test
@@ -181,15 +208,66 @@ public class NotificationServiceTest extends OneyConfigBean {
     }
 
     @Test
-    void parse_existingTransaction_exception() {
+    void parse_nonExistingTransaction_PluginTechnicalException() {
         NotificationRequest request = requestBuilder
-                .withTransactionId("G1906171638279792")
+//                .withTransactionId("G1906171638279792")
                 .withContent(new ByteArrayInputStream("foo".getBytes()))
                 .build();
 
         NotificationResponse response = service.parse(request);
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+    }
+
+    @Test
+    void parse_nonExistingTransaction_RuntimeException() {
+        String badContent = "{" +
+                "  \"language_code\": \"FR\"," +
+                "  \"merchant_guid\": \"anId\"," +
+                "  \"oney_request_id\": \"123456789\"," +
+                "  \"customer\": {" +
+                "    \"customer_external_code\": \"aCode\"" +
+                "  }," +
+                "  \"merchant_context\": \"CN!1000!EUR\"," +
+                "  \"psp_context\": \"G1906171638279792\"" +
+                "}";
+
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(badContent.getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+        PaymentResponseFailure paymentResponseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
+        assertEquals(FailureCause.INTERNAL_ERROR, paymentResponseFailure.getFailureCause());
+    }
+
+    @Test
+    void parse_existingTransaction_RuntimeException() {
+        String badContent = "{" +
+                "  \"language_code\": \"FR\"," +
+                "  \"merchant_guid\": \"anId\"," +
+                "  \"oney_request_id\": \"123456789\"," +
+                "  \"customer\": {" +
+                "    \"customer_external_code\": \"aCode\"" +
+                "  }," +
+                "  \"merchant_context\": \"CN!1000!EUR\"," +
+                "  \"psp_context\": \"G1906171638279792\"" +
+                "}";
+
+        NotificationRequest request = requestBuilder
+                .withTransactionId("G1906171638279792")
+                .withContent(new ByteArrayInputStream(badContent.getBytes()))
+                .build();
+
+        NotificationResponse response = service.parse(request);
+
+        assertEquals(TransactionStateChangedResponse.class, response.getClass());
         TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
-        assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
+        assertEquals(FailureTransactionStatus.class,transactionStateChangedResponse.getTransactionStatus().getClass());
+        FailureTransactionStatus failureTransactionStatus = (FailureTransactionStatus) transactionStateChangedResponse.getTransactionStatus();
+        assertEquals(FailureCause.INTERNAL_ERROR, failureTransactionStatus.getFailureCause());
     }
 
     @Test
@@ -200,8 +278,8 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .build();
 
         NotificationResponse response = service.parse(request);
-        TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
-        assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseFailure.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
     }
 
     /**

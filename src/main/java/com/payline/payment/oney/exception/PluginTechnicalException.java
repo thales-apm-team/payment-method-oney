@@ -74,6 +74,11 @@ public class PluginTechnicalException extends Exception {
                 .build();
     }
 
+    public static String runtimeErrorCode( RuntimeException e ){
+        String errorCode = "plugin error: " + e.toString().substring(e.toString().lastIndexOf('.') + 1);
+        return PluginUtils.truncate( errorCode, MAX_LENGHT );
+    }
+
     public String getErrorCodeOrLabel() {
         return errorCodeOrLabel;
     }
