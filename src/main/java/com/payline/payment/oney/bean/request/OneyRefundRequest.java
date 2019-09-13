@@ -10,6 +10,7 @@ import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.Required;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import com.payline.pmapi.bean.reset.request.ResetRequest;
 
 import java.util.Map;
 
@@ -127,6 +128,27 @@ public class OneyRefundRequest extends ParameterizedUrlOneyRequest {
             this.languageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, LANGUAGE_CODE_KEY);
             this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(refundRequest, PARTNER_CHIFFREMENT_KEY);
             this.callParameters = PluginUtils.getParametersMap(refundRequest);
+
+            return this;
+        }
+
+        public OneyRefundRequest.Builder fromResetRequest(ResetRequest resetRequest, boolean refundFlag) throws InvalidDataException {
+
+            String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, MERCHANT_GUID_KEY);
+
+            this.withPurchaseReferenceFromOrder( resetRequest.getOrder() );
+            this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
+
+            this.pspGuid = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, PSP_GUID_KEY);
+            this.merchantGuid = merchantGuidValue;
+            this.purchase = PurchaseCancel.Builder.aPurchaseCancelBuilder()
+                    .withAmount(createFloatAmount(resetRequest.getAmount().getAmountInSmallestUnit(), resetRequest.getAmount().getCurrency()))
+                    .withReasonCode(0)
+                    .withRefundFlag(refundFlag)
+                    .build();
+            this.languageCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, LANGUAGE_CODE_KEY);
+            this.encryptKey = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, PARTNER_CHIFFREMENT_KEY);
+            this.callParameters = PluginUtils.getParametersMap(resetRequest);
 
             return this;
         }

@@ -35,4 +35,14 @@ public class PurchaseNotification {
     public String getReasonLabel() {
         return reasonLabel;
     }
+
+    public class ValidStatus {
+        public static final String FUNDED = "FUNDED";
+        public static final String CANCELLED = "CANCELLED";
+        public static final String FAVORABLE = "FAVORABLE";
+        public static final String REFUSED = "REFUSED";
+        public static final String ABORTED = "ABORTED";
+        public static final String PENDING ="PENDING";
+        public static final String TO_BE_FUNDED = "TO_BE_FUNDED";
+    }
 }
