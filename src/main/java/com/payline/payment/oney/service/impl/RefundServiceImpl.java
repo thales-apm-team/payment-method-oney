@@ -94,6 +94,13 @@ public class RefundServiceImpl implements RefundService {
                     e.getFailureCause(),
                     ref,
                     e.getErrorCodeOrLabel());
+        }catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            return RefundResponseFailure.RefundResponseFailureBuilder
+                    .aRefundResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
         }
 
     }

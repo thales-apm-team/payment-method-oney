@@ -94,6 +94,12 @@ public class ResetServiceImpl implements ResetService {
         } catch (PluginTechnicalException e) {
             LOGGER.error("unable init the reset", e);
             return e.toResetResponseFailure();
+        }catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
         }
     }
 

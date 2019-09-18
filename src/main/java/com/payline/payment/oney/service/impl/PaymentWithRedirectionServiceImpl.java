@@ -80,6 +80,13 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
+        } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            return PaymentResponseFailure.PaymentResponseFailureBuilder
+                    .aPaymentResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
         }
     }
 
