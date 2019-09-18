@@ -5,6 +5,7 @@ import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
+import com.payline.payment.oney.service.impl.ResetServiceImpl;
 import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.common.Buyer;
@@ -13,6 +14,9 @@ import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import com.payline.pmapi.bean.reset.request.ResetRequest;
+import com.payline.pmapi.logger.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -24,6 +28,8 @@ import static com.payline.payment.oney.utils.OneyConstants.*;
 import static com.payline.payment.oney.utils.properties.constants.ConfigurationConstants.*;
 
 public class PluginUtils {
+    private static final Logger LOGGER = LogManager.getLogger(PluginUtils.class);
+
 
     public static final String LINE_1 = "line1";
     public static final String LINE_4 = "line4";
@@ -343,6 +349,20 @@ public class PluginUtils {
     /**
      * Buid a map with all needed parameters for HTTP calls
      *
+     * @param resetRequest Payline ResetRequest
+     * @return the ParametersMap
+     */
+    public static Map<String, String> getParametersMap(ResetRequest resetRequest) throws InvalidDataException {
+
+        String authorization = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, PARTNER_AUTHORIZATION_KEY);
+        String url = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, PARTNER_API_URL);
+        String coutryCode = RequestConfigServiceImpl.INSTANCE.getParameterValue(resetRequest, COUNTRY_CODE_KEY);
+        return getParametersMap(authorization, url, coutryCode);
+    }
+
+    /**
+     * Buid a map with all needed parameters for HTTP calls
+     *
      * @param contractParametersCheckRequest Payline ContractParametersCheckRequest
      * @return the ParametersMap
      */
@@ -487,5 +507,34 @@ public class PluginUtils {
     public static String dateToString(Date date){
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         return  df.format(date);
+    }
+
+    /**
+     * Check request's status in order to determine if the paiement's status is compatible with a refund or a cancel request.
+     *
+     * @param transactionStatusRequest
+     * @return refundFlag (for refund or cancel request)
+     */
+    public static boolean getRefundFlag(String transactionStatusRequest) {
+
+        if (transactionStatusRequest != null) {
+
+            switch (transactionStatusRequest) {
+                case "FUNDED":
+                    return true;
+
+                case "PENDING":
+                case "FAVORABLE":
+                    return false;
+
+                default:
+                    break;
+            }
+
+        }
+
+        // REFUSED / ABORTED / CANCELLED are not valid for refund or cancel ...
+        LOGGER.error("Resquest's status {} is not valid for refund or cancel", transactionStatusRequest);
+        return false;
     }
 }

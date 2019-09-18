@@ -5,17 +5,16 @@ import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.PluginTechnicalException;
-import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
-import com.payline.pmapi.bean.refund.request.RefundRequest;
-import com.payline.pmapi.bean.refund.response.RefundResponse;
-import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
-import com.payline.pmapi.bean.refund.response.impl.RefundResponseSuccess;
+import com.payline.pmapi.bean.reset.request.ResetRequest;
+import com.payline.pmapi.bean.reset.response.ResetResponse;
+import com.payline.pmapi.bean.reset.response.impl.ResetResponseFailure;
+import com.payline.pmapi.bean.reset.response.impl.ResetResponseSuccess;
 import com.payline.pmapi.logger.LogManager;
-import com.payline.pmapi.service.RefundService;
+import com.payline.pmapi.service.ResetService;
 import org.apache.logging.log4j.Logger;
 
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
@@ -23,46 +22,49 @@ import static com.payline.payment.oney.bean.response.TransactionStatusResponse.c
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 import static com.payline.payment.oney.utils.OneyErrorHandler.handleOneyFailureResponse;
 
-public class RefundServiceImpl implements RefundService {
+public class ResetServiceImpl implements ResetService {
 
     private OneyHttpClient httpClient;
-    private static final Logger LOGGER = LogManager.getLogger(RefundServiceImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(ResetServiceImpl.class);
 
-    public RefundServiceImpl() {
+    public ResetServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
+        ;
     }
 
     @Override
-    public RefundResponse refundRequest(RefundRequest refundRequest) {
-
+    public ResetResponse resetRequest(ResetRequest resetRequest) {
         OneyRefundRequest oneyRefundRequest = null;
         try {
             //obtenir statut de la requete
-            String status = handleStatusRequest(refundRequest);
+            String status = handleStatusRequest(resetRequest);
             //faire une  transactionStatusRequest
             boolean refundFlag = PluginUtils.getRefundFlag(status);
 
             //creation d'une OneyRefundRequest
             oneyRefundRequest = OneyRefundRequest.Builder.aOneyRefundRequest()
-                    .fromRefundRequest(refundRequest, refundFlag)
+                    .fromResetRequest(resetRequest, refundFlag)
                     .build();
 
-            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, refundRequest.getEnvironment().isSandbox());
+            StringResponse oneyResponse = httpClient.initiateRefundPayment(oneyRefundRequest, resetRequest.getEnvironment().isSandbox());
             //handle Response
             if (oneyResponse == null) {
                 LOGGER.debug("oneyResponse StringResponse is null !");
-                LOGGER.error("Refund is null");
-                return OneyErrorHandler.geRefundResponseFailure(
-                        FailureCause.PARTNER_UNKNOWN_ERROR,
-                        oneyRefundRequest.getPurchaseReference(),
-                        "Empty partner response");
+                LOGGER.error("Reset is null");
+
+
+                return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
+                        .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
+                        .withFailureCause(FailureCause.PARTNER_UNKNOWN_ERROR)
+                        .withErrorCode("Empty partner response")
+                        .build();
             }
             //si erreur dans la requete http
             if (oneyResponse.getCode() != HTTP_OK) {
                 OneyFailureResponse failureResponse = new OneyFailureResponse(oneyResponse.getCode(), oneyResponse.getMessage(), oneyResponse.getContent(), paymentErrorResponseFromJson(oneyResponse.getContent()));
-                LOGGER.error("Refund failed {} ", failureResponse.getContent());
+                LOGGER.error("Reset failed {} ", failureResponse.getContent());
 
-                return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+                return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
                         .withFailureCause(handleOneyFailureResponse(failureResponse))
                         .withErrorCode(failureResponse.toPaylineErrorCode())
                         .build();
@@ -73,29 +75,26 @@ public class RefundServiceImpl implements RefundService {
                 //Si Oney renvoie une message vide, on renvoi un Payment Failure response
                 if (responseDecrypted.getStatusPurchase() == null) {
                     LOGGER.debug("oneyResponse StringResponse is null !");
-                    LOGGER.error("Refund is null");
-                    return OneyErrorHandler.geRefundResponseFailure(
-                            FailureCause.REFUSED,
-                            oneyRefundRequest.getPurchaseReference(),
-                            "Purchase status : null");
+                    LOGGER.error("Reset is null");
+                    return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
+                            .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
+                            .withErrorCode("Purchase status : null")
+                            .withFailureCause(FailureCause.REFUSED)
+                            .build();
                 }
 
-                LOGGER.info("Refund success");
-                return RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
+                LOGGER.info("Reset Success");
+                return ResetResponseSuccess.ResetResponseSuccessBuilder.aResetResponseSuccess()
                         .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
                         .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
                         .build();
 
             }
-        } catch (PluginTechnicalException e) {
-            LOGGER.error("unable init the refund", e);
-            String ref = oneyRefundRequest != null ? oneyRefundRequest.getPurchaseReference() : "null";
-            return OneyErrorHandler.geRefundResponseFailure(
-                    e.getFailureCause(),
-                    ref,
-                    e.getErrorCodeOrLabel());
-        }
 
+        } catch (PluginTechnicalException e) {
+            LOGGER.error("unable init the reset", e);
+            return e.toResetResponseFailure();
+        }
     }
 
     @Override
@@ -111,19 +110,19 @@ public class RefundServiceImpl implements RefundService {
     /**
      * Obteniir le statut d'une transaction en cours
      *
-     * @param refundRequest
+     * @param resetRequest
      * @return
      */
-    public String handleStatusRequest(RefundRequest refundRequest) throws PluginTechnicalException {
+    public String handleStatusRequest(ResetRequest resetRequest) throws PluginTechnicalException {
         OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
-                .fromRefundRequest(refundRequest)
+                .fromResetRequest(resetRequest)
                 .build();
         String transactionStatusCode = "";
         try {
-            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, refundRequest.getEnvironment().isSandbox());
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, resetRequest.getEnvironment().isSandbox());
             //l'appel est OK on gere selon la response
             if (status.getCode() == HTTP_OK) {
-                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+                TransactionStatusResponse response = createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
                 transactionStatusCode = response.getStatusPurchase() == null ? null : response.getStatusPurchase().getStatusCode();
             }
 
@@ -135,5 +134,4 @@ public class RefundServiceImpl implements RefundService {
         return transactionStatusCode;
 
     }
-
 }
