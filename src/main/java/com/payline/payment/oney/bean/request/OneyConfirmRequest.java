@@ -134,8 +134,16 @@ public class OneyConfirmRequest extends ParameterizedUrlOneyRequest {
             this.callParameters = PluginUtils.getParametersMap(notificationRequest);
         }
 
-        public OneyConfirmRequest build() {
+        public OneyConfirmRequest build() throws InvalidDataException {
+            this.checkIntegrity();
             return new OneyConfirmRequest(this);
+        }
+
+        private void checkIntegrity() throws InvalidDataException {
+            if (paymentData == null) {
+                throw new InvalidDataException("PaymentData cannot be null", "paymentData");
+            }
+
         }
 
     }
