@@ -26,6 +26,8 @@ public class CustomerTest {
         Assertions.assertNotNull(customer);
     }
 
+    // TODO: move to BeanAssemblerServiceImplTest !
+    /*
     @Test
     public void fromPaylineRequest() throws Exception {
         customer = Customer.Builder.aCustomBuilder()
@@ -33,6 +35,7 @@ public class CustomerTest {
                 .build();
         Assertions.assertNotNull(customer);
     }
+    */
 
     @Test
     public void testToString() throws Exception {
