@@ -396,47 +396,6 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void parseReference_noPipe() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference("test#test");
-
-        });
-
-    }
-
-
-    @Test
-    public void parseReference_emptyReference() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference("");
-
-        });
-
-    }
-
-
-    @Test
-    public void parseReference_nullReference() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference(null);
-
-        });
-
-    }
-
-    @Test
-    public void testParseReference() throws InvalidFieldFormatException {
-        String ref = parseReference("xxx%7Ctest");
-        Assertions.assertEquals("test", ref);
-    }
-
-    @Test
     public void testGenerateMerchantRequestId() throws Exception {
 
         merchantId1 = generateMerchantRequestId("merchantId");

@@ -9,6 +9,7 @@ import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -159,7 +160,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, request.getPurchaseReference());
+        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
         String path = buildConfirmOrderPath(CONFIRM_REQUEST_URL, parameters);
         String jsonBody = null;
         if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
@@ -178,7 +179,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, request.getPurchaseReference());
+        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
         String path = buildRefundOrderPath(CANCEL_REQUEST_URL, parameters);
         String jsonBody;
         if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
@@ -196,7 +197,7 @@ public class OneyHttpClient extends AbstractHttpClient {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, request.getPurchaseReference());
+        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
 
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put(LANGUAGE_CODE, request.getLanguageCode());
