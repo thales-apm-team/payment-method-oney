@@ -197,7 +197,7 @@ public class TestUtils {
         Map<String, String> requestData = new HashMap<>();
         requestData.put(TEST_PSP_GUID_KEY, GUID_KEY);
         requestData.put(SECRET_KEY, TestUtils.getSecretKey());
-        requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
+        requestData.put(EXTERNAL_REFERENCE_KEY, EXTERNAL_REFERENCE);
         requestData.put(LANGUAGE_CODE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
 
@@ -467,7 +467,7 @@ public class TestUtils {
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(TEST_ENVIRONMENT)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withPartnerTransactionId(TRANSACTION_ID)
                 .withTransactionId(createTransactionId())
                 .build();
     }
@@ -486,7 +486,7 @@ public class TestUtils {
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(TEST_ENVIRONMENT)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withPartnerTransactionId(TRANSACTION_ID)
                 .withTransactionId(createTransactionId())
                 .build();
     }

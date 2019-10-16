@@ -68,6 +68,6 @@ public class ResetServiceImplTest {
         Assertions.assertSame(response.getClass(), ResetResponseFailure.class);
         ResetResponseFailure fail = (ResetResponseFailure) response;
         Assertions.assertEquals(FailureCause.REFUSED, fail.getFailureCause());
-        Assertions.assertEquals(PluginUtils.fullPurchaseReference(resetReq.getOrder().getReference()), fail.getPartnerTransactionId());
+        Assertions.assertEquals(resetReq.getOrder().getReference(), fail.getPartnerTransactionId());
     }
 }

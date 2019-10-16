@@ -54,7 +54,7 @@ public class ResetServiceImpl implements ResetService {
 
 
                 return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
-                        .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
+                        .withPartnerTransactionId(resetRequest.getPartnerTransactionId())
                         .withFailureCause(FailureCause.PARTNER_UNKNOWN_ERROR)
                         .withErrorCode("Empty partner response")
                         .build();
@@ -77,7 +77,7 @@ public class ResetServiceImpl implements ResetService {
                     LOGGER.debug("oneyResponse StringResponse is null !");
                     LOGGER.error("Reset is null");
                     return ResetResponseFailure.ResetResponseFailureBuilder.aResetResponseFailure()
-                            .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
+                            .withPartnerTransactionId(resetRequest.getPartnerTransactionId())
                             .withErrorCode("Purchase status : null")
                             .withFailureCause(FailureCause.REFUSED)
                             .build();
@@ -85,7 +85,7 @@ public class ResetServiceImpl implements ResetService {
 
                 LOGGER.info("Reset Success");
                 return ResetResponseSuccess.ResetResponseSuccessBuilder.aResetResponseSuccess()
-                        .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
+                        .withPartnerTransactionId(resetRequest.getPartnerTransactionId())
                         .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
                         .build();
 

@@ -75,7 +75,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Assertions.assertSame(response.getClass(), RefundResponseFailure.class);
         RefundResponseFailure fail = (RefundResponseFailure) response;
         Assertions.assertEquals(FailureCause.REFUSED, fail.getFailureCause());
-        Assertions.assertEquals(PluginUtils.fullPurchaseReference(refundReq.getOrder().getReference()), fail.getPartnerTransactionId());
+        Assertions.assertEquals(refundReq.getOrder().getReference(), fail.getPartnerTransactionId());
     }
 
     @Test

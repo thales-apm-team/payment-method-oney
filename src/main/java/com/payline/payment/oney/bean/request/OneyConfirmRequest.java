@@ -73,7 +73,7 @@ public class OneyConfirmRequest extends ParameterizedUrlOneyRequest {
 
         public Builder(RedirectionPaymentRequest paymentRequest) throws InvalidDataException {
             String merchantGuidValue = RequestConfigServiceImpl.INSTANCE.getParameterValue(paymentRequest, MERCHANT_GUID_KEY);
-            this.purchaseReference = paymentRequest.getRequestContext().getRequestData().get(EXTERNAL_REFERENCE_KEY);
+            this.purchaseReference = PluginUtils.fullPurchaseReference( paymentRequest.getOrder().getReference() );
             this.languageCode = paymentRequest.getRequestContext().getRequestData().get(LANGUAGE_CODE_KEY);
             this.merchantRequestId = generateMerchantRequestId(merchantGuidValue);
 
