@@ -29,7 +29,6 @@ public class ResetServiceImpl implements ResetService {
 
     public ResetServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
-        ;
     }
 
     @Override

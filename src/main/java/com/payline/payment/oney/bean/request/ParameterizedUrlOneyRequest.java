@@ -1,6 +1,5 @@
 package com.payline.payment.oney.bean.request;
 
-import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.pmapi.bean.payment.Order;
 

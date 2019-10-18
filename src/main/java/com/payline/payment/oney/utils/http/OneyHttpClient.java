@@ -9,6 +9,7 @@ import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -160,7 +161,12 @@ public class OneyHttpClient extends AbstractHttpClient {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
+        try {
+            parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference(), StandardCharsets.UTF_8.name()));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new PluginTechnicalException(e, "Plugin error: while encoding purchaseReference");
+        }
         String path = buildConfirmOrderPath(CONFIRM_REQUEST_URL, parameters);
         String jsonBody = null;
         if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
@@ -179,7 +185,12 @@ public class OneyHttpClient extends AbstractHttpClient {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
+        try {
+            parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference(), StandardCharsets.UTF_8.name()));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new PluginTechnicalException(e, "Plugin error: while encoding purchaseReference");
+        }
         String path = buildRefundOrderPath(CANCEL_REQUEST_URL, parameters);
         String jsonBody;
         if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
@@ -193,11 +204,16 @@ public class OneyHttpClient extends AbstractHttpClient {
     }
 
     public StringResponse initiateGetTransactionStatus(OneyTransactionStatusRequest request, boolean isSandbox)
-            throws HttpCallException {
+            throws PluginTechnicalException {
         Map<String, String> parameters = new HashMap<>(request.getCallParameters());
         parameters.put(PSP_GUID, request.getPspGuid());
         parameters.put(MERCHANT_GUID, request.getMerchantGuid());
-        parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference()));
+        try {
+            parameters.put(REFERENCE, URLEncoder.encode(request.getPurchaseReference(), StandardCharsets.UTF_8.name()));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new PluginTechnicalException(e, "Plugin error: while encoding purchaseReference");
+        }
 
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put(LANGUAGE_CODE, request.getLanguageCode());
