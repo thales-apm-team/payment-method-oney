@@ -97,7 +97,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .build();
             StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, transactionStatusRequest.getEnvironment().isSandbox());
 
-            PaymentResponse paymentResponse = findErrorResponse(status, transactionStatusRequest.getOrder().getReference(), oneyTransactionStatusRequest.getEncryptKey());
+            PaymentResponse paymentResponse = findErrorResponse(status, externalReference, oneyTransactionStatusRequest.getEncryptKey());
             if (paymentResponse != null) {
                 return paymentResponse;
             } else {
