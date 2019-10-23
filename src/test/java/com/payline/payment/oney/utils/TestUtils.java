@@ -45,7 +45,7 @@ public class TestUtils {
     public static final String CONFIRM_AMOUNT = "40800";
     private static final String TRANSACTION_ID = "455454545415451198120";
     private static final String EXTERNAL_REFERENCE = "123456789A";
-    private static final String CONFIRM_EXTERNAL_REFERENCE = OneyConstants.EXTERNAL_REFERENCE_TYPE + PIPE + EXTERNAL_REFERENCE;
+    private static final String CONFIRM_EXTERNAL_REFERENCE = PluginUtils.fullPurchaseReference( EXTERNAL_REFERENCE );
 
     private static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
     private static final Locale LOCALE_FR = Locale.FRANCE;
@@ -197,7 +197,7 @@ public class TestUtils {
         Map<String, String> requestData = new HashMap<>();
         requestData.put(TEST_PSP_GUID_KEY, GUID_KEY);
         requestData.put(SECRET_KEY, TestUtils.getSecretKey());
-        requestData.put(EXTERNAL_REFERENCE_KEY, CONFIRM_EXTERNAL_REFERENCE);
+        requestData.put(EXTERNAL_REFERENCE_KEY, EXTERNAL_REFERENCE);
         requestData.put(LANGUAGE_CODE_KEY, CONFIRM_EXTERNAL_REFERENCE);
 
 
@@ -467,7 +467,7 @@ public class TestUtils {
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(TEST_ENVIRONMENT)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withPartnerTransactionId(TRANSACTION_ID)
                 .withTransactionId(createTransactionId())
                 .build();
     }
@@ -486,7 +486,7 @@ public class TestUtils {
                 .withSoftDescriptor(SOFT_DESCRIPTOR)
                 .withEnvironment(TEST_ENVIRONMENT)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
-                .withPartnerTransactionId(CONFIRM_EXTERNAL_REFERENCE)
+                .withPartnerTransactionId(TRANSACTION_ID)
                 .withTransactionId(createTransactionId())
                 .build();
     }

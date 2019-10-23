@@ -2,10 +2,8 @@ package com.payline.payment.oney.utils;
 
 
 import com.payline.payment.oney.exception.InvalidDataException;
-import com.payline.payment.oney.exception.InvalidFieldFormatException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
-import com.payline.payment.oney.service.impl.ResetServiceImpl;
 import com.payline.payment.oney.utils.properties.service.ConfigPropertiesEnum;
 import com.payline.pmapi.bean.capture.request.CaptureRequest;
 import com.payline.pmapi.bean.common.Buyer;
@@ -269,14 +267,6 @@ public class PluginUtils {
         return locale.getDisplayCountry();
     }
 
-    public static String parseReference(String reference) throws InvalidFieldFormatException {
-
-        if (reference == null || reference.isEmpty() || !reference.contains(OneyConstants.PIPE)) {
-            throw new InvalidFieldFormatException("Oney reference should contain a '|' : " + reference, "Oney.PurchaseReference");
-        }
-        return reference.split(OneyConstants.PIPE)[1];
-    }
-
     /**
      * check if a String respect ISO-3166 rules
      *
@@ -536,5 +526,20 @@ public class PluginUtils {
         // REFUSED / ABORTED / CANCELLED are not valid for refund or cancel ...
         LOGGER.error("Resquest's status {} is not valid for refund or cancel", transactionStatusRequest);
         return false;
+    }
+
+    /**
+     * Build the full external reference (with type and pipe separator).
+     * @param externalReference The external reference
+     * @return The full transaction reference
+     */
+    public static String fullPurchaseReference(String externalReference ){
+        if( externalReference == null ){
+            return null;
+        }
+        if( externalReference.startsWith( OneyConstants.EXTERNAL_REFERENCE_TYPE ) ){
+            return externalReference;
+        }
+        return OneyConstants.EXTERNAL_REFERENCE_TYPE + "|" + externalReference;
     }
 }

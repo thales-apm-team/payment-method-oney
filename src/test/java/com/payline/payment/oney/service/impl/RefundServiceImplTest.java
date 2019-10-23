@@ -5,6 +5,7 @@ import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyConfigBean;
 import com.payline.payment.oney.utils.OneyConstants;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -74,7 +75,7 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Assertions.assertSame(response.getClass(), RefundResponseFailure.class);
         RefundResponseFailure fail = (RefundResponseFailure) response;
         Assertions.assertEquals(FailureCause.REFUSED, fail.getFailureCause());
-        Assertions.assertEquals(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + refundReq.getOrder().getReference(), fail.getPartnerTransactionId());
+        Assertions.assertEquals(refundReq.getOrder().getReference(), fail.getPartnerTransactionId());
     }
 
     @Test
