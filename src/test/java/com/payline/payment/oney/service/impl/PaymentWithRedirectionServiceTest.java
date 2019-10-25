@@ -174,7 +174,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void finalizeRedirectionPaymentTestKO() throws HttpCallException {
+    public void finalizeRedirectionPaymentTestKO() throws PluginTechnicalException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(), anyBoolean() );
 
@@ -190,7 +190,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void handleSessionExpiredFundedEncrypted() throws HttpCallException {
+    public void handleSessionExpiredFundedEncrypted() throws PluginTechnicalException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(), anyBoolean() );
@@ -203,7 +203,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void handleSessionExpiredFundedNotEncrypted() throws HttpCallException {
+    public void handleSessionExpiredFundedNotEncrypted() throws PluginTechnicalException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(), anyBoolean() );
@@ -217,7 +217,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
 
 
     @Test
-    public void handleSessionExpiredOnHoldEncrypted() throws HttpCallException {
+    public void handleSessionExpiredOnHoldEncrypted() throws PluginTechnicalException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"Zfxsl1nYU+7gI2vAD7S+JSO1EkNNk4gaIQcX++gJrX7NfjZ417t0L7ruzUCqFyxIVQWywc2FqrUK6J4kU5EPh0ksAzV6KmKWDolDoGte7uENMlMzcTriutnu5d/fJEf1\"}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(), anyBoolean() );
@@ -230,7 +230,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
-    public void handleSessionExpiredOnHoldNotEncrypted() throws HttpCallException {
+    public void handleSessionExpiredOnHoldNotEncrypted() throws PluginTechnicalException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\": { \"status_code\": \"PENDING\", \"status_label\": \"Waiting for customer validation\" }}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class), anyBoolean() );
@@ -244,7 +244,7 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
 
 
     @Test
-    public void handleSessionExpiredTestRefused() throws HttpCallException {
+    public void handleSessionExpiredTestRefused() throws PluginTechnicalException {
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"ymDHJ7HBRe49whKjH1HDtA==\"}");
         Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus( Mockito.any(OneyTransactionStatusRequest.class), anyBoolean() );
         TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
