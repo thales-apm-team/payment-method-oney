@@ -287,6 +287,13 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
             purchaseBuilder.withNumberOfItems(orderItems.size());
             List<Item> listItems = new ArrayList<>();
 
+            // Travel item (same for each item : see PAYLAPMEXT-153).
+            Travel travel = null;
+            if( order != null && order.getOrderOTA() != null
+                    && ( order.getOrderOTA().getTransport() != null || order.getOrderOTA().getAccommodation() != null ) ){
+                travel = this.assembleTravel( order );
+            }
+
             for (Order.OrderItem item : orderItems) {
                 // new Item
                 Item.Builder itemBuilder = Item.Builder.aItemBuilder()
@@ -298,10 +305,7 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
                         .withPrice(createFloatAmount(item.getAmount().getAmountInSmallestUnit(), item.getAmount().getCurrency()));
 
                 // Travel
-                if( order != null && order.getOrderOTA() != null
-                        && ( order.getOrderOTA().getTransport() != null || order.getOrderOTA().getAccommodation() != null ) ){
-                    itemBuilder.withTravel( this.assembleTravel( order ) );
-                }
+                itemBuilder.withTravel( travel );
 
                 // Marketplace
                 if( paymentRequest.getSubMerchant() != null && paymentRequest.getSubMerchant().getSubMerchantName() != null ){
