@@ -52,11 +52,7 @@ public class PluginUtils {
         return PluginUtils.requireNonNull((T) map.get(key), err);
     }
 
-// ------------  Methodes de mapping entre Oney et Payline  -----------------------
-
-
-    // Mapping methods between  Payline and Oney
-    //
+    // ------------  Mapping between Oney and Payline codes  -----------------------
 
     /**
      * Mapping Payline Buyer.legalStatus vers Oney personType
@@ -159,6 +155,8 @@ public class PluginUtils {
         }
     }
 
+    // ------------  FIN Mapping between Oney and Payline codes  -----------------------
+
     /**
      * Concatenates and trims two pieces of text, joining them by a space.
      *
@@ -221,8 +219,6 @@ public class PluginUtils {
 
         return chunks;
     }
-
-// --------------------------- FIN methode de mapping -----------------------
 
     /**
      * Genere un merchant request id qui doit etre unique pour chaque requete

@@ -38,7 +38,7 @@ public class PluginUtilsTest {
 
     @BeforeAll
     public void setUp() {
-        paymentRequest = TestUtils.createCompletePaymentBuilder().build();
+        paymentRequest = TestUtils.createCompletePaymentRequestBuilder().build();
         partnerConfiguration = paymentRequest.getPartnerConfiguration();
         contractConfiguration = paymentRequest.getContractConfiguration();
         Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
