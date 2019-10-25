@@ -27,24 +27,4 @@ public class PurchaseTest {
         Assertions.assertNotNull(purchase);
     }
 
-    // TODO: move to BeanAssemblerServiceImplTest !
-    /*
-    @Test
-    public void fromPaymentRequest() throws Exception {
-        purchase = Purchase.Builder.aPurchaseBuilder()
-                .fromPayline(createCompletePaymentBuilder().build())
-                .build();
-
-        Float paymentAmountConverted = PluginUtils.createFloatAmount(new BigInteger(CONFIRM_AMOUNT), Currency.getInstance("EUR"));
-        Assertions.assertEquals(paymentAmountConverted, purchase.getPurchaseAmount(), 0.01);
-
-        //Test to String here
-        Assertions.assertTrue(purchase.toString().contains("external_reference"));
-        Assertions.assertTrue(purchase.toString().contains("purchase_amount"));
-        Assertions.assertTrue(purchase.toString().contains("currency_code"));
-        Assertions.assertTrue(purchase.toString().contains("delivery"));
-        Assertions.assertTrue(purchase.toString().contains("item_list"));
-    }
-    */
-
 }

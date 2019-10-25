@@ -1,19 +1,17 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.customer.PurchaseHistory;
+import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.bean.common.purchase.Travel;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.utils.TestUtils;
-import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.payment.BuyerExtendedHistory;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.travel.OrderOTA;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
-import java.util.Currency;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +19,36 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BeanAssemblerServiceImplTest {
 
     private BeanAssembleService beanAssembleService = BeanAssemblerServiceImpl.getInstance();
+
+    @Test
+    public void assembleCustomer(){
+        // given: a payment request
+        PaymentRequest paymentRequest = TestUtils.createDefaultPaymentRequest();
+
+        // when: feeding a to assembleCustomer() method
+        Customer customer = beanAssembleService.assembleCustomer( paymentRequest );
+
+        // then: resulting object is not null
+        assertNotNull( customer );
+        assertNotNull( customer.getIdentity() );
+    }
+
+    @Test
+    public void fromPaymentRequest() throws Exception {
+        // given: a full payment request
+        PaymentRequest paymentRequest = TestUtils.createCompletePaymentRequestBuilder().build();
+
+        // when: feeding it to assemblePurchase() method
+        Purchase purchase = beanAssembleService.assemblePurchase( paymentRequest );
+
+        // then: item is not null and its string form contains some important field names
+        assertNotNull( purchase );
+        assertTrue(purchase.toString().contains("external_reference"));
+        assertTrue(purchase.toString().contains("purchase_amount"));
+        assertTrue(purchase.toString().contains("currency_code"));
+        assertTrue(purchase.toString().contains("delivery"));
+        assertTrue(purchase.toString().contains("item_list"));
+    }
 
     @Test
     public void assemblePurchaseHistoryFull() {
