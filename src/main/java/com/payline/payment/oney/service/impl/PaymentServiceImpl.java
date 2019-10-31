@@ -115,7 +115,7 @@ public class PaymentServiceImpl implements PaymentService {
                 //RequestData
                 oneyContext.put(OneyConstants.PSP_GUID_KEY, pspGuid);
                 oneyContext.put(OneyConstants.MERCHANT_GUID_KEY, merchGuid);
-                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + purchase.getExternalReference());
+                oneyContext.put(OneyConstants.EXTERNAL_REFERENCE_KEY, purchase.getExternalReference());
                 oneyContext.put(OneyConstants.PAYMENT_AMOUNT_KEY, paymentData.getAmount().toString());
                 oneyContext.put(OneyConstants.LANGUAGE_CODE_KEY, language);
 
@@ -133,6 +133,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (PluginTechnicalException e) {
             return e.toPaymentResponseFailure();
+        } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            return PaymentResponseFailure.PaymentResponseFailureBuilder
+                    .aPaymentResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
         }
 
     }

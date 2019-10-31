@@ -54,7 +54,7 @@ public class RefundServiceImpl implements RefundService {
                 LOGGER.error("Refund is null");
                 return OneyErrorHandler.geRefundResponseFailure(
                         FailureCause.PARTNER_UNKNOWN_ERROR,
-                        oneyRefundRequest.getPurchaseReference(),
+                        refundRequest.getPartnerTransactionId(),
                         "Empty partner response");
             }
             //si erreur dans la requete http
@@ -76,7 +76,7 @@ public class RefundServiceImpl implements RefundService {
                     LOGGER.error("Refund is null");
                     return OneyErrorHandler.geRefundResponseFailure(
                             FailureCause.REFUSED,
-                            oneyRefundRequest.getPurchaseReference(),
+                            refundRequest.getPartnerTransactionId(),
                             "Purchase status : null");
                 }
 
@@ -89,11 +89,17 @@ public class RefundServiceImpl implements RefundService {
             }
         } catch (PluginTechnicalException e) {
             LOGGER.error("unable init the refund", e);
-            String ref = oneyRefundRequest != null ? oneyRefundRequest.getPurchaseReference() : "null";
             return OneyErrorHandler.geRefundResponseFailure(
                     e.getFailureCause(),
-                    ref,
+                    refundRequest.getPartnerTransactionId(),
                     e.getErrorCodeOrLabel());
+        }catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            return RefundResponseFailure.RefundResponseFailureBuilder
+                    .aRefundResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
         }
 
     }

@@ -38,7 +38,7 @@ public class PluginUtilsTest {
 
     @BeforeAll
     public void setUp() {
-        paymentRequest = TestUtils.createCompletePaymentBuilder().build();
+        paymentRequest = TestUtils.createCompletePaymentRequestBuilder().build();
         partnerConfiguration = paymentRequest.getPartnerConfiguration();
         contractConfiguration = paymentRequest.getContractConfiguration();
         Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
@@ -393,47 +393,6 @@ public class PluginUtilsTest {
         Assertions.assertTrue(result.containsKey(SECRET_KEY));
         Assertions.assertEquals(4, result.size());
 
-    }
-
-    @Test
-    public void parseReference_noPipe() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference("test#test");
-
-        });
-
-    }
-
-
-    @Test
-    public void parseReference_emptyReference() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference("");
-
-        });
-
-    }
-
-
-    @Test
-    public void parseReference_nullReference() {
-        Throwable exception = Assertions.assertThrows(InvalidFieldFormatException.class, () -> {
-
-
-            parseReference(null);
-
-        });
-
-    }
-
-    @Test
-    public void testParseReference() throws InvalidFieldFormatException {
-        String ref = parseReference("xxx%7Ctest");
-        Assertions.assertEquals("test", ref);
     }
 
     @Test

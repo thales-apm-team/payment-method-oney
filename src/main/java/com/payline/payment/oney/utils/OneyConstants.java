@@ -73,9 +73,6 @@ public class OneyConstants {
     public static final String HEADER_COUNTRY_CODE = "oney.coutry.code";
 
 
-    public static final String PIPE = "%7C";
-
-
     // Request URL's
     public static final String PAYMENT_REQUEST_URL = "/payments/v1/purchase/facilypay_url";
     public static final String CONFIRM_REQUEST_URL = "/payments/v1/purchase";

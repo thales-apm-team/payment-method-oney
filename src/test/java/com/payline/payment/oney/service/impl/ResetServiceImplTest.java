@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.utils.OneyConstants;
+import com.payline.payment.oney.utils.PluginUtils;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -67,6 +68,6 @@ public class ResetServiceImplTest {
         Assertions.assertSame(response.getClass(), ResetResponseFailure.class);
         ResetResponseFailure fail = (ResetResponseFailure) response;
         Assertions.assertEquals(FailureCause.REFUSED, fail.getFailureCause());
-        Assertions.assertEquals(OneyConstants.EXTERNAL_REFERENCE_TYPE + OneyConstants.PIPE + resetReq.getOrder().getReference(), fail.getPartnerTransactionId());
+        Assertions.assertEquals(resetReq.getOrder().getReference(), fail.getPartnerTransactionId());
     }
 }

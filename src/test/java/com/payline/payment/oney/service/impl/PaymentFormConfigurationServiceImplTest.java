@@ -53,7 +53,7 @@ public class PaymentFormConfigurationServiceImplTest {
                 .withBuyer(createDefaultBuyer())
                 .withAmount(new Amount(null, Currency.getInstance("EUR")))
                 .withContractConfiguration(contractConfiguration)
-                .withOrder(createOrder("007"))
+                .withOrder(createCompleteOrder("007"))
                 .withEnvironment(environment)
                 .withPartnerConfiguration(createDefaultPartnerConfiguration())
                 .build();

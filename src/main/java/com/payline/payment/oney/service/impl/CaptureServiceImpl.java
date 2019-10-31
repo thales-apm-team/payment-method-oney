@@ -11,17 +11,14 @@ import com.payline.pmapi.bean.capture.response.CaptureResponse;
 import com.payline.pmapi.bean.capture.response.impl.CaptureResponseFailure;
 import com.payline.pmapi.bean.capture.response.impl.CaptureResponseSuccess;
 import com.payline.pmapi.bean.common.FailureCause;
-import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.CaptureService;
-import org.apache.logging.log4j.Logger;
 
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 
 public class CaptureServiceImpl implements CaptureService {
-    private final String ERROR_STATUS = "TRANSACTION STATUS NOT FAVORABLE:";
+    private static final String ERROR_STATUS = "TRANSACTION STATUS NOT FAVORABLE:";
     private OneyHttpClient httpClient;
-    private static final Logger LOGGER = LogManager.getLogger(CaptureServiceImpl.class);
 
     public CaptureServiceImpl() {
         httpClient = OneyHttpClient.getInstance();
