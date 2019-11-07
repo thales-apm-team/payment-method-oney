@@ -23,10 +23,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
@@ -43,16 +40,11 @@ public class NotificationServiceTest extends OneyConfigBean {
     @InjectMocks
     NotificationServiceImpl service;
 
-    @Spy
+    @Mock
     OneyHttpClient client;
 
     private NotificationRequest.NotificationRequestBuilder requestBuilder;
 
-    @BeforeAll
-    public void setup() {
-        service = new NotificationServiceImpl();
-        MockitoAnnotations.initMocks(this);
-    }
 
     @BeforeEach
     public void setupNotificationRequestBuilder() {
@@ -63,6 +55,8 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContractConfiguration(TestUtils.createContractConfiguration())
                 .withPartnerConfiguration(TestUtils.createDefaultPartnerConfiguration())
                 .withEnvironment(TestUtils.TEST_ENVIRONMENT);
+
+        MockitoAnnotations.initMocks(this);
     }
 
     private static Stream<Arguments> parse_nonExistingTransaction_set() {
@@ -84,8 +78,12 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContent(new ByteArrayInputStream(mockContent(oneyStatus).getBytes()))
                 .build();
 
-        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\""+oneyStatus+"\",\"status_label\":\"a label\"}}");
         Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMocked).when(client).initiateGetTransactionStatus(any(), anyBoolean());
+
 
         NotificationResponse response = service.parse(request);
         assertTrue( response instanceof PaymentResponseByNotificationResponse );
@@ -127,8 +125,11 @@ public class NotificationServiceTest extends OneyConfigBean {
                 .withContent(new ByteArrayInputStream(mockContent(oneyStatus).getBytes()))
                 .build();
 
-        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"any\",\"status_label\":\"a label\"}}");
         Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"Transaction is completed\"}}");
+        Mockito.doReturn(responseMocked).when(client).initiateGetTransactionStatus( any(), anyBoolean() );
 
         NotificationResponse response = service.parse(request);
         assertTrue( response instanceof TransactionStateChangedResponse );
@@ -159,6 +160,7 @@ public class NotificationServiceTest extends OneyConfigBean {
 
         StringResponse responseMockedConfirm = createStringResponse(200, "OK", "this is not a good content");
         Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateGetTransactionStatus(any(), anyBoolean());
 
         NotificationResponse response = service.parse(request);
         assertTrue( response instanceof PaymentResponseByNotificationResponse );
