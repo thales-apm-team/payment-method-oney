@@ -316,10 +316,15 @@ public class NotificationServiceImpl implements NotificationService {
 
 
         // verify the checkResponse
-        if (checkStatusResponse.getContent() == null || checkStatusResponse.getCode() != HTTP_OK) {
-            String message = "Unable to read the confirmation response";
+        if (checkStatusResponse.getContent() == null) {
+            String message = "Unable to read the check response";
             LOGGER.error(message);
             throw new HttpCallException(message, "empty check response content");
+        }
+        if ( checkStatusResponse.getCode() != HTTP_OK) {
+            String message = "bad response to the check request";
+            LOGGER.error(message);
+            throw new InvalidDataException(message, "bad responseCode");
         }
 
 
