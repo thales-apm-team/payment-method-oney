@@ -2,8 +2,10 @@ package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.PurchaseNotification;
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
+import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyNotificationResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
+import com.payline.payment.oney.exception.HttpCallException;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.PluginTechnicalException;
 import com.payline.payment.oney.utils.OneyConstants;
@@ -171,38 +173,28 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private PaymentResponse getConfirmationPaymentResponse(NotificationRequest request, OneyNotificationResponse oneyResponse) throws PluginTechnicalException {
-        OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(request, oneyResponse).build();
-        StringResponse confirmResponse = httpClient.initiateConfirmationPayment(confirmRequest, request.getEnvironment().isSandbox());
-        final String key = RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PARTNER_CHIFFREMENT_KEY);
+        try {
+            String status = confirmAndCheck(request, oneyResponse);
+
+            if ("FUNDED".equals(status) || "TO_BE_FUNDED".equals(status)) {
+                // success
+                return createSuccessPaymentResponse(
+                        oneyResponse.getPurchase().getExternalReference()
+                        , oneyResponse.getPurchase().getStatusLabel());
+            } else {
+                return OneyErrorHandler.getPaymentResponseFailure(
+                        FailureCause.REFUSED
+                        , oneyResponse.getPurchase().getExternalReference()
+                        , "payment not funded");
+            }
 
 
-        // extract infos from oneyResponse
-        PurchaseNotification purchase = oneyResponse.getPurchase();
-        String partnerTransactionId = purchase.getExternalReference();
-
-
-        // check response
-        if (confirmResponse.getContent() == null || confirmResponse.getCode() != HTTP_OK) {
-            String errorMessage = "Unable to read the confirmation response";
-            LOGGER.error(errorMessage);
-            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, PluginUtils.truncate(errorMessage, 50));
-        }
-
-        TransactionStatusResponse confirmTransactionResponse = createTransactionStatusResponseFromJson(confirmResponse.getContent(), key);
-        if (confirmTransactionResponse == null || confirmTransactionResponse.getStatusPurchase() == null) {
-            // unable to read the payment status
-            String errorMessage = "Unable to read the confirmation response transaction status";
-            LOGGER.error(errorMessage);
-            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.COMMUNICATION_ERROR, partnerTransactionId, PluginUtils.truncate(errorMessage, 50));
-        }
-
-        // check the confirmation response status
-        String confirmStatus = confirmTransactionResponse.getStatusPurchase().getStatusCode();
-        if ("FUNDED".equals(confirmStatus) || "TO_BE_FUNDED".equals(confirmStatus)) {
-            // success
-            return createSuccessPaymentResponse(partnerTransactionId, purchase.getStatusLabel());
-        } else {
-            return OneyErrorHandler.getPaymentResponseFailure(FailureCause.REFUSED, partnerTransactionId, "payment not funded");
+        } catch (HttpCallException e) {
+            return OneyErrorHandler.getPaymentResponseFailure(
+                    e.getFailureCause()
+                    , oneyResponse.getPurchase().getExternalReference()
+                    , PluginUtils.truncate(e.getErrorCodeOrLabel(), 50)
+            );
         }
     }
 
@@ -293,33 +285,59 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     private TransactionStatus getConfirmationStatus(NotificationRequest request, OneyNotificationResponse oneyResponse) throws PluginTechnicalException {
+        try{
+            String status  = confirmAndCheck(request, oneyResponse);
+            if ("FUNDED".equals(status) || "TO_BE_FUNDED".equals(status)) {
+                // success
+                return new SuccessTransactionStatus();
+            } else {
+                LOGGER.error("Unable to read the confirmation response transaction status");
+                return new FailureTransactionStatus(FailureCause.REFUSED);
+            }
+        }catch (HttpCallException e){
+            return new FailureTransactionStatus(e.getFailureCause());
+        }
+    }
+
+    private String confirmAndCheck(NotificationRequest request, OneyNotificationResponse oneyResponse) throws PluginTechnicalException {
         final String key = RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PARTNER_CHIFFREMENT_KEY);
 
+        // confirmation
         OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(request, oneyResponse).build();
-        StringResponse confirmResponse = httpClient.initiateConfirmationPayment(confirmRequest, request.getEnvironment().isSandbox());
+        httpClient.initiateConfirmationPayment(confirmRequest, request.getEnvironment().isSandbox());
 
-        // check response
-        if (confirmResponse.getContent() == null || confirmResponse.getCode() != HTTP_OK) {
-            LOGGER.error("Unable to read the confirmation response");
-            return new FailureTransactionStatus(FailureCause.COMMUNICATION_ERROR);
+
+        // check
+        OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                .fromNotificationRequest(request)
+                .withPurchaseReference(PluginUtils.fullPurchaseReference(oneyResponse.getPurchase().getExternalReference()))
+                .build();
+        StringResponse checkStatusResponse = httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, request.getEnvironment().isSandbox());
+
+
+        // verify the checkResponse
+        if (checkStatusResponse.getContent() == null) {
+            String message = "Unable to read the check response";
+            LOGGER.error(message);
+            throw new HttpCallException(message, "empty check response content");
+        }
+        if ( checkStatusResponse.getCode() != HTTP_OK) {
+            String message = "bad response to the check request";
+            LOGGER.error(message);
+            throw new InvalidDataException(message, "bad responseCode");
         }
 
-        TransactionStatusResponse confirmTransactionResponse = createTransactionStatusResponseFromJson(confirmResponse.getContent(), key);
+
+        TransactionStatusResponse confirmTransactionResponse = createTransactionStatusResponseFromJson(checkStatusResponse.getContent(), key);
         if (confirmTransactionResponse == null || confirmTransactionResponse.getStatusPurchase() == null) {
             // unable to read the payment status
-            LOGGER.error("Unable to read the confirmation response transaction status");
-            return new FailureTransactionStatus(FailureCause.COMMUNICATION_ERROR);
+            String message = "Unable to read the confirmation response transaction status";
+            LOGGER.error(message);
+            throw new HttpCallException(message, "empty check response object or statusCode");
         }
 
         // check the confirmation response status
-        String confirmStatus = confirmTransactionResponse.getStatusPurchase().getStatusCode();
-        if ("FUNDED".equals(confirmStatus) || "TO_BE_FUNDED".equals(confirmStatus)) {
-            // success
-            return new SuccessTransactionStatus();
-        } else {
-            LOGGER.error("Unable to read the confirmation response transaction status");
-            return new FailureTransactionStatus(FailureCause.REFUSED);
-        }
+        return confirmTransactionResponse.getStatusPurchase().getStatusCode();
     }
 
 
