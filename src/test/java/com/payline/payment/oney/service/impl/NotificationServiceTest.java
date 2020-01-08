@@ -35,6 +35,7 @@ import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationServiceTest extends OneyConfigBean {
@@ -261,7 +262,6 @@ public class NotificationServiceTest extends OneyConfigBean {
         assertEquals(FailureCause.INTERNAL_ERROR, failureTransactionStatus.getFailureCause());
     }
 
-
     @Test
     void parse_invalidContent() {
         String invalidContent = "{" +
@@ -341,6 +341,30 @@ public class NotificationServiceTest extends OneyConfigBean {
         PaymentResponseFailure responseFailure = (PaymentResponseFailure) paymentResponseByNotificationResponse.getPaymentResponse();
         assertNotNull(responseFailure.getFailureCause());
     }
+
+    @Test
+    void parse_statusAttemptsAfterConfirmation() throws Exception {
+        // given a payment with FAVORABLE status...
+        NotificationRequest request = requestBuilder
+                .withContent(new ByteArrayInputStream(mockContent("FAVORABLE").getBytes()))
+                .build();
+        // ... confirmation happens normally...
+        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"ANY\",\"status_label\":\"a label\"}}");
+        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
+        // ... the first 2 status responses return FAVORABLE, the third returns FUNDED
+        StringResponse favorableResponse = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"a label\"}}");
+        StringResponse fundedResponse = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
+        when( client.initiateGetTransactionStatus(any(), anyBoolean()) )
+                .thenReturn( favorableResponse )
+                .thenReturn( favorableResponse )
+                .thenReturn( fundedResponse );
+
+        NotificationResponse response = service.parse(request);
+        assertTrue( response instanceof PaymentResponseByNotificationResponse );
+        PaymentResponseByNotificationResponse paymentResponseByNotificationResponse = (PaymentResponseByNotificationResponse) response;
+        assertEquals(PaymentResponseSuccess.class, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
+    }
+
 
     private String mockContent( String statusCode ){
         String content = "{" +

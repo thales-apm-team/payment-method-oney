@@ -180,32 +180,51 @@ public class NotificationServiceImpl implements NotificationService {
                 .fromNotificationRequest(request)
                 .withPurchaseReference(PluginUtils.fullPurchaseReference(oneyResponse.getPurchase().getExternalReference()))
                 .build();
-        StringResponse checkStatusResponse = httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, request.getEnvironment().isSandbox());
+        String finalStatus = null;
+        int attempts = 0;
+        while( finalStatus == null ) {
+            StringResponse checkStatusResponse = httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, request.getEnvironment().isSandbox());
+            attempts++;
 
+            // verify the response integrity and HTTP status
+            if (checkStatusResponse.getContent() == null) {
+                String message = "Unable to read the check response";
+                LOGGER.error(message);
+                throw new HttpCallException(message, "empty check response content");
+            }
+            if (checkStatusResponse.getCode() != HTTP_OK) {
+                String message = "bad response to the check request";
+                LOGGER.error(message);
+                throw new InvalidDataException(message, "bad responseCode");
+            }
 
-        // verify the checkResponse
-        if (checkStatusResponse.getContent() == null) {
-            String message = "Unable to read the check response";
-            LOGGER.error(message);
-            throw new HttpCallException(message, "empty check response content");
+            // Parse the response content
+            TransactionStatusResponse statusResponseResponse = createTransactionStatusResponseFromJson(checkStatusResponse.getContent(), key);
+            if (statusResponseResponse == null || statusResponseResponse.getStatusPurchase() == null) {
+                // unable to read the payment status
+                String message = "Unable to read the confirmation response transaction status";
+                LOGGER.error(message);
+                throw new HttpCallException(message, "empty check response object or statusCode");
+            }
+
+            // Retry every 3s until the payment status equals FUNDED or TO_BE_FUNDED (3 times max)
+            String currentStatus = statusResponseResponse.getStatusPurchase().getStatusCode();
+            if( attempts == 3 || "FUNDED".equals( currentStatus ) || "TO_BE_FUNDED".equals( currentStatus ) ){
+                finalStatus = currentStatus;
+            }
+            else {
+                // if it was not the third attempt, wait for 3s before the next one
+                try {
+                    Thread.sleep(3000);
+                }
+                catch (InterruptedException e) {
+                    LOGGER.error("The thread has been interrupted. Shutting down the thread cleanly..." );
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        if ( checkStatusResponse.getCode() != HTTP_OK) {
-            String message = "bad response to the check request";
-            LOGGER.error(message);
-            throw new InvalidDataException(message, "bad responseCode");
-        }
 
-
-        TransactionStatusResponse confirmTransactionResponse = createTransactionStatusResponseFromJson(checkStatusResponse.getContent(), key);
-        if (confirmTransactionResponse == null || confirmTransactionResponse.getStatusPurchase() == null) {
-            // unable to read the payment status
-            String message = "Unable to read the confirmation response transaction status";
-            LOGGER.error(message);
-            throw new HttpCallException(message, "empty check response object or statusCode");
-        }
-
-        // check the confirmation response status
-        return confirmTransactionResponse.getStatusPurchase().getStatusCode();
+        return finalStatus;
     }
 
     @Override
