@@ -165,7 +165,7 @@ public class PluginUtils {
      * @return The resulting string.
      */
     public static String spaceConcat(String text1, String text2) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
 
         if (text1 != null) {
@@ -192,7 +192,7 @@ public class PluginUtils {
      */
     public static List<String> splitLongText(String toSplit, int maxLength) {
         List<String> chunks = new ArrayList<>();
-        StringBuffer sb = new StringBuffer(toSplit);
+        StringBuilder sb = new StringBuilder(toSplit);
 
         while (sb.length() > 0) {
             // remove whitespaces at the beginning
@@ -206,7 +206,7 @@ public class PluginUtils {
             if (sb.length() <= maxLength) {
                 chunk = sb.toString().trim();
             } else {
-                int splitSpace = sb.substring(0, maxLength + 1).lastIndexOf(" ");
+                int splitSpace = sb.substring(0, maxLength + 1).lastIndexOf(' ');
                 int end = splitSpace >= 0 ? splitSpace : maxLength;
                 chunk = sb.substring(0, end).trim();
             }

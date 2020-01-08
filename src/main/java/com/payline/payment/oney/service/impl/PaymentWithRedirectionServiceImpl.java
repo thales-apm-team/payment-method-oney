@@ -6,7 +6,6 @@ import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.PluginTechnicalException;
-import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -169,7 +168,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                         .build();
             default:
                 // Should not be encountered !
-                LOGGER.error("Unexpected purchase status code encountered: " + purchaseStatus.getStatusCode());
+                LOGGER.error("Unexpected purchase status code encountered: {}", purchaseStatus.getStatusCode());
                 return OneyErrorHandler.getPaymentResponseFailure(
                         FailureCause.PARTNER_UNKNOWN_ERROR,
                         purchaseReference,

@@ -141,7 +141,7 @@ public class NotificationServiceImpl implements NotificationService {
                     break;
                 default:
                     // Ignore the notification, with a 204 HTTP status code
-                    LOGGER.info("Unknown payment status: " + paymentStatus);
+                    LOGGER.info("Unknown payment status: {}", paymentStatus);
                     return IgnoreNotificationResponse.IgnoreNotificationResponseBuilder.aIgnoreNotificationResponseBuilder()
                             .withHttpStatus(204)
                             .build();
