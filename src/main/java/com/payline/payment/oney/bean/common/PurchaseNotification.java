@@ -37,6 +37,8 @@ public class PurchaseNotification {
     }
 
     public class ValidStatus {
+        private ValidStatus(){} // private constructor to hide the implicit public one (Sonarqube issue)
+
         public static final String FUNDED = "FUNDED";
         public static final String CANCELLED = "CANCELLED";
         public static final String FAVORABLE = "FAVORABLE";
