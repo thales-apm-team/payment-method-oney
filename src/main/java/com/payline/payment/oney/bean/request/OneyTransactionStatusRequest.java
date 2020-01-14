@@ -65,6 +65,7 @@ public class OneyTransactionStatusRequest extends ParameterizedUrlOneyRequest {
             return this;
         }
 
+        @Override
         public Builder withPurchaseReferenceFromOrder( Order order ){
             super.withPurchaseReferenceFromOrder( order );
             return this;
