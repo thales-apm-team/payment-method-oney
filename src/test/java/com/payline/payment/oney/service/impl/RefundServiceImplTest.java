@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.exception.PluginTechnicalException;
@@ -22,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import static com.payline.payment.oney.bean.common.PurchaseStatus.StatusCode.FUNDED;
 import static com.payline.payment.oney.utils.TestUtils.createDefaultRefundRequest;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -84,9 +86,9 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
         mockCorrectlyConfigPropertiesEnum(true);
-        String status = service.handleStatusRequest(refundReq);
+        PurchaseStatus.StatusCode status = service.handleStatusRequest(refundReq);
 
-        Assertions.assertEquals("FUNDED", status);
+        Assertions.assertEquals(FUNDED, status);
     }
 
     @Test
@@ -95,9 +97,9 @@ public class RefundServiceImplTest extends OneyConfigBean {
         Mockito.doReturn(responseMocked1).when(httpClient).doGet(Mockito.anyString(), Mockito.anyMap(), Mockito.anyMap());
         RefundRequest refundReq = createDefaultRefundRequest();
         mockCorrectlyConfigPropertiesEnum(false);
-        String status = service.handleStatusRequest(refundReq);
+        PurchaseStatus.StatusCode status = service.handleStatusRequest(refundReq);
 
-        Assertions.assertEquals("FUNDED", status);
+        Assertions.assertEquals(FUNDED, status);
     }
 
 

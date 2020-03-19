@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
@@ -38,7 +39,7 @@ public class RefundServiceImpl implements RefundService {
         OneyRefundRequest oneyRefundRequest = null;
         try {
             //obtenir statut de la requete
-            String status = handleStatusRequest(refundRequest);
+            PurchaseStatus.StatusCode status = handleStatusRequest(refundRequest);
             //faire une  transactionStatusRequest
             boolean refundFlag = PluginUtils.getRefundFlag(status);
 
@@ -83,7 +84,7 @@ public class RefundServiceImpl implements RefundService {
                 LOGGER.info("Refund success");
                 return RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
                         .withPartnerTransactionId(oneyRefundRequest.getPurchaseReference())
-                        .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
+                        .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode().name())
                         .build();
 
             }
@@ -120,11 +121,11 @@ public class RefundServiceImpl implements RefundService {
      * @param refundRequest
      * @return
      */
-    public String handleStatusRequest(RefundRequest refundRequest) throws PluginTechnicalException {
+    public PurchaseStatus.StatusCode handleStatusRequest(RefundRequest refundRequest) throws PluginTechnicalException {
         OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .fromRefundRequest(refundRequest)
                 .build();
-        String transactionStatusCode = "";
+        PurchaseStatus.StatusCode transactionStatusCode = null;
         try {
             StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, refundRequest.getEnvironment().isSandbox());
             //l'appel est OK on gere selon la response

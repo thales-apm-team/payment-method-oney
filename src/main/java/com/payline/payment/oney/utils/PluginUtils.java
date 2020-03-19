@@ -1,6 +1,7 @@
 package com.payline.payment.oney.utils;
 
 
+import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.exception.InvalidDataException;
 import com.payline.payment.oney.exception.InvalidRequestException;
 import com.payline.payment.oney.service.impl.RequestConfigServiceImpl;
@@ -501,16 +502,16 @@ public class PluginUtils {
      * @param transactionStatusRequest
      * @return refundFlag (for refund or cancel request)
      */
-    public static boolean getRefundFlag(String transactionStatusRequest) {
+    public static boolean getRefundFlag(PurchaseStatus.StatusCode transactionStatusRequest) {
 
         if (transactionStatusRequest != null) {
 
             switch (transactionStatusRequest) {
-                case "FUNDED":
+                case FUNDED:
                     return true;
 
-                case "PENDING":
-                case "FAVORABLE":
+                case PENDING:
+                case FAVORABLE:
                     return false;
 
                 default:
