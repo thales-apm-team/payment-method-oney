@@ -84,6 +84,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         codes.put("BE", "BE");
         codes.put("IT", "IT");
         codes.put("ES", "ES");
+        codes.put("PT", "PT");
         codePays.setList(codes);
         codePays.setValue("FR");
         parameters.add(codePays);
