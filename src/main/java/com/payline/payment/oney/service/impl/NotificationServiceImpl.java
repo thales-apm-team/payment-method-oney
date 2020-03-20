@@ -1,6 +1,7 @@
 package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.PurchaseNotification;
+import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.bean.request.OneyConfirmRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyNotificationResponse;
@@ -35,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.payline.payment.oney.bean.common.PurchaseStatus.StatusCode.*;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
 
@@ -100,22 +102,22 @@ public class NotificationServiceImpl implements NotificationService {
             // extract data from the notification content
             PurchaseNotification purchase = oneyResponse.getPurchase();
             partnerTransactionId = purchase.getExternalReference();
-            String paymentStatus = purchase.getStatusCode();
+            PurchaseStatus.StatusCode paymentStatus = purchase.getStatusCode();
             Boolean isCaptureNow = PluginUtils.isCaptureNow(oneyResponse.getMerchantContext());
 
             // analyze the payment status
             switch( paymentStatus ){
-                case PurchaseNotification.ValidStatus.FUNDED:
-                case PurchaseNotification.ValidStatus.TO_BE_FUNDED:
-                case PurchaseNotification.ValidStatus.CANCELLED:
+                case FUNDED:
+                case TO_BE_FUNDED:
+                case CANCELLED:
                     notificationResponse = notificationResponseHandler.successResponse( oneyResponse, transactionId );
                     break;
 
-                case PurchaseNotification.ValidStatus.FAVORABLE:
+                case FAVORABLE:
                     if (Boolean.TRUE.equals(isCaptureNow)) {
                         // if captureNow => do the confirmation call
-                        String status = confirmAndCheck(request, oneyResponse);
-                        if ("FUNDED".equals(status) || "TO_BE_FUNDED".equals(status)) {
+                        PurchaseStatus.StatusCode status = confirmAndCheck(request, oneyResponse);
+                        if (FUNDED.equals(status) || TO_BE_FUNDED.equals(status)) {
                             notificationResponse = notificationResponseHandler.successResponse( oneyResponse, transactionId );
                         }
                         else {
@@ -128,15 +130,15 @@ public class NotificationServiceImpl implements NotificationService {
                     }
 
                     break;
-                case PurchaseNotification.ValidStatus.REFUSED:
+                case REFUSED:
                     notificationResponse = notificationResponseHandler.failureResponse( oneyResponse, transactionId,
                             FailureCause.REFUSED, oneyResponse.getPurchase().getStatusLabel() );
                     break;
-                case PurchaseNotification.ValidStatus.ABORTED:
+                case ABORTED:
                     notificationResponse = notificationResponseHandler.failureResponse( oneyResponse, transactionId,
                             FailureCause.CANCEL, oneyResponse.getPurchase().getStatusLabel() );
                     break;
-                case PurchaseNotification.ValidStatus.PENDING:
+                case PENDING:
                     notificationResponse = notificationResponseHandler.onHoldResponse( oneyResponse, transactionId );
                     break;
                 default:
@@ -167,7 +169,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @return the final status of the payment, after confirmation.
      * @throws PluginTechnicalException
      */
-    private String confirmAndCheck(NotificationRequest request, OneyNotificationResponse oneyResponse) throws PluginTechnicalException {
+    private PurchaseStatus.StatusCode confirmAndCheck(NotificationRequest request, OneyNotificationResponse oneyResponse) throws PluginTechnicalException {
         final String key = RequestConfigServiceImpl.INSTANCE.getParameterValue(request, OneyConstants.PARTNER_CHIFFREMENT_KEY);
 
         // confirmation
@@ -180,7 +182,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .fromNotificationRequest(request)
                 .withPurchaseReference(PluginUtils.fullPurchaseReference(oneyResponse.getPurchase().getExternalReference()))
                 .build();
-        String finalStatus = null;
+        PurchaseStatus.StatusCode finalStatus = null;
         int attempts = 0;
         while( finalStatus == null ) {
             StringResponse checkStatusResponse = httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, request.getEnvironment().isSandbox());
@@ -208,8 +210,8 @@ public class NotificationServiceImpl implements NotificationService {
             }
 
             // Retry every 3s until the payment status equals FUNDED or TO_BE_FUNDED (3 times max)
-            String currentStatus = statusResponseResponse.getStatusPurchase().getStatusCode();
-            if( attempts == 3 || "FUNDED".equals( currentStatus ) || "TO_BE_FUNDED".equals( currentStatus ) ){
+            PurchaseStatus.StatusCode currentStatus = statusResponseResponse.getStatusPurchase().getStatusCode();
+            if( attempts == 3 || FUNDED.equals( currentStatus ) || TO_BE_FUNDED.equals( currentStatus ) ){
                 finalStatus = currentStatus;
             }
             else {

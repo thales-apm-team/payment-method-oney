@@ -54,7 +54,7 @@ public class ItalieTestIT extends TestIT {
     }
 
     @Override
-    public TestCountry getContry() {
+    public TestCountry getCountry() {
         return TestCountry.IT;
     }
 }

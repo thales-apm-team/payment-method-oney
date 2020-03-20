@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import static com.payline.payment.oney.bean.common.PurchaseStatus.StatusCode.CANCELLED;
 import static com.payline.payment.oney.utils.TestUtils.createDefaultResetRequest;
 import static com.payline.payment.oney.utils.TestUtils.createStringResponse;
 
@@ -50,7 +51,7 @@ public class ResetServiceImplTest {
 
         Assertions.assertEquals(ResetResponseSuccess.class, response.getClass());
         ResetResponseSuccess success = (ResetResponseSuccess) response;
-        Assertions.assertEquals("CANCELLED", success.getStatusCode());
+        Assertions.assertEquals(CANCELLED, success.getStatusCode());
         Assertions.assertNotNull(success.getPartnerTransactionId());
     }
 

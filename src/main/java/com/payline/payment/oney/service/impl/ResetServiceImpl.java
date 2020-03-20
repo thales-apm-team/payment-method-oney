@@ -1,5 +1,6 @@
 package com.payline.payment.oney.service.impl;
 
+import com.payline.payment.oney.bean.common.PurchaseStatus;
 import com.payline.payment.oney.bean.request.OneyRefundRequest;
 import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
@@ -36,7 +37,7 @@ public class ResetServiceImpl implements ResetService {
         OneyRefundRequest oneyRefundRequest = null;
         try {
             //obtenir statut de la requete
-            String status = handleStatusRequest(resetRequest);
+            PurchaseStatus.StatusCode status = handleStatusRequest(resetRequest);
             //faire une  transactionStatusRequest
             boolean refundFlag = PluginUtils.getRefundFlag(status);
 
@@ -85,7 +86,7 @@ public class ResetServiceImpl implements ResetService {
                 LOGGER.info("Reset Success");
                 return ResetResponseSuccess.ResetResponseSuccessBuilder.aResetResponseSuccess()
                         .withPartnerTransactionId(resetRequest.getPartnerTransactionId())
-                        .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode())
+                        .withStatusCode(responseDecrypted.getStatusPurchase().getStatusCode().name())
                         .build();
 
             }
@@ -118,11 +119,11 @@ public class ResetServiceImpl implements ResetService {
      * @param resetRequest
      * @return
      */
-    public String handleStatusRequest(ResetRequest resetRequest) throws PluginTechnicalException {
+    public PurchaseStatus.StatusCode handleStatusRequest(ResetRequest resetRequest) throws PluginTechnicalException {
         OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
                 .fromResetRequest(resetRequest)
                 .build();
-        String transactionStatusCode = "";
+        PurchaseStatus.StatusCode transactionStatusCode = null;
         try {
             StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, resetRequest.getEnvironment().isSandbox());
             //l'appel est OK on gere selon la response

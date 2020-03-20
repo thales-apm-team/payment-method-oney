@@ -95,19 +95,6 @@ public class NotificationServiceTest extends OneyConfigBean {
         assertEquals(expectedClass, paymentResponseByNotificationResponse.getPaymentResponse().getClass());
     }
 
-    @Test
-    void parse_nonExistingTransactionOther() throws Exception{
-        NotificationRequest request = requestBuilder
-                .withContent(new ByteArrayInputStream(mockContent("FOO").getBytes()))
-                .build();
-
-        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
-        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
-
-        NotificationResponse response = service.parse(request);
-        assertEquals(IgnoreNotificationResponse.class, response.getClass());
-    }
-
     private static Stream<Arguments> parse_existingTransaction_set() {
         return Stream.of(
                 Arguments.of("FUNDED", SuccessTransactionStatus.class),
@@ -142,20 +129,6 @@ public class NotificationServiceTest extends OneyConfigBean {
     }
 
     @Test
-    void parse_existingTransactionOther() throws Exception{
-        NotificationRequest request = requestBuilder
-                .withTransactionId("G1906171638279792")
-                .withContent(new ByteArrayInputStream(mockContent("FOO").getBytes()))
-                .build();
-
-        StringResponse responseMockedConfirm = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FUNDED\",\"status_label\":\"a label\"}}");
-        Mockito.doReturn(responseMockedConfirm).when(client).initiateConfirmationPayment(any(), anyBoolean());
-
-        NotificationResponse response = service.parse(request);
-        assertEquals(IgnoreNotificationResponse.class, response.getClass());
-    }
-
-    @Test
     void parse_nonExistingTransaction_confirmationFail() throws Exception {
         NotificationRequest request = requestBuilder
                 .withContent(new ByteArrayInputStream(mockContent("FAVORABLE").getBytes()))
@@ -187,16 +160,6 @@ public class NotificationServiceTest extends OneyConfigBean {
         assertTrue( response instanceof TransactionStateChangedResponse );
         TransactionStateChangedResponse transactionStateChangedResponse = (TransactionStateChangedResponse) response;
         assertEquals(FailureTransactionStatus.class, transactionStateChangedResponse.getTransactionStatus().getClass());
-    }
-
-    @Test
-    void parseOther() {
-        NotificationRequest request = requestBuilder
-                .withContent(new ByteArrayInputStream(mockContent("ANYTHING").getBytes()))
-                .build();
-
-        NotificationResponse response = service.parse(request);
-        assertEquals(IgnoreNotificationResponse.class, response.getClass());
     }
 
     @Test

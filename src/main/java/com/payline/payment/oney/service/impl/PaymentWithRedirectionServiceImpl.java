@@ -6,6 +6,7 @@ import com.payline.payment.oney.bean.request.OneyTransactionStatusRequest;
 import com.payline.payment.oney.bean.response.OneyFailureResponse;
 import com.payline.payment.oney.bean.response.TransactionStatusResponse;
 import com.payline.payment.oney.exception.PluginTechnicalException;
+import com.payline.payment.oney.utils.OneyConstants;
 import com.payline.payment.oney.utils.OneyErrorHandler;
 import com.payline.payment.oney.utils.http.OneyHttpClient;
 import com.payline.payment.oney.utils.http.StringResponse;
@@ -16,7 +17,6 @@ import com.payline.pmapi.bean.payment.request.RedirectionPaymentRequest;
 import com.payline.pmapi.bean.payment.request.TransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.EmptyTransactionDetails;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseActiveWaiting;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
@@ -24,6 +24,7 @@ import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.PaymentWithRedirectionService;
 import org.apache.logging.log4j.Logger;
 
+import static com.payline.payment.oney.bean.common.PurchaseStatus.StatusCode.FAVORABLE;
 import static com.payline.payment.oney.bean.response.PaymentErrorResponse.paymentErrorResponseFromJson;
 import static com.payline.payment.oney.bean.response.TransactionStatusResponse.createTransactionStatusResponseFromJson;
 import static com.payline.payment.oney.utils.OneyConstants.HTTP_OK;
@@ -35,6 +36,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
     private OneyHttpClient httpClient;
 
     private static final String ERROR_CODE = "Purchase status : ";
+    private static final String ERROR_NO_PURCHASE_STATUS = "No purchase status";
 
     public PaymentWithRedirectionServiceImpl() {
         this.httpClient = OneyHttpClient.getInstance();
@@ -42,11 +44,55 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
 
     @Override
     public PaymentResponse finalizeRedirectionPayment(RedirectionPaymentRequest redirectionPaymentRequest) {
-        return new PaymentResponseActiveWaiting();
+        PaymentResponse paymentResponse;
+        String partnerTransactionId = redirectionPaymentRequest.getRequestContext().getRequestData().get(OneyConstants.EXTERNAL_REFERENCE_KEY);
+        boolean isSandbox = redirectionPaymentRequest.getEnvironment().isSandbox();
+        try {
+            OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
+                    .fromRedirectionPaymentRequest(redirectionPaymentRequest)
+                    .build();
+            StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, isSandbox);
+
+            paymentResponse = findErrorResponse(status, partnerTransactionId, oneyTransactionStatusRequest.getEncryptKey());
+            if (paymentResponse == null) {
+                // Special case in which we need to send a confirmation request
+                TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
+                if (response.getStatusPurchase() != null) {
+
+                    // Special case in which we need to send a confirmation request
+                    if (redirectionPaymentRequest.isCaptureNow() && FAVORABLE.equals(response.getStatusPurchase().getStatusCode())) {
+                        OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(redirectionPaymentRequest)
+                                .build();
+                        paymentResponse = this.validatePayment(confirmRequest, isSandbox, partnerTransactionId);
+                    } else {
+                        paymentResponse = handleTransactionStatusResponse(response, partnerTransactionId);
+                    }
+
+                } else {
+                    //Pas de statut pour cette demande
+                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(
+                            FailureCause.CANCEL,
+                            partnerTransactionId,
+                            ERROR_NO_PURCHASE_STATUS);
+                }
+            }
+
+        } catch (PluginTechnicalException e) {
+            paymentResponse = e.toPaymentResponseFailure();
+        } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder
+                    .aPaymentResponseFailure()
+                    .withErrorCode(PluginTechnicalException.runtimeErrorCode(e))
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
+                    .build();
+        }
+        return paymentResponse;
     }
 
     @Override
     public PaymentResponse handleSessionExpired(TransactionStatusRequest transactionStatusRequest) {
+        PaymentResponse paymentResponse;
         String externalReference = transactionStatusRequest.getOrder().getReference();
         try {
             OneyTransactionStatusRequest oneyTransactionStatusRequest = OneyTransactionStatusRequest.Builder.aOneyGetStatusRequest()
@@ -54,33 +100,32 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     .build();
             StringResponse status = this.httpClient.initiateGetTransactionStatus(oneyTransactionStatusRequest, transactionStatusRequest.getEnvironment().isSandbox());
 
-            PaymentResponse paymentResponse = findErrorResponse(status, externalReference, oneyTransactionStatusRequest.getEncryptKey());
-            if (paymentResponse != null) {
-                return paymentResponse;
-            } else {
+            paymentResponse = findErrorResponse(status, externalReference, oneyTransactionStatusRequest.getEncryptKey());
+            if (paymentResponse == null) {
                 // Special case in which we need to send a confirmation request
                 TransactionStatusResponse response = TransactionStatusResponse.createTransactionStatusResponseFromJson(status.getContent(), oneyTransactionStatusRequest.getEncryptKey());
                 if (response.getStatusPurchase() != null) {
                     // Special case in which we need to send a confirmation request
-                    if ("FAVORABLE".equals(response.getStatusPurchase().getStatusCode())) {
+                    if (FAVORABLE.equals(response.getStatusPurchase().getStatusCode())) {
                         OneyConfirmRequest confirmRequest = new OneyConfirmRequest.Builder(transactionStatusRequest)
                                 .build();
-                        return this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox(), externalReference);
+                        paymentResponse = this.validatePayment(confirmRequest, transactionStatusRequest.getEnvironment().isSandbox(), externalReference);
                     } else {
-                        return this.handleTransactionStatusResponse(response, externalReference);
+                        paymentResponse = this.handleTransactionStatusResponse(response, externalReference);
                     }
                 } else {
                     //Pas de statut pour cette demande
-                    return OneyErrorHandler.getPaymentResponseFailure(
+                    paymentResponse = OneyErrorHandler.getPaymentResponseFailure(
                             FailureCause.CANCEL,
                             externalReference,
-                            ERROR_CODE + "null");
+                            ERROR_NO_PURCHASE_STATUS);
                 }
             }
 
         } catch (PluginTechnicalException e) {
-            return e.toPaymentResponseFailure();
+            paymentResponse = e.toPaymentResponseFailure();
         }
+        return paymentResponse;
     }
 
 
@@ -117,7 +162,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                     return OneyErrorHandler.getPaymentResponseFailure(
                             FailureCause.REFUSED,
                             partnerTransactionId,
-                            ERROR_CODE + "null");
+                            ERROR_NO_PURCHASE_STATUS);
                 }
 
                 return this.handleTransactionStatusResponse(responseDecrypted, partnerTransactionId);
@@ -131,20 +176,20 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                                                             String purchaseReference) {
         PurchaseStatus purchaseStatus = response.getStatusPurchase();
         switch (purchaseStatus.getStatusCode()) {
-            case "PENDING":
+            case PENDING:
                 // Payline: PENDING
                 return PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
                         .withPartnerTransactionId(purchaseReference)
                         .withOnHoldCause(OnHoldCause.SCORING_ASYNC)
                         .build();
-            case "REFUSED":
+            case REFUSED:
                 // Payline: REFUSED
                 return OneyErrorHandler.getPaymentResponseFailure(
                         FailureCause.REFUSED,
                         purchaseReference,
                         addErrorCode(response)
                 );
-            case "ABORTED":
+            case ABORTED:
                 // Payline:
                 // CANCEL or SESSION_EXPIRED according to Confluence mapping.
                 // Always CANCEL according to the former code...
@@ -153,10 +198,10 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                         purchaseReference,
                         addErrorCode(response)
                 );
-            case "FAVORABLE":
-            case "FUNDED":
-            case "CANCELLED":
-            case "TO_BE_FUNDED":
+            case FAVORABLE:
+            case FUNDED:
+            case CANCELLED:
+            case TO_BE_FUNDED:
                 // Payline: ACCEPTED
                 String message = purchaseStatus.getStatusLabel() != null ? purchaseStatus.getStatusLabel() : "OK";
                 return PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
@@ -200,7 +245,7 @@ public class PaymentWithRedirectionServiceImpl implements PaymentWithRedirection
                 return OneyErrorHandler.getPaymentResponseFailure(
                         FailureCause.REFUSED,
                         partnerTransactionID,
-                        ERROR_CODE + "null");
+                        ERROR_NO_PURCHASE_STATUS);
             }
             return this.handleTransactionStatusResponse(responseDecrypted, partnerTransactionID);
         }
