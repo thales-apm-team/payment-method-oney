@@ -24,7 +24,9 @@ publishing {
 
             // For release only
             if (!project.version.contains('-')) {
-                artifact testJar
+                afterEvaluate {
+                    artifact testJar
+                }
             }
         }
     }
