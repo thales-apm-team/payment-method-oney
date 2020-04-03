@@ -17,19 +17,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import static com.payline.payment.oney.utils.TestUtils.*;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     private String partnerTransactionId = "123456789A";
 
     @InjectMocks
+    @Spy
     public PaymentWithRedirectionServiceImpl service;
 
     @Mock
@@ -185,6 +183,27 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
     }
 
     @Test
+    void finalizeRedirectionPaymentTestNullResponse() throws PluginTechnicalException {
+        // create mocks
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus(Mockito.any(), anyBoolean());
+
+        Mockito.doReturn(null).when(service).findErrorResponse(any(),any(), anyString());
+
+        StringResponse responseMocked2 = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
+        Mockito.doReturn(responseMocked2).when(httpClient).initiateConfirmationPayment(Mockito.any(), anyBoolean());
+
+        // do the call
+        RedirectionPaymentRequest redirectionPaymentRequest = createCompleteRedirectionPaymentBuilder();
+        PaymentResponse response = service.finalizeRedirectionPayment(redirectionPaymentRequest);
+
+        // assertions
+        Assertions.assertEquals(PaymentResponseSuccess.class, response.getClass());
+
+    }
+
+
+    @Test
     void handleSessionExpiredFundedEncrypted() throws PluginTechnicalException {
 
         StringResponse responseMocked = createStringResponse(200, "OK", "{\"encrypted_message\":\"+l2i0o7hGRh+wJO02++ulzsMg0QfZ1N009CwI1PLZzBnbfv6/Enufe5TriN1gKQkEmbMYU0PMtHdk+eF7boW/lsIc5PmjpFX1E/4MUJGkzI=\"}");
@@ -239,6 +258,26 @@ public class PaymentWithRedirectionServiceTest extends OneyConfigBean {
         PaymentResponse paymentResponse = service.handleSessionExpired(transactionStatusReq);
         Assertions.assertNotNull(paymentResponse);
         Assertions.assertEquals(paymentResponse.getClass(), PaymentResponseOnHold.class);
+
+    }
+
+    @Test
+    void handleSessionExpiredTestNullResponse() throws PluginTechnicalException {
+        // create mocks
+        StringResponse responseMocked = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
+        Mockito.doReturn(responseMocked).when(httpClient).initiateGetTransactionStatus(Mockito.any(), anyBoolean());
+
+        Mockito.doReturn(null).when(service).findErrorResponse(any(),any(), anyString());
+
+        StringResponse responseMocked2 = createStringResponse(200, "OK", "{\"purchase\":{\"status_code\":\"FAVORABLE\",\"status_label\":\"Oney accepts the payment\"}}");
+        Mockito.doReturn(responseMocked2).when(httpClient).initiateConfirmationPayment(Mockito.any(), anyBoolean());
+
+        // do the call
+        TransactionStatusRequest transactionStatusReq = createDefaultTransactionStatusRequest();
+        PaymentResponse response = service.handleSessionExpired(transactionStatusReq);
+
+        // assertions
+        Assertions.assertEquals(PaymentResponseSuccess.class, response.getClass());
 
     }
 
