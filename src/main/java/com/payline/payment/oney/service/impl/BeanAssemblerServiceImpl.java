@@ -318,6 +318,26 @@ public class BeanAssemblerServiceImpl implements BeanAssembleService {
                 listItems.add( itemBuilder.build() );
             }
 
+            // add delivery fee as an item if needed (see PAYLAPMEXT-238)
+            Amount deliveryCharge = order.getDeliveryCharge();
+            if (deliveryCharge != null
+                    && deliveryCharge.getAmountInSmallestUnit() != null
+                    && !BigInteger.ZERO.equals(deliveryCharge.getAmountInSmallestUnit())){
+
+                Item item = Item.Builder.aItemBuilder()
+                        .withMainItem(0)
+                        .withCategoryCode(11)
+                        .withLabel("Frais de livraison")
+                        .withItemExternalCode("TRANSPORT")
+                        .withQuantity(1)
+                        .withPrice(createFloatAmount(deliveryCharge.getAmountInSmallestUnit(), deliveryCharge.getCurrency()))
+                        .withMarketplaceFlag(0)
+                        .build();
+
+                listItems.add(item);
+
+            }
+
             //Define the main item
             Item.defineMainItem(listItems);
             purchaseBuilder.withListItem(listItems);
