@@ -2,47 +2,52 @@ package com.payline.payment.oney.service.impl;
 
 import com.payline.payment.oney.bean.common.customer.Customer;
 import com.payline.payment.oney.bean.common.customer.PurchaseHistory;
+import com.payline.payment.oney.bean.common.purchase.Item;
 import com.payline.payment.oney.bean.common.purchase.Purchase;
 import com.payline.payment.oney.bean.common.purchase.Travel;
 import com.payline.payment.oney.service.BeanAssembleService;
 import com.payline.payment.oney.utils.TestUtils;
+import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.payment.BuyerExtendedHistory;
 import com.payline.pmapi.bean.payment.Order;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.travel.OrderOTA;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+import java.util.Currency;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BeanAssemblerServiceImplTest {
+class BeanAssemblerServiceImplTest {
 
     private BeanAssembleService beanAssembleService = BeanAssemblerServiceImpl.getInstance();
 
     @Test
-    public void assembleCustomer(){
+    void assembleCustomer() {
         // given: a payment request
         PaymentRequest paymentRequest = TestUtils.createDefaultPaymentRequest();
 
         // when: feeding a to assembleCustomer() method
-        Customer customer = beanAssembleService.assembleCustomer( paymentRequest );
+        Customer customer = beanAssembleService.assembleCustomer(paymentRequest);
 
         // then: resulting object is not null
-        assertNotNull( customer );
-        assertNotNull( customer.getIdentity() );
+        assertNotNull(customer);
+        assertNotNull(customer.getIdentity());
     }
 
     @Test
-    public void fromPaymentRequest() throws Exception {
+    void fromPaymentRequest() throws Exception {
         // given: a full payment request
         PaymentRequest paymentRequest = TestUtils.createCompletePaymentRequestBuilder().build();
 
         // when: feeding it to assemblePurchase() method
-        Purchase purchase = beanAssembleService.assemblePurchase( paymentRequest );
+        Purchase purchase = beanAssembleService.assemblePurchase(paymentRequest);
 
         // then: item is not null and its string form contains some important field names
-        assertNotNull( purchase );
+        assertNotNull(purchase);
         assertTrue(purchase.toString().contains("external_reference"));
         assertTrue(purchase.toString().contains("purchase_amount"));
         assertTrue(purchase.toString().contains("currency_code"));
@@ -51,7 +56,7 @@ public class BeanAssemblerServiceImplTest {
     }
 
     @Test
-    public void assemblePurchaseHistoryFull() {
+    void assemblePurchaseHistoryFull() {
         BuyerExtendedHistory buyerExtendedHistory = BuyerExtendedHistory.BuyerExtendedHistoryBuilder.aBuyerExtendedHistory()
                 .withFirstOrderDate(new Date())
                 .withLastOrderDate(new Date())
@@ -63,7 +68,7 @@ public class BeanAssemblerServiceImplTest {
         PaymentRequest request = TestUtils.createCompletePaymentRequestBuilder()
                 .withBuyer(
                         TestUtils.createCompleteBuyerBuilder()
-                                .withBuyerExtendedHistory( buyerExtendedHistory )
+                                .withBuyerExtendedHistory(buyerExtendedHistory)
                                 .build()
                 )
                 .build();
@@ -78,7 +83,7 @@ public class BeanAssemblerServiceImplTest {
     }
 
     @Test
-    public void assemblePurchaseHistoryNoExtended()  {
+    void assemblePurchaseHistoryNoExtended() {
         // create paymentRequest
         PaymentRequest request = TestUtils.createCompletePaymentRequestBuilder()
                 .withBuyer(
@@ -97,24 +102,52 @@ public class BeanAssemblerServiceImplTest {
         assertNull(purchaseHistory.getLastPurchaseDate());
     }
 
+    @Test
+    void assemblePurchaseWithDeliveryFees() {
+        // create request with order.deliveryCharge not empty
+        Currency currency = Currency.getInstance("EUR");
+        Order order = TestUtils.createCompleteOrderBuilder("123456789")
+                .withDeliveryCharge(new Amount(BigInteger.TEN, currency))
+                .build();
+
+        PaymentRequest request = TestUtils.createCompletePaymentRequestBuilder()
+                .withOrder(order)
+                .build();
+
+        Purchase purchase = beanAssembleService.assemblePurchase(request);
+
+        Assertions.assertNotNull(purchase);
+        Assertions.assertNotNull(purchase.getListItem());
+        Assertions.assertFalse(purchase.getListItem().isEmpty());
+        Assertions.assertNotNull(purchase.getListItem().get(2));
+        Item item = purchase.getListItem().get(2);
+        Assertions.assertEquals(11, item.getCategoryCode().intValue());
+        Assertions.assertEquals(0, item.getIsMainItem().intValue());
+        Assertions.assertEquals(Float.valueOf("0.1"), item.getPrice());
+        Assertions.assertEquals(1, item.getQuantity().intValue());
+        Assertions.assertEquals("TRANSPORT", item.getItemExternalcode());
+
+
+    }
+
     /**
      * Test assembleTravel() method, but assembleJourneyList() and assembleStayList() as well.
      */
     @Test
     void assembleTravel() {
         // given: an Order, with an OrderOTA inside
-        Order order = TestUtils.createCompleteOrder( TestUtils.createTransactionId() );
-        assertNotNull( order.getOrderOTA() );
+        Order order = TestUtils.createCompleteOrder(TestUtils.createTransactionId());
+        assertNotNull(order.getOrderOTA());
 
         // when: feeding it to assembleTravel() method
-        Travel travel = beanAssembleService.assembleTravel( order );
+        Travel travel = beanAssembleService.assembleTravel(order);
 
         // then:
         OrderOTA orderOTA = order.getOrderOTA();
-        assertNotNull( travel );
-        assertNotNull( travel.getJourney() );
-        assertEquals( order.getOrderOTA().getTransport().getLegList().size(), travel.getJourney().size() );
-        assertNotNull( travel.getStay() );
+        assertNotNull(travel);
+        assertNotNull(travel.getJourney());
+        assertEquals(order.getOrderOTA().getTransport().getLegList().size(), travel.getJourney().size());
+        assertNotNull(travel.getStay());
     }
 
 }

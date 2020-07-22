@@ -148,12 +148,12 @@ public class TestUtils {
                 .withBuyerExtendedHistory( createBuyerExtendedHistory() );
     }
 
-    public static Order createCompleteOrder(String transactionID) {
+    public static Order.OrderBuilder createCompleteOrderBuilder(String transactionId){
         List<Order.OrderItem> orderItems = new ArrayList<>();
         orderItems.add(createOrderItem("item1", createAmount(CURRENCY_EUR)));
         orderItems.add(createOrderItem("item2", createAmount(CURRENCY_EUR)));
         return Order.OrderBuilder.anOrder()
-                .withReference(transactionID)
+                .withReference(transactionId)
                 .withAmount(createAmount(CONFIRM_AMOUNT, CURRENCY_EUR))
                 .withDate(new Date())
                 .withItems(orderItems)
@@ -161,8 +161,11 @@ public class TestUtils {
                 .withDeliveryTime("2")
                 .withExpectedDeliveryDate(new Date())
                 .withOrderOTA( createOrderOTA() )
-                .withRiskLevel(1)
-                .build();
+                .withRiskLevel(1);
+    }
+
+    public static Order createCompleteOrder(String transactionId) {
+        return createCompleteOrderBuilder(transactionId).build();
     }
 
     /**
