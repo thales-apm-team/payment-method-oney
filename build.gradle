@@ -31,7 +31,7 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 ext {
-    paymentMethodApiVersion = '1.7'
+    paymentMethodApiVersion = '1.9'
     paymentMethodIntegrationVersion = '1.4'
     mockitoVersion = '2.19.0'
     releaseDirectoryPath = 'D:/build'
@@ -44,10 +44,10 @@ configurations {
 dependencies {
     compileOnly("com.payline:payment-method-api:$paymentMethodApiVersion")
 
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.8.2'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
 
-    implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.10'
+    implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.13'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.6'
 
     compileOnly group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.1'
@@ -58,25 +58,28 @@ dependencies {
     testRuntimeOnly group: 'javax.jws', name: 'javax.jws-api', version:  '1.1'
     testRuntimeOnly group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
 
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
 
     testImplementation group: 'org.jmockit', name: 'jmockit', version: '1.49'
 
     testImplementation "com.payline:payment-method-api:${paymentMethodApiVersion}"
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
 
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.2'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.6.2'
+
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.141.59'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.141.59'
+
+    implementation 'org.apache.commons:commons-lang3:3.11'
 
     // fatJarTest include testImplementation dependencies (not for IT)
-    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
-    fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.3'
-    fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.2'
-    fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.13.0'
-    fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.13.0'
+    fatJarTest group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
+    fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+    fatJarTest group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.6.2'
+    fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-server', version: '3.141.59'
+    fatJarTest group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '3.141.59'
 }
 
 dependencyCheck {
@@ -90,16 +93,16 @@ shadowJar {
     classifier = ''
     dependencies {
         exclude(dependency('com.payline:payment-method-api'))
-        exclude(dependency('org.apache.logging.log4j:log4j-api:2.11.0'))
-        exclude(dependency('org.apache.logging.log4j:log4j-core:2.11.0'))
-        exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.0.3'))
-        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.0'))
+        exclude(dependency('org.apache.logging.log4j:log4j-api:2.13.3'))
+        exclude(dependency('org.apache.logging.log4j:log4j-core:2.13.3'))
+        exclude(dependency('org.junit.jupiter:junit-jupiter-api:5.6.2'))
+        exclude(dependency('org.powermock:powermock-api-mockito2:2.0.7'))
         exclude(dependency('org.jmockit:jmockit:1.49'))
-        exclude(dependency('org.powermock:powermock-module-junit4:1.7.4'))
-        exclude(dependency('org.powermock:powermock-module-junit4-rule-agent:1.7.4'))
-        exclude(dependency('org.powermock:powermock-module-junit4-rule:1.7.4'))
-        exclude(dependency('org.seleniumhq.selenium:selenium-server:3.13.0'))
-        exclude(dependency('org.seleniumhq.selenium:selenium-support:3.13.0'))
+        exclude(dependency('org.powermock:powermock-module-junit4:2.0.7'))
+        exclude(dependency('org.powermock:powermock-module-junit4-rule-agent:2.0.7'))
+        exclude(dependency('org.powermock:powermock-module-junit4-rule: 2.0.7'))
+        exclude(dependency('org.seleniumhq.selenium:selenium-server:3.141.59'))
+        exclude(dependency('org.seleniumhq.selenium:selenium-support:3.141.59'))
     }
 }
 
