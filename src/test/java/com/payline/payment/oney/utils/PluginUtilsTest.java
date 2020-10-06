@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PluginUtilsTest {
+class PluginUtilsTest {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginUtilsTest.class);
 
@@ -39,7 +39,7 @@ public class PluginUtilsTest {
     private ContractConfiguration contractConfiguration;
 
     @BeforeAll
-    public void setUp() {
+    void setUp() {
         paymentRequest = TestUtils.createCompletePaymentRequestBuilder().build();
         partnerConfiguration = paymentRequest.getPartnerConfiguration();
         contractConfiguration = paymentRequest.getContractConfiguration();
@@ -51,7 +51,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void spaceConcat_nominal() {
+    void spaceConcat_nominal() {
         // given 2 strings
         String text1 = "This is the first part";
         String text2 = "This is the second part";
@@ -64,7 +64,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void spaceConcat_trailingSpace() {
+    void spaceConcat_trailingSpace() {
         // given 2 strings
         String text1 = "The first part with a space at the end ";
         String text2 = "the second part";
@@ -77,7 +77,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_nothingToSplit() {
+    void splitLongText_nothingToSplit() {
         // given:
         String toSplit = "This string's length is just the maxLength";
 
@@ -90,7 +90,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_splitAfterSpace() {
+    void splitLongText_splitAfterSpace() {
         // given:
         String toSplit = "This string will be split in two";
 
@@ -103,7 +103,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_splitBeforeSpace() {
+    void splitLongText_splitBeforeSpace() {
         // given:
         String toSplit = "This string will be split in two";
 
@@ -116,7 +116,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_splitMiddleWord() {
+    void splitLongText_splitMiddleWord() {
         // given:
         String toSplit = "This string should not be split in the middle of a word";
 
@@ -131,7 +131,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_multipleSplitSpaces() {
+    void splitLongText_multipleSplitSpaces() {
         // given:
         String toSplit = "This string has a very      long space in the middle";
 
@@ -145,7 +145,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void splitLongText_tooLongWithoutSpace() {
+    void splitLongText_tooLongWithoutSpace() {
         // given:
         String toSplit = "ThisStringIsTooLongButThereIsNoSpaceBetweenWordsToSplitCleanly";
 
@@ -157,7 +157,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void itemComparator() throws Exception {
+    void itemComparator() {
         ItemComparator comp = new ItemComparator();
         Item item1 = Item.Builder.aItemBuilder()
                 .withMainItem(0)
@@ -183,7 +183,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testGetIsoAlpha3CodeFromCountryCode2() {
+    void testGetIsoAlpha3CodeFromCountryCode2() {
         String country = "FR";
         String pays = getIsoAlpha3CodeFromCountryCode2(country);
         Assertions.assertEquals("FRA", pays);
@@ -191,7 +191,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testGetCountryNameCodeFromCountryCode2() {
+    void testGetCountryNameCodeFromCountryCode2() {
         String country = "FR";
         String pays = getCountryNameCodeFromCountryCode2(country);
         Assertions.assertEquals("France", pays);
@@ -201,7 +201,7 @@ public class PluginUtilsTest {
 
 
     @Test
-    public void testCategoryHandler() {
+    void testCategoryHandler() {
         String catCodePayline = "17";
         String catCodePayline2 = "964";
         int catCodeOney = findCategory(catCodePayline);
@@ -213,7 +213,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testDeliveryModeCode() {
+    void testDeliveryModeCode() {
         String catCodePayline = "1";
         String catCodePayline2 = "4";
         int catCodeOney = getOneyDeliveryModeCode(catCodePayline);
@@ -224,7 +224,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testDeliveryOption() {
+    void testDeliveryOption() {
         String mode1 = "1";
         String mode2 = "2";
         String mode3 = "17";
@@ -238,7 +238,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testHonorificName() {
+    void testHonorificName() {
 
         // Madame → PAYLINE: 1 → ONEY: 2
         String mme = "1";
@@ -269,7 +269,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void createStringAmount() {
+    void createStringAmount() {
         BigInteger int1 = BigInteger.ZERO;
         BigInteger int2 = BigInteger.ONE;
         BigInteger int3 = BigInteger.TEN;
@@ -284,7 +284,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void createFloatAmount() {
+    void createFloatAmount() {
         BigInteger int1 = BigInteger.ZERO;
         BigInteger int2 = BigInteger.ONE;
         BigInteger int3 = BigInteger.TEN;
@@ -299,19 +299,19 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testIsISO639() {
+    void testIsISO639() {
         Assertions.assertFalse(isISO639("FR"));
         Assertions.assertTrue(isISO639("fr"));
     }
 
     @Test
-    public void testIsISO3166() {
+    void testIsISO3166() {
         Assertions.assertFalse(isISO3166("FRA"));
         Assertions.assertTrue(isISO3166("FR"));
     }
 
     @Test
-    public void getParameters_noCoutryCode() {
+    void getParameters_noCoutryCode() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
@@ -324,7 +324,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void getParameters_emptyCoutryCode() {
+    void getParameters_emptyCoutryCode() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
             Whitebox.setInternalState(partnerConfiguration, "partnerConfigurationMap", new HashMap<>());
@@ -341,7 +341,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void getParameters_noAuthorizationKey() {
+    void getParameters_noAuthorizationKey() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
 
 
@@ -360,7 +360,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void getParameters_noPartnerUrl() {
+    void getParameters_noPartnerUrl() {
         Throwable exception = Assertions.assertThrows(InvalidDataException.class, () -> {
             Map<String, String> partnerConfigurationMap = new HashMap<>();
             partnerConfigurationMap.put(PARTNER_API_URL, "PARTNER_AUTHORIZATION_KEY");
@@ -376,7 +376,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void getParameters_ok() throws Exception {
+    void getParameters_ok() throws Exception {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
         partnerConfigurationMap.put(PARTNER_AUTHORIZATION_KEY + ".coutrycode", "PARTNER_AUTHORIZATION_KEY");
         partnerConfigurationMap.put(PARTNER_API_URL, "PARTNER_API_URL");
@@ -398,7 +398,7 @@ public class PluginUtilsTest {
     }
 
     @Test
-    public void testGenerateMerchantRequestId() throws Exception {
+    void testGenerateMerchantRequestId() throws Exception {
 
         merchantId1 = generateMerchantRequestId("merchantId");
         TimeUnit.SECONDS.sleep(1);

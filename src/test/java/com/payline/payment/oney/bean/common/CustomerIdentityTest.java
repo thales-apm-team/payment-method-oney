@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.payline.payment.oney.utils.TestUtils.createDefaultBuyer;
 
-public class CustomerIdentityTest {
+class CustomerIdentityTest {
 
     @Test
     void customerFromPaylineTest() throws InvalidDataException {
@@ -19,7 +19,7 @@ public class CustomerIdentityTest {
     }
 
     @Test
-    public void customerIdentityTest() {
+    void customerIdentityTest() {
         CustomerIdentity customerIdentity = CustomerIdentity.Builder.aCustomerIdentity()
                 .withBirthName("Doe")
                 .withPersonType(2)

@@ -17,9 +17,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
+import java.util.List;
 
+import static com.payline.payment.oney.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BeanAssemblerServiceImplTest {
@@ -127,7 +130,36 @@ class BeanAssemblerServiceImplTest {
         Assertions.assertEquals(Float.valueOf("0.1"), item.getPrice());
         Assertions.assertEquals(1, item.getQuantity().intValue());
         Assertions.assertEquals("TRANSPORT", item.getItemExternalcode());
+    }
 
+
+    @Test
+    void assemblePurchase() throws InvalidDataException {
+        List<Order.OrderItem> items = new ArrayList<>();
+        items.add(createOrderItemBuilder("reference", createAmount(CURRENCY_EUR)).withQuantity(1L).build());
+        items.add(createOrderItemBuilder("reference", createAmount(CURRENCY_EUR)).withQuantity(2L).build());
+
+        Order order = TestUtils.createCompleteOrderBuilder("123456789")
+                .withDeliveryCharge(new Amount(BigInteger.TEN, Currency.getInstance("EUR")))
+                .withItems(items)
+                .build();
+
+        // create paymentRequest
+        PaymentRequest request = TestUtils.createCompletePaymentRequestBuilder()
+                .withBuyer(
+                        TestUtils.createCompleteBuyerBuilder()
+                                .withBuyerExtendedHistory(null)
+                                .build()
+                )
+                .withOrder(order)
+                .build();
+
+        // test method
+        Purchase purchase = beanAssembleService.assemblePurchase(request);
+        Assertions.assertNotNull(purchase);
+        Assertions.assertNotNull(purchase.getListItem());
+        Assertions.assertFalse(purchase.getListItem().isEmpty());
+        Assertions.assertEquals(3, purchase.getNumberOfItems());
 
     }
 

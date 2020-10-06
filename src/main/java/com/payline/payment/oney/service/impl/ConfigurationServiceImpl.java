@@ -217,7 +217,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             String jsonMsg = getFinalJsonMessage(pspId, merchantGuid, opcKey, codePays);
             Map<String, String> parameters = PluginUtils.getParametersMap(contractParametersCheckRequest);
             StringResponse stringResponse;
-            if (Boolean.valueOf(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
+            if (Boolean.parseBoolean(ConfigPropertiesEnum.INSTANCE.get(CHIFFREMENT_IS_ACTIVE))) {
                 OneyEncryptedRequest requestEncrypted = OneyEncryptedRequest.fromJson(jsonMsg, contractParametersCheckRequest);
                 stringResponse = httpClient.initiateCheckPayment(requestEncrypted.toString(), parameters, isSandbox);
             } else {
@@ -227,7 +227,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 errors.put(PARTNER_API_URL, UNEXPECTED_ERR);
                 LOGGER.error("HTTP response is not parsable");
             } else {
-                OneyError40x err = null;
+                OneyError40x err;
 
                 switch (stringResponse.getCode()) {
                     case HTTP_404:
